@@ -41,7 +41,7 @@ public class ReadXMLFile {
                 Attributes attributes) throws SAXException {
  
 		
-		System.out.println("Start Element :" + elementName);
+		//System.out.println("Start Element :" + elementName);
  
 		if (elementName.equalsIgnoreCase("page")) {			
 			 page = new Page();			
@@ -71,7 +71,7 @@ public class ReadXMLFile {
 		        	}
 		        }
 		    }
-		System.out.println("End Element :" + element);
+		//System.out.println("End Element :" + element);
  
 	}
  
