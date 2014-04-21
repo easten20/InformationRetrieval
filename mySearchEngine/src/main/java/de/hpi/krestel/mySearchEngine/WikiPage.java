@@ -7,9 +7,9 @@ package de.hpi.krestel.mySearchEngine;
  */
 public class WikiPage {
 	  String title;
-	    String id;   
-	    String text;
+	  String id;   
+	  String text;
 	    
-	    public WikiPage(){        
-	    }
+	  public WikiPage(){        
+	  }
 }

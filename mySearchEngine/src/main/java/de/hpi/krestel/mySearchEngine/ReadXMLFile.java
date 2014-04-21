@@ -19,26 +19,44 @@ import org.xml.sax.helpers.DefaultHandler;
 public class ReadXMLFile extends DefaultHandler {
 				
 		public List<WikiPage> pageL = new ArrayList<WikiPage>();
-		WikiPage page;
-		String tmpValue;		
+		WikiPage page;		
+		StringBuilder strBuilder;
 		String fileName;
 		boolean isPage = false;
+		boolean isElement = false;
 	    int limit = 5;
 	    
 	    public ReadXMLFile(String fileName) {
 	    	this.fileName = fileName;
+	    	this.strBuilder = new StringBuilder();
 	    	parseDocument();
+	    }
+	    
+	    /*
+	     * check if cursor is currently inside one of the WikiPage elements
+	     */
+	    private boolean checkInsideElement(String element)  {
+	    	if (element.equals("id") || element.equals("title") || 
+	    			element.equals("text") || element.equals("page")) 		        	
+	            return true;	 
+	    	else
+	    		return false;
 	    }
 	    
 		public void startElement(String uri, String localName,String elementName, 
 	                Attributes attributes) throws SAXException {	
-			
-			//System.out.println("Start Element :" + elementName);
-	 
+							 
 			if (elementName.equalsIgnoreCase("page")) {			
 				 page = new WikiPage();			
 				 isPage = true;			 			 			
+			}						
+			
+			if (this.checkInsideElement(elementName)) {
+				this.strBuilder = new StringBuilder();
+				isElement = true;
 			}
+			else
+				isElement = false;
 		}
 		
 		 private void parseDocument() {			 
@@ -53,16 +71,17 @@ public class ReadXMLFile extends DefaultHandler {
 			         } catch (IOException e) {		
 			             System.out.println("IO error");			
 			         }			 
-			     }
-
+			     }		
 	 
 		public void endElement(String uri, String localName,
 			String element) throws SAXException {
 			 if (isPage) {
 			        if (element.equals("id") && !(page.id != null)) 		        	
-			            page.id = this.tmpValue;
+			            page.id = this.strBuilder.toString();
 			        else if (element.equals("title"))
-			        	page.title = this.tmpValue;
+			        	page.title = this.strBuilder.toString();
+			        else if (element.equals("text"))
+			        	page.text = this.strBuilder.toString();
 			        else if (element.equals("page"))
 			        {
 			        	pageL.add(page);
@@ -73,12 +92,12 @@ public class ReadXMLFile extends DefaultHandler {
 			        		throw new SAXException();			        	
 			        }
 			    }
-			//System.out.println("End Element :" + element);
 	 
 		}
 	 
-		public void characters(char ch[], int start, int length) throws SAXException {		
-				tmpValue = new String(ch, start, length);					
+		public void characters(char ch[], int start, int length) throws SAXException {
+			if (isElement) //only append string builder if inside of the expected node (text,id, etc)
+				strBuilder.append(ch, start, length);					
 		}
 	 	
 	
@@ -87,8 +106,10 @@ public class ReadXMLFile extends DefaultHandler {
  	
 	ReadXMLFile handler = new ReadXMLFile("C:\\Users\\easten\\Documents\\Information Retrieval\\dewiki-20140216-pages-articles-multistream.xml");
     
-     for (WikiPage page : handler.pageL)
-  	   System.out.println("title :" + page.title);     
+     for (WikiPage page : handler.pageL){
+  	   System.out.println("title : " + page.title);
+  	   System.out.println("text: " + page.text);
+     }
  
    }
    
