@@ -10,6 +10,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import org.tartarus.snowball.*;
+import org.tartarus.snowball.ext.germanStemmer;
 
 
 /**
@@ -98,20 +100,7 @@ public class ReadXMLFile extends DefaultHandler {
 		public void characters(char ch[], int start, int length) throws SAXException {
 			if (isElement) //only append string builder if inside of the expected node (text,id, etc)
 				strBuilder.append(ch, start, length);					
-		}
-	 	
-	
-   public static void main(String argv[]) {
-     
- 	
-	ReadXMLFile handler = new ReadXMLFile("C:\\Users\\easten\\Documents\\Information Retrieval\\dewiki-20140216-pages-articles-multistream.xml");
-    
-     for (WikiPage page : handler.pageL){
-  	   System.out.println("title : " + page.title);
-  	   System.out.println("text: " + page.text);
-     }
- 
-   }
+		}	 		
    
 }
  
