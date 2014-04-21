@@ -1,6 +1,10 @@
 package de.hpi.krestel.mySearchEngine;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.tartarus.snowball.SnowballStemmer;
+import org.tartarus.snowball.ext.germanStemmer;
 
 /* This is your file! implement your search engine here!
  * 
@@ -15,7 +19,6 @@ import java.util.ArrayList;
 
 // Replace 'Y' with your search engine name
 public class SearchEngineY extends SearchEngine {
-
 	
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
@@ -25,7 +28,16 @@ public class SearchEngineY extends SearchEngine {
 
 	@Override
 	void index(String dir) {
-		// TODO Auto-generated method stub
+		ReadXMLFile parseXML = new ReadXMLFile(dir);	
+		List<WikiPage> listPages = parseXML.pageL;
+		SnowballStemmer stemmer = new germanStemmer();			
+		for (WikiPage page: listPages) {			
+			for (String strWord : page.text.split("\\s+")) {
+				stemmer.setCurrent(strWord);			
+				stemmer.stem();				
+				System.out.println("stemmer: " + stemmer.getCurrent());				
+			}												
+		}		
 	}
 
 	@Override

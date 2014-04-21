@@ -19,14 +19,8 @@ public class SearchEngineTest {
 	static int prf = 5;
 
 	public static void main(String[] args) {
-
-		// Get a new search engine
-		//SearchEngine se1 = new SearchEngineX();
-		//evaluate(se1);
-		// SearchEngine se2 = new SearchEngineY();
-		// evaluate(se2);
-		// ...
-
+		SearchEngineY test = new SearchEngineY();
+		test.index("C:\\Users\\easten\\Documents\\Information Retrieval\\dewiki-20140216-pages-articles-multistream.xml");
 	}
 
 	private static void evaluate(SearchEngine se) {
