@@ -1,10 +1,16 @@
 package de.hpi.krestel.mySearchEngine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.germanStemmer;
+
+import de.hpi.krestel.mySearchEngine.domain.WikiPage;
+import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
+import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
+import de.hpi.krestel.mySearchEngine.parser.ReadXMLFile;
 
 /* This is your file! implement your search engine here!
  * 
@@ -29,14 +35,26 @@ public class SearchEngineY extends SearchEngine {
 	@Override
 	void index(String dir) {
 		ReadXMLFile parseXML = new ReadXMLFile(dir);	
-		List<WikiPage> listPages = parseXML.pageL;
+		List<WikiPage> listPages = parseXML.getWikiPages();
+		//get Stopwords
+		StopWord stopWord = new StopWord();        
+        stopWord.FillStopWord(new File("res/stop-words_german_1_de.txt").getAbsolutePath());
+        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());        
+        int minLength = 3;
 		SnowballStemmer stemmer = new germanStemmer();			
-		for (WikiPage page: listPages) {			
-			for (String strWord : page.text.split("\\s+")) {
-				stemmer.setCurrent(strWord);			
-				stemmer.stem();				
-				System.out.println("stemmer: " + stemmer.getCurrent());				
-			}												
+		ParseHTMLToText htmlParser = new ParseHTMLToText();
+		for (WikiPage page: listPages) {				
+			List<String> listTerms = new ArrayList<String>();							       	        //		
+			String html = ParseWikiToHTMLUtility.parseMediaWiki(page.getText());
+			for (String strWord : htmlParser.parseHTML(html).toString().replaceAll("[^a-zA-Z ]", "").split("\\s+")) {
+				//filter by stopword and length
+				if (strWord.length() < minLength || stopWord.GetHashSet().contains(strWord))
+					continue;
+				stemmer.setCurrent(strWord); //stemword				
+				stemmer.stem();										
+				listTerms.add(stemmer.getCurrent());				
+			}					
+			System.out.println(listTerms.size());
 		}		
 	}
 
