@@ -7,6 +7,8 @@ import java.util.List;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.germanStemmer;
 
+import com.google.common.collect.Iterators;
+
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
@@ -37,25 +39,88 @@ public class SearchEngineY extends SearchEngine {
 		ReadXMLFile parseXML = new ReadXMLFile(dir);	
 		List<WikiPage> listPages = parseXML.getWikiPages();
 		//get Stopwords
+		// method fill stopwords
 		StopWord stopWord = new StopWord();        
         stopWord.FillStopWord(new File("res/stop-words_german_1_de.txt").getAbsolutePath());
-        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());        
+        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());
+
         int minLength = 3;
-		SnowballStemmer stemmer = new germanStemmer();			
+        // stemmer initialization
+		SnowballStemmer stemmer = new germanStemmer();
+		// parser initialization
 		ParseHTMLToText htmlParser = new ParseHTMLToText();
-		for (WikiPage page: listPages) {				
-			List<String> listTerms = new ArrayList<String>();							       	        //		
+		for (WikiPage page: listPages) {
+			// iterate over the wiki pages
+			List<String> listTerms = new ArrayList<String>();
+			// mediawiki -> HTML		
 			String html = ParseWikiToHTMLUtility.parseMediaWiki(page.getText());
+			// 1. from html to clean text, 2. tokenization
 			for (String strWord : htmlParser.parseHTML(html).toString().replaceAll("[^a-zA-Z ]", "").split("\\s+")) {
-				//filter by stopword and length
+				// stemming
+				stemmer.setCurrent(strWord); //stemword				
+				stemmer.stem();
+				//filter (by stopword and length)
 				if (strWord.length() < minLength || stopWord.GetHashSet().contains(strWord))
 					continue;
-				stemmer.setCurrent(strWord); //stemword				
-				stemmer.stem();										
-				listTerms.add(stemmer.getCurrent());				
+				// put stemmed document back
+				listTerms.add(stemmer.getCurrent());
+				System.out.println(strWord);
 			}					
 			System.out.println(listTerms.size());
 		}		
+	}
+	
+	void index2(String dir) {
+		// StopWord stopWords = getStopWords();
+		// stemmer = initializeStemmer();
+		for (WikiPage wikiPage: listWikiPages(dir)) {
+			String cleanText = cleanUpWikiText(wikiPage);
+			Iterable<String> tokens = tokenizeWikiText(cleanText);
+			tokens = removeStopWords(tokens);
+			tokens = stemText(tokens);
+			index(wikiPage, tokens);
+		}
+	}
+	
+	List<WikiPage> listWikiPages(String dir) {
+		ReadXMLFile parseXML = new ReadXMLFile(dir);
+		List<WikiPage> listPages = parseXML.getWikiPages();
+		return listPages;
+	}
+	
+	String cleanUpWikiText(WikiPage wikiPage) {
+		ParseHTMLToText htmlParser = new ParseHTMLToText();
+		String html = ParseWikiToHTMLUtility.parseMediaWiki(wikiPage.getText());
+		return htmlParser.parseHTML(html).toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	Iterable<String> tokenizeWikiText(String wikiText) {
+		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
+		return (Iterable<String>) Iterators.forArray(tokens);
+	}
+	
+	StopWord getStopWord() {
+		return StopWord.StopWordFromFiles();
+	}
+	
+	Iterable<String> removeStopWords(Iterable<String> tokens) {
+		StopWord stopWord = getStopWord();
+		//if (strWord.length() < minLength || stopWord.GetHashSet().contains(strWord))
+			//continue;
+		return tokens;
+	}
+	
+	Iterable<String> stemText(Iterable<String> tokens) {
+		SnowballStemmer stemmer = new germanStemmer();
+		// stemmer.setCurrent(strWord); //stemword				
+		// stemmer.stem();
+		// stemmer.getCurrent()
+		return tokens;
+	}
+	
+	void index(WikiPage wikiPage, Iterable<String> tokens) {
+		
 	}
 
 	@Override

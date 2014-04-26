@@ -1,6 +1,7 @@
 package de.hpi.krestel.mySearchEngine;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,6 +16,13 @@ public class StopWord {
 	
 	public void FillStopWord(String fileName){
 		this.GetFromFile(fileName);
+	}
+	
+	public static StopWord StopWordFromFiles() {
+		StopWord stopWord = new StopWord();        
+        stopWord.FillStopWord(new File("res/stop-words_german_1_de.txt").getAbsolutePath());
+        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());
+        return stopWord;		
 	}
 	
 	public HashSet<String> GetHashSet() {
@@ -35,4 +43,5 @@ public class StopWord {
 			e.printStackTrace();
 		}
 	}
+
 }
