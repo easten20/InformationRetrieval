@@ -1,5 +1,7 @@
 package de.hpi.krestel.mySearchEngine;
 
+import java.io.File;
+
 
 // This file will be used to evaluate your search engine!
 // You can use/change this file for development. But
@@ -20,7 +22,7 @@ public class SearchEngineTest {
 
 	public static void main(String[] args) {
 		SearchEngineY test = new SearchEngineY();
-		test.index("C:\\Users\\easten\\Documents\\Information Retrieval\\dewiki-20140216-pages-articles-multistream.xml");
+		test.index(new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath());
 	}
 
 	private static void evaluate(SearchEngine se) {
