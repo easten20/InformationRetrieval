@@ -13,6 +13,7 @@ import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
 import de.hpi.krestel.mySearchEngine.parser.ReadXMLFile;
+import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 /* This is your file! implement your search engine here!
  * 
@@ -35,7 +36,7 @@ public class SearchEngineY extends SearchEngine {
 	}
 
 	@Override
-	void index(String dir) {
+	void index(String dir) {		
 		ReadXMLFile parseXML = new ReadXMLFile(dir);	
 		List<WikiPage> listPages = parseXML.getWikiPages();
 		//get Stopwords
@@ -49,7 +50,7 @@ public class SearchEngineY extends SearchEngine {
 		SnowballStemmer stemmer = new germanStemmer();
 		// parser initialization
 		ParseHTMLToText htmlParser = new ParseHTMLToText();
-		for (WikiPage page: listPages) {
+		for (WikiPage page: listWikiPages(dir)) {
 			// iterate over the wiki pages
 			List<String> listTerms = new ArrayList<String>();
 			// mediawiki -> HTML		
@@ -64,16 +65,17 @@ public class SearchEngineY extends SearchEngine {
 					continue;
 				// put stemmed document back
 				listTerms.add(stemmer.getCurrent());
-				System.out.println(strWord);
-			}					
+				//System.out.println(strWord);
+			}		
+			System.out.println("page Id: " + page.getId());
 			System.out.println(listTerms.size());
 		}		
 	}
 	
 	void index2(String dir) {
 		// StopWord stopWords = getStopWords();
-		// stemmer = initializeStemmer();
-		for (WikiPage wikiPage: listWikiPages(dir)) {
+		// stemmer = initializeStemmer();		
+		for (WikiPage wikiPage: listWikiPages(dir)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
 			Iterable<String> tokens = tokenizeWikiText(cleanText);
 			tokens = removeStopWords(tokens);
@@ -82,10 +84,9 @@ public class SearchEngineY extends SearchEngine {
 		}
 	}
 	
-	List<WikiPage> listWikiPages(String dir) {
-		ReadXMLFile parseXML = new ReadXMLFile(dir);
-		List<WikiPage> listPages = parseXML.getWikiPages();
-		return listPages;
+	Iterable<WikiPage> listWikiPages(String dir) {
+		WikiXMLIterable test = new WikiXMLIterable(dir);		
+		return test;
 	}
 	
 	String cleanUpWikiText(WikiPage wikiPage) {

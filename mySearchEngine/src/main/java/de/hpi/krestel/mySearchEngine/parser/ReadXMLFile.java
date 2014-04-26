@@ -18,6 +18,7 @@ import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 /**
  * @author easten
  * XML parser class to parse xml file
+ * @deprecated use {@link WikiXMLIterable} instead.  
  */
 public class ReadXMLFile extends DefaultHandler {
 				
@@ -87,7 +88,7 @@ public class ReadXMLFile extends DefaultHandler {
 			        	page.setText(this.strBuilder.toString());
 			        else if (element.equals("page"))
 			        {
-			        	pageL.add(page);
+			        	pageL.add(page);			        	
 			        	isPage = false;
 			        	--limit;		        	
 			        	// throws error when the parser reach its limit
