@@ -1,6 +1,5 @@
 package de.hpi.krestel.mySearchEngine;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,12 +7,9 @@ import java.util.List;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.germanStemmer;
 
-import com.google.common.collect.Iterators;
-
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
-import de.hpi.krestel.mySearchEngine.parser.ReadXMLFile;
 import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 /* This is your file! implement your search engine here!
@@ -29,11 +25,12 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 // Replace 'Y' with your search engine name
 public class SearchEngineY extends SearchEngine {
-	
+	Index index;
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
 		// This should stay as is! Don't add anything here!
-		super();	
+		super();
+		index = new Index();
 	}
 
 	@Override
@@ -98,6 +95,7 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	void index(WikiPage wikiPage, Iterable<String> tokens) {
+		index.addTerms(wikiPage.getId(), tokens);
 		System.out.println("page Id: " + wikiPage.getId());
 		System.out.println(((List<String>) tokens).size());
 	}
