@@ -38,6 +38,9 @@ public class SearchEngineY extends SearchEngine {
 
 	@Override
 	void index(String dir) {
+		// First you need to pre-process the raw input. Decide on how to tokenize, whether to
+		// use a stopword list and/or stemming. For these steps you can use existing code — you
+		// don’t need to come up with a stopword list or implement a new stemmer!
 		for (WikiPage wikiPage: listWikiPages(dir)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
 			Iterable<String> tokens = tokenizeWikiText(cleanText);
@@ -58,7 +61,6 @@ public class SearchEngineY extends SearchEngine {
 		return htmlParser.parseHTML(html).toString();
 	}
 	
-	//@SuppressWarnings("unchecked")
 	Iterable<String> tokenizeWikiText(String wikiText) {
 		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
 		return Arrays.asList(tokens);
