@@ -2,6 +2,7 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.tartarus.snowball.SnowballStemmer;
@@ -35,8 +36,8 @@ public class SearchEngineY extends SearchEngine {
 		super();	
 	}
 
-	@Override
-	void index(String dir) {		
+	
+	void index2(String dir) {		
 		ReadXMLFile parseXML = new ReadXMLFile(dir);	
 		List<WikiPage> listPages = parseXML.getWikiPages();
 		//get Stopwords
@@ -72,7 +73,8 @@ public class SearchEngineY extends SearchEngine {
 		}		
 	}
 	
-	void index2(String dir) {
+	@Override
+	void index(String dir) {
 		// StopWord stopWords = getStopWords();
 		// stemmer = initializeStemmer();		
 		for (WikiPage wikiPage: listWikiPages(dir)) {						
@@ -95,33 +97,48 @@ public class SearchEngineY extends SearchEngine {
 		return htmlParser.parseHTML(html).toString();
 	}
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	Iterable<String> tokenizeWikiText(String wikiText) {
 		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
-		return (Iterable<String>) Iterators.forArray(tokens);
+		return Arrays.asList(tokens);
 	}
 	
 	StopWord getStopWord() {
+		// TODO: cache the result, do not create a new one every time. 
 		return StopWord.StopWordFromFiles();
 	}
 	
 	Iterable<String> removeStopWords(Iterable<String> tokens) {
 		StopWord stopWord = getStopWord();
-		//if (strWord.length() < minLength || stopWord.GetHashSet().contains(strWord))
-			//continue;
-		return tokens;
+		List<String> stopWordFreeTokens = new ArrayList<String>();
+		for (String token : tokens) {
+			if (token.length() < 3 || stopWord.GetHashSet().contains(token))
+				continue;
+			stopWordFreeTokens.add(token);
+		}
+		return stopWordFreeTokens;
+	}
+	
+	
+	SnowballStemmer getStemmer() {
+		// TODO: cache the stemmer for better performance
+		return new germanStemmer();
 	}
 	
 	Iterable<String> stemText(Iterable<String> tokens) {
-		SnowballStemmer stemmer = new germanStemmer();
-		// stemmer.setCurrent(strWord); //stemword				
-		// stemmer.stem();
-		// stemmer.getCurrent()
-		return tokens;
+		SnowballStemmer stemmer  = this.getStemmer();
+		List<String> stemmedTokens = new ArrayList<String>();
+		for (String token : tokens) {
+			stemmer.setCurrent(token); 		
+			stemmer.stem();
+			stemmedTokens.add(stemmer.getCurrent());
+		}
+		return stemmedTokens;
 	}
 	
 	void index(WikiPage wikiPage, Iterable<String> tokens) {
-		
+		System.out.println("page Id: " + wikiPage.getId());
+		System.out.println(((List<String>) tokens).size());
 	}
 
 	@Override
