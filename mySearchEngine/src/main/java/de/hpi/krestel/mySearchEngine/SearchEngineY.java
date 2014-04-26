@@ -38,8 +38,6 @@ public class SearchEngineY extends SearchEngine {
 
 	@Override
 	void index(String dir) {
-		// StopWord stopWords = getStopWords();
-		// stemmer = initializeStemmer();		
 		for (WikiPage wikiPage: listWikiPages(dir)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
 			Iterable<String> tokens = tokenizeWikiText(cleanText);
