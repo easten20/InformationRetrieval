@@ -36,43 +36,6 @@ public class SearchEngineY extends SearchEngine {
 		super();	
 	}
 
-	
-	void index2(String dir) {		
-		ReadXMLFile parseXML = new ReadXMLFile(dir);	
-		List<WikiPage> listPages = parseXML.getWikiPages();
-		//get Stopwords
-		// method fill stopwords
-		StopWord stopWord = new StopWord();        
-        stopWord.FillStopWord(new File("res/stop-words_german_1_de.txt").getAbsolutePath());
-        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());
-
-        int minLength = 3;
-        // stemmer initialization
-		SnowballStemmer stemmer = new germanStemmer();
-		// parser initialization
-		ParseHTMLToText htmlParser = new ParseHTMLToText();
-		for (WikiPage page: listWikiPages(dir)) {
-			// iterate over the wiki pages
-			List<String> listTerms = new ArrayList<String>();
-			// mediawiki -> HTML		
-			String html = ParseWikiToHTMLUtility.parseMediaWiki(page.getText());
-			// 1. from html to clean text, 2. tokenization
-			for (String strWord : htmlParser.parseHTML(html).toString().replaceAll("[^a-zA-Z ]", "").split("\\s+")) {
-				// stemming
-				stemmer.setCurrent(strWord); //stemword				
-				stemmer.stem();
-				//filter (by stopword and length)
-				if (strWord.length() < minLength || stopWord.GetHashSet().contains(strWord))
-					continue;
-				// put stemmed document back
-				listTerms.add(stemmer.getCurrent());
-				//System.out.println(strWord);
-			}		
-			System.out.println("page Id: " + page.getId());
-			System.out.println(listTerms.size());
-		}		
-	}
-	
 	@Override
 	void index(String dir) {
 		// StopWord stopWords = getStopWords();
