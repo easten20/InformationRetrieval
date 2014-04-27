@@ -25,11 +25,17 @@ public class SearchEngineTest {
 		String filePath = new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath();
 		SearchEngineY test = new SearchEngineY();
 		if (!test.loadIndex(filePath)) {
-			System.out.println("Creating index!");
+			System.out.println("Creating index...");
 			test.index(filePath);
 		}
 		assert test.loadIndex(filePath);
-		System.out.println("fertig!");
+		System.out.println("Created index!");
+		System.out.println("Searching Terms...");
+		System.out.println("---------------------- Uranisotope ----------------------");
+		System.out.println(test.searchDocumentIds("Uranisotope"));
+		System.out.println("---------------------- Artikel ----------------------");
+		System.out.println(test.searchDocumentIds("Artikel"));
+		System.out.println("Searched Terms!");
 	}
 
 	@SuppressWarnings("unused")

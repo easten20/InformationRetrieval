@@ -10,8 +10,12 @@ import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 public class FileIndex {
 	
@@ -89,7 +93,6 @@ public class FileIndex {
 	}
 	
 	
-	
 	public List<Occurence> findDocuments(String word) throws IOException {
 		long indexInIndex;
 		try {
@@ -161,5 +164,44 @@ public class FileIndex {
 		return occurences;
 	}
 
+	public List<String> findDocumentIds(Iterable<String> words) throws IOException {
+		// thanks to http://stackoverflow.com/a/15378048/1320237
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (String word : words) {
+			for (Occurence occurence : findDocuments(word)) {
+				String documentId = occurence.getDocumentId();
+			    if (map.containsKey(documentId)) {
+			        map.put(documentId, map.get(documentId) + 1);
+			    } else {
+			        map.put(documentId, 1);
+			    }
+			}
+		}
+		
+		ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (map);
+		Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
+		sortedMap.putAll(map);
+
+		List<String> sortedList = new ArrayList<String> (sortedMap.keySet());
+		
+		return sortedList;
+		
+	}
 	
+
+	
+}
+
+class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
+	
+	Map<K, V> map;
+	
+	public ValueComparator(Map<K, V> base) {
+	    this.map = base;
+	}
+	
+	@Override
+	public int compare(K o1, K o2) {
+	     return map.get(o2).compareTo(map.get(o1));
+	}
 }

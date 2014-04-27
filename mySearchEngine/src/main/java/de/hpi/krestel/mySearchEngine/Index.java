@@ -92,11 +92,19 @@ public class Index {
 	}
 
 	private void createIndexOfIndex() throws IOException {
-		new FileIndex(indexFilePath()).createSeekList();
+		fileIndex().createSeekList();
+	}
+	
+	FileIndex fileIndex() {
+		return new FileIndex(indexFilePath());
 	}
 
 	public boolean isValid() {
 		return (new File(seekListFilePath()).exists()) && (new File(indexFilePath()).exists());
+	}
+
+	public List<String> documentIdsMatchingQuery(Iterable<String> queryTokens) throws IOException {
+		return fileIndex().findDocumentIds(queryTokens);
 	}
 
 }

@@ -43,12 +43,17 @@ public class SearchEngineY extends SearchEngine {
 		Index index = new Index(wikipediaFilePath);
 		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
-			Iterable<String> tokens = tokenizeWikiText(cleanText);
-			tokens = removeStopWords(tokens);
-			tokens = stemText(tokens);
+			Iterable<String> tokens = preprocessText(cleanText);
 			index.add(wikiPage, tokens);
 		}
 		index.save();
+	}
+	
+	Iterable<String> preprocessText(String text) {
+		Iterable<String> tokens = tokenizeWikiText(text);
+		tokens = removeStopWords(tokens);
+		tokens = stemText(tokens);
+		return tokens;
 	}
 	
 	Iterable<WikiPage> listWikiPages(String wikipediaFilePath) {
@@ -113,6 +118,12 @@ public class SearchEngineY extends SearchEngine {
 	ArrayList<String> search(String query, int topK, int prf) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public List<String> searchDocumentIds(String query) throws IOException {
+		assert index.isValid();
+		Iterable<String> queryTokens = preprocessText(query);
+		return index.documentIdsMatchingQuery(queryTokens);
 	}
 	
 	@Override
