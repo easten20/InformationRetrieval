@@ -9,9 +9,14 @@ public class WikiPage {
 	private String title;
 	private String id;   
 	private String text;
+	private long positionInXMLFile;
 
 	public WikiPage(){  
 		text = "";
+	}
+	
+	public WikiPage(String xmlFilePath, long positionInXMLFile) {
+		
 	}
 
 	public String getTitle() {
@@ -36,5 +41,13 @@ public class WikiPage {
 
 	public void addText(String data) {
 		text += data;
+	}
+
+	public void setPositionInXMLFile(long position) {
+		positionInXMLFile = position;
 	}	
+	
+	public long getPositionInXMLFile() {
+		return positionInXMLFile;
+	}
 }

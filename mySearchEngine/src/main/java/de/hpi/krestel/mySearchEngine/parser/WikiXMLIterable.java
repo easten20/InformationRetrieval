@@ -2,6 +2,8 @@ package de.hpi.krestel.mySearchEngine.parser;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -20,12 +22,18 @@ public class WikiXMLIterable implements Iterable<WikiPage> {
 		this.fileName = fileName;
 	}	
 	@Override
-	public Iterator<WikiPage> iterator() {
-		return new ReadXMLParser(fileName); 
+	public ReadXMLParser iterator() {
+		try {
+			return new ReadXMLParser(fileName);
+		} catch (IOException | XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} 
 	}
 
 }
-class ReadXMLParser implements Iterator<WikiPage> {
+ public class ReadXMLParser implements Iterator<WikiPage> {
 
 
 	private XMLEventReader eventReader;
@@ -34,24 +42,27 @@ class ReadXMLParser implements Iterator<WikiPage> {
 	static final String TEXT = "text";
 	static final String PAGE = "page";	
 	private WikiPage nextWikiPage;
+	FileInputStream inputStream;	
 
-	public ReadXMLParser(String xmlFile){
-		try {
-			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-			InputStream in;		
-			in = new FileInputStream(xmlFile);		
-			this.eventReader = inputFactory.createXMLEventReader(in);
-		} catch (FileNotFoundException | XMLStreamException e) {
-			// TODO Auto-generated catch block			
-			e.printStackTrace();
-			System.out.println("Read XML File failed: " + e.getMessage());			
-		}
-	}	
+	public ReadXMLParser(String xmlFile) throws IOException, XMLStreamException {
+		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+		inputStream = new FileInputStream(xmlFile);	
+		eventReader = inputFactory.createXMLEventReader(inputStream);
+	}
+	
+	public void jumpToPosition(long position) throws IOException {
+		inputStream.getChannel().position(position);
+	}
 
 	@Override
 	public boolean hasNext() {		
 		if (nextWikiPage == null){
-			this.readNewWikiPage();
+			try {
+				this.readNewWikiPage();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
 			return (nextWikiPage != null);			
 		}
 		else
@@ -60,7 +71,7 @@ class ReadXMLParser implements Iterator<WikiPage> {
 		}
 	}
 
-	private void readNewWikiPage(){		
+	private void readNewWikiPage() throws IOException{		
 		try {		
 			assert this.nextWikiPage == null;
 			XMLEvent event = eventReader.nextEvent();
@@ -69,7 +80,8 @@ class ReadXMLParser implements Iterator<WikiPage> {
 					StartElement startElement = event.asStartElement();
 					// If we have an page element, we create a new wikipage
 					if (startElement.getName().getLocalPart() == (PAGE)) {
-						this.nextWikiPage = new WikiPage();	            	            
+						this.nextWikiPage = new WikiPage();
+						nextWikiPage.setPositionInXMLFile(startElement.getLocation().getCharacterOffset());
 					}
 				}	    	
 				if (event.isStartElement()) {
@@ -118,7 +130,7 @@ class ReadXMLParser implements Iterator<WikiPage> {
 			return wikiPage;			
 		}
 		else {
-			throw new NoSuchElementException("check your code damn it!!! use hashnext befor calling me");
+			throw new NoSuchElementException("check your code damn it!!! use hashNext() befor calling me.");
 		}
 	}
 
