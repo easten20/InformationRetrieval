@@ -10,6 +10,7 @@ import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +120,7 @@ public class FileIndex {
 		String startBytes = new String(Charset.forName("UTF-8").encode(word).array(), "ASCII");
 		String line;
 		String lineStart;
+		String[] splitLine;
 		RandomAccessFile seekList = getSeekListReader();
 		long start = 0;
 		long stop = seekListSize();
@@ -128,23 +130,24 @@ public class FileIndex {
 		while (true) {
 			middle = (start + stop) / 2;
 			seekList.seek(middle);
-			entryLength = seekList.readLine().length(); // skip line
+			entryLength = seekList.readLine().length() + 1; // skip line
 			line = seekList.readLine();
-			entryLength += line.length();
-			lineStart = line.split(" ", 2)[0];
+			entryLength += line.length() + 1;
+			splitLine = line.split(" ", 2);
+			lineStart = splitLine[0];
 			comparism = lineStart.compareTo(startBytes);
 			if (comparism < 0) {
 				start = middle;
 			} else if (comparism > 0) {
 				stop = middle;
 			} else {
-				break;
+				return Integer.parseInt(splitLine[1]);
 			}
 			if (start + entryLength + 1 > stop) {
 				throw new NoSuchElementException();
 			}
 		}
-		return start;
+		
 	}
 
 	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
@@ -177,18 +180,35 @@ public class FileIndex {
 			    }
 			}
 		}
-		
-		ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (map);
-		Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
-		sortedMap.putAll(map);
 
-		List<String> sortedList = new ArrayList<String> (sortedMap.keySet());
+		List<String> sortedList = getWordInDescendingFreqOrder(map);
 		
 		return sortedList;
 		
 	}
 	
+	static List<String> getWordInDescendingFreqOrder(Map<String, Integer> wordCount) {
+		// thanks to http://stackoverflow.com/a/10159540/1320237
 
+	    // Convert map to list of <String,Integer> entries
+	    List<Map.Entry<String, Integer>> list = 
+	        new ArrayList<Map.Entry<String, Integer>>(wordCount.entrySet());
+
+	    // Sort list by integer values
+	    Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+	        public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+	            // compare o2 to o1, instead of o1 to o2, to get descending freq. order
+	            return (o2.getValue()).compareTo(o1.getValue());
+	        }
+	    });
+
+	    // Populate the result into a list
+	    List<String> result = new ArrayList<String>();
+	    for (Map.Entry<String, Integer> entry : list) {
+	        result.add(entry.getKey());
+	    }
+	    return result;
+	}
 	
 }
 
