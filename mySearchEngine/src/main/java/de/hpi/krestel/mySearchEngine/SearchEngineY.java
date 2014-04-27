@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.germanStemmer;
 
@@ -120,10 +122,18 @@ public class SearchEngineY extends SearchEngine {
 		return null;
 	}
 	
-	public List<String> searchDocumentIds(String query) throws IOException {
+	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
 		assert index.isValid();
 		Iterable<String> queryTokens = preprocessText(query);
-		return index.documentIdsMatchingQuery(queryTokens);
+		return index.wikiPagesMatchingQuery(queryTokens);
+	}
+	
+	public List<String> searchTitles(String query) throws IOException, XMLStreamException {
+		List<String> titles = new ArrayList<String>();
+		for (WikiPage wikiPage : searchWikiPages(query)) {
+			titles.add(wikiPage.getTitle());
+		}
+		return titles;
 	}
 	
 	@Override
@@ -132,4 +142,5 @@ public class SearchEngineY extends SearchEngine {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

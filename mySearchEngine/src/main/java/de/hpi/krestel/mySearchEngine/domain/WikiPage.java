@@ -1,5 +1,12 @@
 package de.hpi.krestel.mySearchEngine.domain;
 
+import java.io.IOException;
+
+import javax.xml.stream.XMLStreamException;
+
+import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser;
+import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
+
 
 /**
  * @author easten
@@ -13,10 +20,6 @@ public class WikiPage {
 
 	public WikiPage(){  
 		text = "";
-	}
-	
-	public WikiPage(String xmlFilePath, long positionInXMLFile) {
-		
 	}
 
 	public String getTitle() {
@@ -49,5 +52,17 @@ public class WikiPage {
 	
 	public long getPositionInXMLFile() {
 		return positionInXMLFile;
+	}
+	
+	public static WikiPage from(String xmlFilePath, long positionInXMLFile) throws IOException, XMLStreamException {
+		WikiXMLIterable wikiPages = new WikiXMLIterable(xmlFilePath);
+		ReadXMLParser parser = wikiPages.iterator();
+		parser.jumpToPosition(positionInXMLFile);
+		boolean thereIsAWikiPage = parser.hasNext(); 
+		assert thereIsAWikiPage;
+		WikiPage wikiPage =  parser.next();
+		assert wikiPage.getPositionInXMLFile() == positionInXMLFile;
+		wikiPage.setPositionInXMLFile(positionInXMLFile);
+		return wikiPage;
 	}
 }

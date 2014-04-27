@@ -7,22 +7,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.xml.stream.XMLStreamException;
+
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
 public class Index {
 	
 	private long maximumMemoryUsageInBytes = 1024 * 1024 * 1024;
 	private List<String> fileIndexPaths;
-	private String indexPath;
+	private String wikipediaXMLFilePath;
 	private MemoryIndex temporaryIndex;
 	
-	Index (String indexPath) {
-		this.indexPath = indexPath;
+	Index (String wikipediaXMLFilePath) {
+		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
 		temporaryIndex = new MemoryIndex();
 	}
 		
 	//build an index for a  document
-	public void addTerms (String documentId, Iterable <String> terms) throws IOException{
+	public void addTerms (long documentId, Iterable <String> terms) throws IOException{
 		temporaryIndex.add(documentId, terms);
 		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
 			writeToDisk();
@@ -35,7 +37,7 @@ public class Index {
 	}
 	
 	String indexFilePath(int fileNumber) {
-		return indexPath + "." + fileNumber + ".index";
+		return wikipediaXMLFilePath + "." + fileNumber + ".index";
 	}
 	
 	String freeIndexFilePath () {
@@ -52,13 +54,13 @@ public class Index {
 	}
 
 	public void add(WikiPage wikiPage, Iterable<String> tokens) throws IOException {
-		addTerms(wikiPage.getId(), tokens);
+		addTerms(wikiPage.getPositionInXMLFile(), tokens);
 		System.out.println("page Id: " + wikiPage.getId());
 		System.out.println(((List<String>) tokens).size());
 	}
 	
 	public String indexFilePath() {
-		return indexPath + ".index";
+		return wikipediaXMLFilePath + ".index";
 	}
 	
 	public String seekListFilePath () {
@@ -103,8 +105,16 @@ public class Index {
 		return (new File(seekListFilePath()).exists()) && (new File(indexFilePath()).exists());
 	}
 
-	public List<String> documentIdsMatchingQuery(Iterable<String> queryTokens) throws IOException {
-		return fileIndex().findDocumentIds(queryTokens);
+	public List<Long> documentPositionsMatchingQuery(Iterable<String> queryTokens) throws IOException {
+		return fileIndex().findDocumentPositionsInXMLFile(queryTokens);
 	}
-
+	
+	public List<WikiPage> wikiPagesMatchingQuery(Iterable<String> queryTokens) throws IOException, XMLStreamException {
+		List<WikiPage> wikiPages = new ArrayList<WikiPage> ();
+		for (long positionInXMLFile : documentPositionsMatchingQuery(queryTokens)) {
+			WikiPage wikiPage = WikiPage.from(this.wikipediaXMLFilePath, positionInXMLFile);
+			wikiPages.add(wikiPage);
+		}
+		return wikiPages;
+	}
 }

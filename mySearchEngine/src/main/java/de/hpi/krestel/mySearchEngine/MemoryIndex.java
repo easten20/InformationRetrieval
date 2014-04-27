@@ -28,11 +28,11 @@ public class MemoryIndex {
 		return usedBytes;
 	}
 	
-	public void add (String documentId, Iterable<String> terms){
+	public void add (long documentId, Iterable<String> terms){
 		int i = 0;
 		for (String term:terms){
 			List<String> emptyList = new ArrayList<>();
-			String entry = documentId + ":" + Integer.toString(i);
+			String entry = Long.toString(documentId) + ":" + Integer.toString(i);
 			if (index.containsKey(term)){
 				index.get(term).add(entry);
 				usedBytes+=entry.length();

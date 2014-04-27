@@ -2,22 +2,16 @@ package de.hpi.krestel.mySearchEngine;
 
 public class Occurence {
 
-	private String id;
-	private int position;
+	private long positionOfDocumentInXMLFile;
+	private int positionOfWordInDocument;
 	private String word;
 	
 	public Occurence(String item, String word) {
 		
 		String[] splitItem = item.split(":");
-		id = splitItem[0];
-		position = Integer.parseInt(splitItem[1]);
-		this.word =word;
-		
-		// TODO Auto-generated constructor stub
-	}
-	
-	public String getDocumentId (){
-		return id;
+		this.positionOfDocumentInXMLFile = Long.parseLong(splitItem[0]);
+		this.positionOfWordInDocument = Integer.parseInt(splitItem[1]);
+		this.word = word;
 	}
 	
 	public String getWord(){
@@ -25,12 +19,16 @@ public class Occurence {
 	}
 	
 	public int getPositionOfWordInDocument (){
-		return position;
+		return positionOfWordInDocument;
 	}
 	
 	public String toString (){
 		
-		return ("This word: " + word + " occurs in document " + id + " at position" + position + ".");
+		return ("This word: " + word + " occurs in document " + positionOfDocumentInXMLFile + " at position" + positionOfWordInDocument + ".");
+	}
+
+	public long getPositionOfDocumentInXMLFile() {
+		return positionOfDocumentInXMLFile;
 	}
 
 

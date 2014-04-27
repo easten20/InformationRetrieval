@@ -3,6 +3,8 @@ package de.hpi.krestel.mySearchEngine;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.stream.XMLStreamException;
+
 
 // This file will be used to evaluate your search engine!
 // You can use/change this file for development. But
@@ -21,8 +23,10 @@ public class SearchEngineTest {
 	static int topK = 10;
 	static int prf = 5;
 
-	public static void main(String[] args) throws IOException {
-		String filePath = new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath();
+	public static void main(String[] args) throws IOException, XMLStreamException {
+		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
+		basicPath = "res/wiki.xml";
+		String filePath = new File(basicPath).getAbsolutePath();
 		SearchEngineY test = new SearchEngineY();
 		if (!test.loadIndex(filePath)) {
 			System.out.println("Creating index...");
@@ -32,9 +36,9 @@ public class SearchEngineTest {
 		System.out.println("Created index!");
 		System.out.println("Searching Terms...");
 		System.out.println("---------------------- Uranisotope ----------------------");
-		System.out.println(test.searchDocumentIds("Uranisotope"));
+		System.out.println(test.searchTitles("Uranisotope"));
 		System.out.println("---------------------- Artikel ----------------------");
-		System.out.println(test.searchDocumentIds("Artikel"));
+		System.out.println(test.searchTitles("Artikel"));
 		System.out.println("Searched Terms!");
 	}
 

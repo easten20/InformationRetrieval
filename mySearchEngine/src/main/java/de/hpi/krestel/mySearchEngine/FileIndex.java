@@ -1,13 +1,9 @@
 package de.hpi.krestel.mySearchEngine;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 
 public class FileIndex {
 	
@@ -167,12 +162,12 @@ public class FileIndex {
 		return occurences;
 	}
 
-	public List<String> findDocumentIds(Iterable<String> words) throws IOException {
+	public List<Long> findDocumentPositionsInXMLFile(Iterable<String> words) throws IOException {
 		// thanks to http://stackoverflow.com/a/15378048/1320237
-		Map<String, Integer> map = new HashMap<String, Integer>();
+		Map<Long, Integer> map = new HashMap<Long, Integer>();
 		for (String word : words) {
 			for (Occurence occurence : findDocuments(word)) {
-				String documentId = occurence.getDocumentId();
+				long documentId = occurence.getPositionOfDocumentInXMLFile();
 			    if (map.containsKey(documentId)) {
 			        map.put(documentId, map.get(documentId) + 1);
 			    } else {
@@ -181,30 +176,30 @@ public class FileIndex {
 			}
 		}
 
-		List<String> sortedList = getWordInDescendingFreqOrder(map);
+		List<Long> sortedList = getWordInDescendingFreqOrder(map);
 		
 		return sortedList;
 		
 	}
 	
-	static List<String> getWordInDescendingFreqOrder(Map<String, Integer> wordCount) {
+	static List<Long> getWordInDescendingFreqOrder(Map<Long, Integer> wordCount) {
 		// thanks to http://stackoverflow.com/a/10159540/1320237
 
 	    // Convert map to list of <String,Integer> entries
-	    List<Map.Entry<String, Integer>> list = 
-	        new ArrayList<Map.Entry<String, Integer>>(wordCount.entrySet());
+	    List<Map.Entry<Long, Integer>> list = 
+	        new ArrayList<Map.Entry<Long, Integer>>(wordCount.entrySet());
 
 	    // Sort list by integer values
-	    Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-	        public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+	    Collections.sort(list, new Comparator<Map.Entry<Long, Integer>>() {
+	        public int compare(Map.Entry<Long, Integer> o1, Map.Entry<Long, Integer> o2) {
 	            // compare o2 to o1, instead of o1 to o2, to get descending freq. order
 	            return (o2.getValue()).compareTo(o1.getValue());
 	        }
 	    });
 
 	    // Populate the result into a list
-	    List<String> result = new ArrayList<String>();
-	    for (Map.Entry<String, Integer> entry : list) {
+	    List<Long> result = new ArrayList<Long>();
+	    for (Map.Entry<Long, Integer> entry : list) {
 	        result.add(entry.getKey());
 	    }
 	    return result;
