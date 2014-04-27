@@ -83,6 +83,14 @@ public class FileIndex {
 	
 	private List<Occurence> documentsFor(String word, String line) {
 		List<Occurence> occurences = new ArrayList<>();
+		String[] splitLine = line.split(" ");
+		assert (word==splitLine[0]);
+		for (String item : splitLine){
+			if (item==word)
+				continue;
+			occurences.add(new Occurence(item, word));
+			
+		}
 		// TODO: parse the line to occurences
 		return occurences;
 	}
