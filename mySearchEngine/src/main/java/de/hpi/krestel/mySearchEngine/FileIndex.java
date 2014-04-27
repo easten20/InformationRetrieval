@@ -1,26 +1,24 @@
 package de.hpi.krestel.mySearchEngine;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.RandomAccessFile;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class FileIndex {
 	
 	/**
 	 * 
-	 * SeekList Format: <word> <indexOfWordInIndexFile>\n 
-	 * Index Format: <word>{ <DocumentID>:<indexOfWordInDocumentTokens>}\n
+	 * SeekList Format: \n{<word> <indexOfWordInIndexFile>\n} 
+	 * Index Format: {<word>{ <DocumentID>:<indexOfWordInDocumentTokens>}\n}
 	 * 
 	 */
 
@@ -40,15 +38,15 @@ public class FileIndex {
 		this.seekListPath = seekListPath;
 	}
 
-	BufferedReader getIndexReader () throws UnsupportedEncodingException, FileNotFoundException {
-		return new BufferedReader(new InputStreamReader(new FileInputStream(indexPath), "utf-8"));
+	RandomAccessFile getIndexReader () throws FileNotFoundException {
+		return new RandomAccessFile(indexPath, "r");
 	}
 	
-	BufferedReader getSeekListReader () throws IOException {
+	RandomAccessFile getSeekListReader () throws IOException {
 		if (!hasSeekList()) {
 			createSeekList();
 		}
-		return new BufferedReader(new InputStreamReader(new FileInputStream(seekListPath), "utf-8"));
+		return new RandomAccessFile(seekListPath, "r");
 	}
 	
 	public boolean hasSeekList() {
@@ -65,7 +63,8 @@ public class FileIndex {
 		String line;
 		String term;
 		int position = 0;
-		BufferedReader reader = getIndexReader();
+		RandomAccessFile reader = getIndexReader();
+		writer.write("\n");
 		while (true) {
 			line = reader.readLine();
 			if (line == null) {
@@ -84,7 +83,12 @@ public class FileIndex {
 	
 	
 	public List<Occurence> findDocuments(String word) throws IOException {
-		int indexInIndex = this.findIndexOfWordInSeekList(word);
+		long indexInIndex;
+		try {
+			indexInIndex = this.findIndexOfWordInSeekList(word);
+		} catch (NoSuchElementException e) {
+			return new ArrayList<Occurence> ();
+		}
 		return this.findDocuments(indexInIndex, word);
 	}
 	
@@ -99,17 +103,42 @@ public class FileIndex {
 	 * @return seek index of line starting with word or -1 otherwise
 	 * @throws IOException 
 	 */
-	private int findIndexOfWordInSeekList(String word) throws IOException {
-		// TODO: binary search the index index file
-		BufferedReader seekList = getSeekListReader();
+	private long findIndexOfWordInSeekList(String word) throws IOException, NoSuchElementException {
+		// we need to search without UTF8 because then we could not skip to byte positions and had to read the whole file
+		String startBytes = new String(Charset.forName("UTF-8").encode(word).array(), "ASCII");
+		String line;
+		String lineStart;
+		RandomAccessFile seekList = getSeekListReader();
 		long start = 0;
 		long stop = seekListSize();
-		return 0;// TODO
+		long middle;
+		int entryLength;
+		int comparism;
+		while (true) {
+			middle = (start + stop) / 2;
+			seekList.seek(middle);
+			entryLength = seekList.readLine().length(); // skip line
+			line = seekList.readLine();
+			entryLength += line.length();
+			lineStart = line.split(" ", 1)[0];
+			comparism = lineStart.compareTo(startBytes);
+			if (comparism < 0) {
+				start = middle;
+			} else if (comparism > 0) {
+				stop = middle;
+			} else {
+				break;
+			}
+			if (start + entryLength + 1 > stop) {
+				throw new NoSuchElementException();
+			}
+		}
+		return start;
 	}
 
-	List<Occurence> findDocuments(int index, String word) throws IOException {
-		BufferedReader reader = getIndexReader();
-		assert reader.skip(index) == index;
+	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
+		RandomAccessFile reader = getIndexReader();
+		reader.seek(indexInIndex);
 		return documentsFor(word, reader.readLine());
 	}
 	
