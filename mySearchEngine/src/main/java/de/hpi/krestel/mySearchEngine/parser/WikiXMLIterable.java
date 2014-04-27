@@ -63,8 +63,8 @@ class ReadXMLParser implements Iterator<WikiPage> {
 	private void readNewWikiPage(){		
 		try {		
 			assert this.nextWikiPage == null;
+			XMLEvent event = eventReader.nextEvent();
 			while (eventReader.hasNext()) {
-				XMLEvent event = eventReader.nextEvent();
 				if (event.isStartElement()) {
 					StartElement startElement = event.asStartElement();
 					// If we have an page element, we create a new wikipage
@@ -75,10 +75,13 @@ class ReadXMLParser implements Iterator<WikiPage> {
 				if (event.isStartElement()) {
 					if (event.asStartElement().getName().getLocalPart().equals(TEXT)) {
 						event = eventReader.nextEvent();
-						this.nextWikiPage.setText(event.asCharacters().getData());
+						while (event.isCharacters()) {
+							this.nextWikiPage.addText(event.asCharacters().getData());
+							event = eventReader.nextEvent();
+						}
 						continue;
 					}
-				}	    	 
+				}
 				if (event.isStartElement()) {
 					if (event.asStartElement().getName().getLocalPart().equals(TITLE)) {
 						event = eventReader.nextEvent();
@@ -99,6 +102,7 @@ class ReadXMLParser implements Iterator<WikiPage> {
 						return;
 					}
 				}
+				event = eventReader.nextEvent();
 			}
 		}
 		catch (XMLStreamException e) {

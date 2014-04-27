@@ -10,7 +10,8 @@ public class WikiPage {
 	private String id;   
 	private String text;
 
-	public WikiPage(){        
+	public WikiPage(){  
+		text = "";
 	}
 
 	public String getTitle() {
@@ -33,7 +34,7 @@ public class WikiPage {
 		return text;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void addText(String data) {
+		text += data;
 	}	
 }

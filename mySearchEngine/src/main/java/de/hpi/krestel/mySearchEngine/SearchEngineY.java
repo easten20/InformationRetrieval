@@ -54,8 +54,11 @@ public class SearchEngineY extends SearchEngine {
 	
 	String cleanUpWikiText(WikiPage wikiPage) {
 		ParseHTMLToText htmlParser = new ParseHTMLToText();
-		String html = ParseWikiToHTMLUtility.parseMediaWiki(wikiPage.getText());
-		return htmlParser.parseHTML(html).toString();
+		String text = wikiPage.getText();
+		String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
+		html = html.replaceFirst("<\\?[^>]*\\?>", "");
+		String parsedHTML = htmlParser.parseHTML(html);
+		return parsedHTML.toString();
 	}
 	
 	Iterable<String> tokenizeWikiText(String wikiText) {

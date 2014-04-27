@@ -62,27 +62,27 @@ public class FileIndex {
 	}
 	
 	public void createSeekList() throws IOException {
-		Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(seekListPath), "utf-8"));
+		RandomAccessFile writer = new RandomAccessFile(seekListPath, "w");
 		createSeekList(writer);
 		writer.close();
 	}
 	
-	void createSeekList(Writer writer) throws IOException {
+	void createSeekList(RandomAccessFile writer) throws IOException {
 		String line;
 		String term;
 		int position = 0;
 		RandomAccessFile reader = getIndexReader();
-		writer.write("\n");
+		writer.writeBytes("\n");
 		while (true) {
 			line = reader.readLine();
 			if (line == null) {
 				break;
 			}
 			term = line.split(" ", 1)[0];
-			writer.write(term);
-			writer.write(" ");
-			writer.write(Integer.toString(position));
-			writer.write("\n");
+			writer.writeBytes(term);
+			writer.writeBytes(" ");
+			writer.writeBytes(Integer.toString(position));
+			writer.writeBytes("\n");
 			// end of loop
 			position += line.length() + 1;
 		}

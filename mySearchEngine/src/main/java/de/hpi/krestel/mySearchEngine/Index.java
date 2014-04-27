@@ -84,7 +84,7 @@ public class Index {
 		return indexFilePaths;
 	}
 	
-	private void putAllIndexFilesIntoOneFile() {
+	private void putAllIndexFilesIntoOneFile() throws IOException {
 		CombineIndex combinedIndex = new CombineIndex(allIndexFilePaths());
 		combinedIndex.saveToFile(indexFilePath());
 	}

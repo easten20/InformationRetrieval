@@ -24,6 +24,7 @@ public class SearchEngineTest {
 	public static void main(String[] args) throws IOException {
 		SearchEngineY test = new SearchEngineY();
 		test.index(new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath());
+		System.out.println("fertig!");
 	}
 
 	@SuppressWarnings("unused")
