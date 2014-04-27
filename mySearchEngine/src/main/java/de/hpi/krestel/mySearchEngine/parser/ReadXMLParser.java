@@ -2,6 +2,9 @@ package de.hpi.krestel.mySearchEngine.parser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -57,6 +60,17 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 			return true;
 		}
 	}
+	
+	String eventText(XMLEvent event) {
+		String string = event.asCharacters().getData();
+		byte[] bytes = string.getBytes(Charset.forName("ASCII"));
+		ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+		buffer.put(bytes);
+		buffer.flip();
+		CharBuffer charBuffer =  Charset.forName("UTF-8").decode(buffer);
+		String unicodeString = String.valueOf(charBuffer);
+		return unicodeString;
+	}
 
 	private void readNewWikiPage() throws IOException{		
 		try {		
@@ -75,7 +89,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 					if (event.asStartElement().getName().getLocalPart().equals(TEXT)) {
 						event = eventReader.nextEvent();
 						while (event.isCharacters()) {
-							this.nextWikiPage.addText(event.asCharacters().getData());
+							this.nextWikiPage.addText(eventText(event));
 							event = eventReader.nextEvent();
 						}
 						continue;
@@ -84,14 +98,14 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 				if (event.isStartElement()) {
 					if (event.asStartElement().getName().getLocalPart().equals(TITLE)) {
 						event = eventReader.nextEvent();
-						this.nextWikiPage.setTitle(event.asCharacters().getData());
+						this.nextWikiPage.setTitle(eventText(event));
 						continue;
 					}
 				}
 				if (event.isStartElement()) {
 					if (event.asStartElement().getName().getLocalPart().equals(ID) && this.nextWikiPage.getId() == null) {
 						event = eventReader.nextEvent();
-						this.nextWikiPage.setId(event.asCharacters().getData());	               
+						this.nextWikiPage.setId(eventText(event));	               
 						continue;
 					}
 				}
