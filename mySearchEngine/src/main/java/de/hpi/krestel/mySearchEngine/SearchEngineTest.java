@@ -1,6 +1,7 @@
 package de.hpi.krestel.mySearchEngine;
 
 import java.io.File;
+import java.io.IOException;
 
 
 // This file will be used to evaluate your search engine!
@@ -20,12 +21,13 @@ public class SearchEngineTest {
 	static int topK = 10;
 	static int prf = 5;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		SearchEngineY test = new SearchEngineY();
 		test.index(new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath());
 	}
 
-	private static void evaluate(SearchEngine se) {
+	@SuppressWarnings("unused")
+	private static void evaluate(SearchEngine se) throws IOException {
 		
 		// Load or generate the index
 		se.indexWrapper();

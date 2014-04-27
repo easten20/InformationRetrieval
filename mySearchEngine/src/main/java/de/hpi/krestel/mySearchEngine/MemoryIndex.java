@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,8 @@ public class MemoryIndex {
 		return usedBytes;
 	}
 	
-	public void add (String documentId, String[] terms){
-		
-		int i=0;
+	public void add (String documentId, Iterable<String> terms){
+		int i = 0;
 		for (String term:terms){
 			List<String> emptyList = new ArrayList<>();
 			String entry = documentId + ":" + Integer.toString(i);

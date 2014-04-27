@@ -12,13 +12,13 @@ public class CombineIndex {
 	
 	static final String FILEPATH = "/Users/jaeyoonjung/Downloads/oldfile.txt";
 	static final String TEMPORAL_FILEPATH = "/Users/jaeyoonjung/Downloads/newfile.txt";
-	private ArrayList<String> insertWordList;
+	private Iterable<String> indexFilePaths;
 
-	public CombineIndex(ArrayList<String> insertWordList){
-		this.insertWordList = insertWordList;
+	public CombineIndex(Iterable<String> indexFilePaths){
+		this.indexFilePaths = indexFilePaths;
 	}
 	
-	public void Combine(){
+	public void saveToFile(String combinedIndexPath){
 	
 		try {
 			

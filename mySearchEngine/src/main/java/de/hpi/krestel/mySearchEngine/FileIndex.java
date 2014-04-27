@@ -33,6 +33,14 @@ public class FileIndex {
 		initFileIndex(indexPath, indexPath + ".skl");
 	}
 	
+	public String indexFilePath() {
+		return indexPath;
+	}
+	
+	public String seekListFilePath() {
+		return seekListPath;
+	}
+	
 	private void initFileIndex(String indexPath, String seekListPath) {
 		this.indexPath = indexPath;
 		this.seekListPath = seekListPath;

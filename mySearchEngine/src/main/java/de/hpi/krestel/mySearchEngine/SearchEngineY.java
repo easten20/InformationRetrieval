@@ -1,5 +1,6 @@
 package de.hpi.krestel.mySearchEngine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,31 +26,30 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 // Replace 'Y' with your search engine name
 public class SearchEngineY extends SearchEngine {
-	Index index;
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
 		// This should stay as is! Don't add anything here!
 		super();
-		index = new Index();
 	}
 
 	@Override
-	void index(String dir) {
+	void index(String wikipediaFilePath) throws IOException {
 		// First you need to pre-process the raw input. Decide on how to tokenize, whether to
 		// use a stopword list and/or stemming. For these steps you can use existing code — you
 		// don’t need to come up with a stopword list or implement a new stemmer!
-		for (WikiPage wikiPage: listWikiPages(dir)) {						
+		Index index = new Index(wikipediaFilePath);
+		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
 			Iterable<String> tokens = tokenizeWikiText(cleanText);
 			tokens = removeStopWords(tokens);
 			tokens = stemText(tokens);
-			index(wikiPage, tokens);
+			index.add(wikiPage, tokens);
 		}
+		index.save();
 	}
 	
-	Iterable<WikiPage> listWikiPages(String dir) {
-		WikiXMLIterable test = new WikiXMLIterable(dir);		
-		return test;
+	Iterable<WikiPage> listWikiPages(String wikipediaFilePath) {
+		return new WikiXMLIterable(wikipediaFilePath);
 	}
 	
 	String cleanUpWikiText(WikiPage wikiPage) {
@@ -95,15 +95,10 @@ public class SearchEngineY extends SearchEngine {
 		}
 		return stemmedTokens;
 	}
-	
-	void index(WikiPage wikiPage, Iterable<String> tokens) {
-		index.addTerms(wikiPage.getId(), tokens);
-		System.out.println("page Id: " + wikiPage.getId());
-		System.out.println(((List<String>) tokens).size());
-	}
+
 
 	@Override
-	boolean loadIndex(String directory) {
+	boolean loadIndex(String wikipediaFilePath) {
 		// TODO Auto-generated method stub
 		return false;
 	}
