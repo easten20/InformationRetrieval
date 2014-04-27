@@ -2,6 +2,7 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,7 +37,18 @@ public class FileIndex {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(indexPath), "utf-8"));
 	}
 	
-	void createSeekList() throws IOException {
+	BufferedReader getSeekListReader () throws IOException {
+		if (!hasSeekList()) {
+			createSeekList();
+		}
+		return new BufferedReader(new InputStreamReader(new FileInputStream(seekListPath), "utf-8"));
+	}
+	
+	public boolean hasSeekList() {
+		return new File(seekListPath).isFile();
+	}
+	
+	public void createSeekList() throws IOException {
 		Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(seekListPath), "utf-8"));
 		createSeekList(writer);
 		writer.close();
@@ -64,15 +76,28 @@ public class FileIndex {
 	
 	
 	
-	List<Occurence> findDocuments(String word) throws IOException {
+	public List<Occurence> findDocuments(String word) throws IOException {
 		int indexInIndex = this.findIndexOfWordInSeekList(word);
 		return this.findDocuments(indexInIndex, word);
 	}
 	
-	private int findIndexOfWordInSeekList(String word) {
-		// TODO Auto-generated method stub
-		// TODO: binary search the index file
-		return 0;
+	public long seekListSize() {
+		assert hasSeekList(); // seek list mus be created
+		return new File(seekListPath).length();
+	}
+	
+	/**
+	 * 
+	 * @param word
+	 * @return seek index of line starting with word or -1 otherwise
+	 * @throws IOException 
+	 */
+	private int findIndexOfWordInSeekList(String word) throws IOException {
+		// TODO: binary search the index index file
+		BufferedReader seekList = getSeekListReader();
+		long start = 0;
+		long stop = seekListSize();
+		return 0;// TODO
 	}
 
 	List<Occurence> findDocuments(int index, String word) throws IOException {
@@ -84,14 +109,11 @@ public class FileIndex {
 	private List<Occurence> documentsFor(String word, String line) {
 		List<Occurence> occurences = new ArrayList<>();
 		String[] splitLine = line.split(" ");
-		assert (word==splitLine[0]);
+		assert (word.equals(splitLine[0]));
 		for (String item : splitLine){
-			if (item==word)
-				continue;
+			if (item.equals(word)) continue; // skip word
 			occurences.add(new Occurence(item, word));
-			
 		}
-		// TODO: parse the line to occurences
 		return occurences;
 	}
 
