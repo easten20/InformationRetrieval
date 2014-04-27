@@ -16,6 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileIndex {
+	
+	/**
+	 * 
+	 * SeekList Format: <word> <indexOfWordInIndexFile>\n 
+	 * Index Format: <word>{ <DocumentID>:<indexOfWordInDocumentTokens>}\n
+	 * 
+	 */
 
 	String indexPath;
 	String seekListPath;
