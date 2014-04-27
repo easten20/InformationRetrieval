@@ -46,6 +46,7 @@ public class Index {
 			if (!new File(filePath).exists()) {
 				return filePath;
 			}
+			i++;
 		}
 		
 	}
@@ -80,6 +81,7 @@ public class Index {
 				break;
 			}
 			indexFilePaths.add(filePath);
+			i++;
 		}
 		return indexFilePaths;
 	}
@@ -91,6 +93,10 @@ public class Index {
 
 	private void createIndexOfIndex() throws IOException {
 		new FileIndex(indexFilePath()).createSeekList();
+	}
+
+	public boolean isValid() {
+		return (new File(seekListFilePath()).exists()) && (new File(indexFilePath()).exists());
 	}
 
 }

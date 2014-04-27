@@ -74,8 +74,9 @@ public class CombineIndex {
 			if (line == null) {
 				files.remove(indexToReplace);
 				lines.remove(indexToReplace);
+			} else {
+				lines.set(indexToReplace, line);				
 			}
-			lines.set(indexToReplace, line);
 		}
 		
 	}
@@ -89,7 +90,7 @@ public class CombineIndex {
 		combinedIndex.writeBytes(word);
 		for (int lineIndex : lineIndices) {
 			line = lines.get(lineIndex);
-			splitLine = line.split(" ", 1);
+			splitLine = line.split(" ", 2);
 			wordOfTheLine = splitLine[0]; 
 			positionsOfTheWord = splitLine[1];
 			assert wordOfTheLine == word; // we only merge "documentId:position" for the same word
@@ -100,7 +101,7 @@ public class CombineIndex {
 	}
 	
 	private String wordOfLine(String line) {
-		return line.split(" ", 1)[0];
+		return line.split(" ", 2)[0];
 	}
 
 	private List<Integer> getindicesOfLowestLines(List<String> lines) {
@@ -124,7 +125,7 @@ public class CombineIndex {
 	}
 
 	private RandomAccessFile openCombinedIndex(String combinedIndexPath) throws FileNotFoundException {
-		return new RandomAccessFile(combinedIndexPath, "w");
+		return new RandomAccessFile(combinedIndexPath, "rw");
 	}
 
 	private List<RandomAccessFile> listOfInputFiles() throws FileNotFoundException {

@@ -26,6 +26,9 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 // Replace 'Y' with your search engine name
 public class SearchEngineY extends SearchEngine {
+	
+	Index index;
+	
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
 		// This should stay as is! Don't add anything here!
@@ -102,8 +105,8 @@ public class SearchEngineY extends SearchEngine {
 
 	@Override
 	boolean loadIndex(String wikipediaFilePath) {
-		// TODO Auto-generated method stub
-		return false;
+		index = new Index(wikipediaFilePath);
+		return index.isValid();
 	}
 
 	@Override

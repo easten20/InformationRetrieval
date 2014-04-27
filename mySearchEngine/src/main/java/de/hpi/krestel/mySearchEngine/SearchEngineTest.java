@@ -22,8 +22,13 @@ public class SearchEngineTest {
 	static int prf = 5;
 
 	public static void main(String[] args) throws IOException {
+		String filePath = new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath();
 		SearchEngineY test = new SearchEngineY();
-		test.index(new File("res/dewiki-20140216-pages-articles-multistream.xml").getAbsolutePath());
+		if (!test.loadIndex(filePath)) {
+			System.out.println("Creating index!");
+			test.index(filePath);
+		}
+		assert test.loadIndex(filePath);
 		System.out.println("fertig!");
 	}
 

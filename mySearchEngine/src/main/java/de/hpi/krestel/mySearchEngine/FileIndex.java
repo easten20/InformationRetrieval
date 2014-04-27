@@ -62,7 +62,7 @@ public class FileIndex {
 	}
 	
 	public void createSeekList() throws IOException {
-		RandomAccessFile writer = new RandomAccessFile(seekListPath, "w");
+		RandomAccessFile writer = new RandomAccessFile(seekListPath, "rw");
 		createSeekList(writer);
 		writer.close();
 	}
@@ -78,7 +78,7 @@ public class FileIndex {
 			if (line == null) {
 				break;
 			}
-			term = line.split(" ", 1)[0];
+			term = line.split(" ", 2)[0];
 			writer.writeBytes(term);
 			writer.writeBytes(" ");
 			writer.writeBytes(Integer.toString(position));
@@ -128,7 +128,7 @@ public class FileIndex {
 			entryLength = seekList.readLine().length(); // skip line
 			line = seekList.readLine();
 			entryLength += line.length();
-			lineStart = line.split(" ", 1)[0];
+			lineStart = line.split(" ", 2)[0];
 			comparism = lineStart.compareTo(startBytes);
 			if (comparism < 0) {
 				start = middle;
