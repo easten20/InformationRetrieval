@@ -30,6 +30,8 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class SearchEngineY extends SearchEngine {
 	
 	Index index;
+	private StopWord cachedStopWord;
+	private SnowballStemmer cachedStemmer;
 	
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
@@ -74,13 +76,15 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	Iterable<String> tokenizeWikiText(String wikiText) {
-		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
+		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");
 		return Arrays.asList(tokens);
 	}
 	
 	StopWord getStopWord() {
-		// TODO: cache the result, do not create a new one every time. 
-		return StopWord.StopWordFromFiles();
+		if (cachedStopWord == null) {
+			cachedStopWord = StopWord.StopWordFromFiles(); 
+		}
+		return cachedStopWord;
 	}
 	
 	Iterable<String> removeStopWords(Iterable<String> tokens) {
@@ -96,8 +100,10 @@ public class SearchEngineY extends SearchEngine {
 	
 	
 	SnowballStemmer getStemmer() {
-		// TODO: cache the stemmer for better performance
-		return new germanStemmer();
+		if (cachedStemmer == null) {
+			cachedStemmer = new germanStemmer();
+		}
+		return cachedStemmer;
 	}
 	
 	Iterable<String> stemText(Iterable<String> tokens) {
