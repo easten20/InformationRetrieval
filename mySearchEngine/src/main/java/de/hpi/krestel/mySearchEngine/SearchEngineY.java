@@ -43,7 +43,7 @@ public class SearchEngineY extends SearchEngine {
 		// use a stopword list and/or stemming. For these steps you can use existing code — you
 		// don’t need to come up with a stopword list or implement a new stemmer!
 		Index index = new Index(wikipediaFilePath);
-		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath)) {						
+		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
 			Iterable<String> tokens = preprocessText(cleanText);
 			index.add(wikiPage, tokens);
@@ -58,8 +58,10 @@ public class SearchEngineY extends SearchEngine {
 		return tokens;
 	}
 	
-	Iterable<WikiPage> listWikiPages(String wikipediaFilePath) {
-		return new WikiXMLIterable(wikipediaFilePath);
+	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
+		WikiXMLIterable parser = new WikiXMLIterable(wikipediaFilePath);
+		parser.setPosition(index.getlastPositionInXMLFile());
+		return parser;
 	}
 	
 	String cleanUpWikiText(WikiPage wikiPage) {

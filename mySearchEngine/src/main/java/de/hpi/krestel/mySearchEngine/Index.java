@@ -1,40 +1,85 @@
 package de.hpi.krestel.mySearchEngine;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
 public class Index {
 	
-	private long maximumMemoryUsageInBytes = 1024 * 1024 * 1024;
-	private List<String> fileIndexPaths;
+	private long maximumMemoryUsageInBytes = 128 * 1024 * 1024;
 	private String wikipediaXMLFilePath;
 	private MemoryIndex temporaryIndex;
+	long wikipediaXMLFileSize;
+	private WikiPage lastWikiPage;
 	
 	Index (String wikipediaXMLFilePath) {
 		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
+		assert new File(wikipediaXMLFilePath).isFile();
+		wikipediaXMLFileSize = new File(wikipediaXMLFilePath).length();
+		if (wikipediaXMLFileSize == 0) {
+			wikipediaXMLFileSize = 1;
+		}
 		temporaryIndex = new MemoryIndex();
 	}
 		
 	//build an index for a  document
-	public void addTerms (long documentId, Iterable <String> terms) throws IOException{
-		temporaryIndex.add(documentId, terms);
-		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
-			writeToDisk();
-		}
+	public void addTerms (long positionInXMLFile, Iterable <String> terms) throws IOException{
+		temporaryIndex.add(positionInXMLFile, terms);
 	}
+	
+	
+	///// start: make index resumable
 	
 	public void writeToDisk() throws IOException {
 		temporaryIndex.writeTo(freeIndexFilePath());
+		markLastLocationInWikiFile();
 		temporaryIndex = new MemoryIndex();	
 	}
+	
+	public long getlastPositionInXMLFile() {
+		RandomAccessFile randomAccessFile;
+		String line;
+		try {
+			randomAccessFile = new RandomAccessFile(lastLocationPath(), "r");
+		} catch (FileNotFoundException e) {
+			return 0;
+		}
+		try {
+			line = randomAccessFile.readLine();
+			randomAccessFile.close();
+		} catch (IOException e) {
+			return 0;
+		}
+		if (line == null) {
+			return 0;
+		}
+		try {
+			return Long.parseLong(line);
+		} catch (NumberFormatException e) {
+			return 0;
+		}	
+	}
+	
+	String lastLocationPath() {
+		return wikipediaXMLFilePath + ".lastPosition";
+	}
+	
+	void markLastLocationInWikiFile() throws FileNotFoundException, IOException {
+		if (lastWikiPage == null) {
+			return ;
+		}
+		RandomAccessFile randomAccessFile = new RandomAccessFile(lastLocationPath(), "rw");
+		randomAccessFile.writeBytes(Long.toString(lastWikiPage.getStopPositionInXMLFile()));
+		randomAccessFile.close();
+	}
+	
+	//// end: make index resumable
 	
 	String indexFilePath(int fileNumber) {
 		return wikipediaXMLFilePath + "." + fileNumber + ".index";
@@ -50,12 +95,15 @@ public class Index {
 			}
 			i++;
 		}
-		
 	}
 
 	public void add(WikiPage wikiPage, Iterable<String> tokens) throws IOException {
+		lastWikiPage = wikiPage;
 		addTerms(wikiPage.getPositionInXMLFile(), tokens);
-		System.out.println("page Id: " + wikiPage.getId());
+		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
+			writeToDisk();
+		}
+		System.out.println("page Id: " + wikiPage.getId() + " " + (wikiPage.getPositionInXMLFile() * 100 / wikipediaXMLFileSize) + "%");
 		System.out.println(((List<String>) tokens).size());
 	}
 	

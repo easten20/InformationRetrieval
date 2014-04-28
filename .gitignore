@@ -11,3 +11,4 @@ mySearchEngine/res/dewiki-20140216-pages-articles-multistream.xml.bz2
 /mySearchEngine/res/*.index
 mySearchEngine/res/_dewiki-20140216-pages-articles-multistream.xml
 /mySearchEngine/res/*.skl
+/mySearchEngine/res/*.lastPosition

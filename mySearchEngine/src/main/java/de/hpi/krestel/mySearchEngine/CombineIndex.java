@@ -15,12 +15,15 @@ public class CombineIndex {
 	
 	static final String FILEPATH = "/Users/jaeyoonjung/Downloads/oldfile.txt";
 	static final String TEMPORAL_FILEPATH = "/Users/jaeyoonjung/Downloads/newfile.txt";
-	private Iterable<String> indexFilePaths;
+	private List<String> indexFilePaths;
 	private List<String> insertWordList;
 	
 
 	public CombineIndex(Iterable<String> indexFilePaths){
-		this.indexFilePaths = indexFilePaths;
+		this.indexFilePaths = new ArrayList<String>();
+		for (String filePath : indexFilePaths) {
+			this.indexFilePaths.add(filePath);
+		}
 	}
 	
 	public void saveToFile(String combinedIndexPath) throws IOException{
@@ -31,6 +34,17 @@ public class CombineIndex {
 			writeNextLine(lines, inputFiles, combinedIndex);
 		}
 		combinedIndex.close();
+		deleteInputIndexFiles();
+	}
+	
+	private void deleteInputIndexFiles() {
+		for (String filePath : indexFilePaths) {
+			File file = new File(filePath); 
+			if (file.exists()) {
+				boolean fileWasDeleted = file.delete();
+				assert fileWasDeleted;
+			}
+		}
 	}
 		
 	private List<String> readOneLineFromEachFile(
@@ -42,7 +56,7 @@ public class CombineIndex {
 			file = inputFiles.get(index);
 			line = file.readLine();
 			if (line == null) {
-				inputFiles.remove(index);
+				inputFiles.remove(index).close();
 				continue;
 			}
 			lines.add(line);
@@ -72,10 +86,10 @@ public class CombineIndex {
 			file = files.get(indexToReplace);
 			line = file.readLine();
 			if (line == null) {
-				files.remove(indexToReplace);
+				files.remove(indexToReplace).close();
 				lines.remove(indexToReplace);
 			} else {
-				lines.set(indexToReplace, line);				
+				lines.set(indexToReplace, line);
 			}
 		}
 		

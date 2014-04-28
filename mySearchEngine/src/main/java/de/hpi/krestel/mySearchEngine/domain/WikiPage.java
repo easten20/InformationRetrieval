@@ -17,6 +17,7 @@ public class WikiPage {
 	private String id;   
 	private String text;
 	private long positionInXMLFile;
+	private long stopPositionInXMLFile;
 
 	public WikiPage(){  
 		text = "";
@@ -64,5 +65,13 @@ public class WikiPage {
 		assert wikiPage.getPositionInXMLFile() == positionInXMLFile;
 		wikiPage.setPositionInXMLFile(positionInXMLFile);
 		return wikiPage;
+	}
+
+	public void setStopPositionInXMLFile(long lastPageLocation) {
+		stopPositionInXMLFile = lastPageLocation;
+	}
+	
+	public long getStopPositionInXMLFile() {
+		return stopPositionInXMLFile;
 	}
 }

@@ -28,7 +28,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 	static final String PAGE = "page";	
 	private WikiPage nextWikiPage;
 	FileInputStream inputStream;	
-	long lastPageLocation;
+	long lastPageLocation; // last end of a page tag
 	String xmlFile;
 
 	public ReadXMLParser(String xmlFile) throws IOException, XMLStreamException {
@@ -70,7 +70,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 		CharBuffer charBuffer =  Charset.forName("UTF-8").decode(buffer);
 		String unicodeString = String.valueOf(charBuffer);
 		return unicodeString;
-	}
+	}	
 
 	private void readNewWikiPage() throws IOException{		
 		try {		
@@ -113,6 +113,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 					EndElement endElement = event.asEndElement();
 					if (endElement.getName().getLocalPart() == (PAGE)) {
 						lastPageLocation = endElement.getLocation().getCharacterOffset();
+						nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
 						return;
 					}
 				}

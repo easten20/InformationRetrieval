@@ -53,12 +53,11 @@ public class MemoryIndex {
 				writer.write( " " + value.toString());
 			}
 			writer.write("\n");
-			
 		}
 	}
 	
 	public void writeTo(String path) throws IOException{
-		Writer writer =new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "utf-8"));
+		Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "utf-8"));
 		writeTo(writer);
 		writer.close();
 	}
