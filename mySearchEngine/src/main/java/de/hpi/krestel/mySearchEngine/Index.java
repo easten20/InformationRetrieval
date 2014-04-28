@@ -112,7 +112,7 @@ public class Index {
 	}
 	
 	public String seekListFilePath () {
-		return new FileIndex(indexFilePath()).seekListFilePath();
+		return new FileIndex(wikipediaXMLFilePath, indexFilePath()).seekListFilePath();
 	}
 	
 	public void save() throws IOException {

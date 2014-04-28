@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,15 +23,20 @@ public class FileIndex {
 
 	String indexPath;
 	String seekListPath;
+	String xmlPath;
 	
-	FileIndex(String indexPath, String seekListPath) {
-		initFileIndex(indexPath, seekListPath);
+	FileIndex(String xmlPath, String indexPath, String seekListPath) {
+		initFileIndex(xmlPath, indexPath, seekListPath);
 	}
 	
-	FileIndex(String indexPath) {
-		initFileIndex(indexPath, indexPath + ".skl");
+	FileIndex(String xmlPath, String indexPath) {
+		initFileIndex(xmlPath, indexPath, indexPath + ".skl");
 	}
 	
+	FileIndex(String xmlPath) {
+		initFileIndex(xmlPath, xmlPath + ".index", xmlPath + ".index.skl");
+	}
+		
 	public String indexFilePath() {
 		return indexPath;
 	}
@@ -41,9 +45,10 @@ public class FileIndex {
 		return seekListPath;
 	}
 	
-	private void initFileIndex(String indexPath, String seekListPath) {
+	private void initFileIndex(String xmlPath, String indexPath, String seekListPath) {
 		this.indexPath = indexPath;
 		this.seekListPath = seekListPath;
+		this.xmlPath = xmlPath;
 	}
 
 	RandomAccessFile getIndexReader () throws FileNotFoundException {
@@ -159,7 +164,7 @@ public class FileIndex {
 		assert (word.equals(splitLine[0]));
 		for (String item : splitLine){
 			if (item.equals(word)) continue; // skip word
-			occurences.add(new Occurence(item, word));
+			occurences.add(new Occurence(item, word, xmlPath));
 		}
 		return occurences;
 	}
