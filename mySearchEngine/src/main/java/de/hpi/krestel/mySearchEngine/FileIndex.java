@@ -113,7 +113,8 @@ public class FileIndex {
 	 */
 	private long findIndexOfWordInSeekList(String word) throws IOException, NoSuchElementException {
 		// we need to search without UTF8 because then we could not skip to byte positions and had to read the whole file
-		String startBytes = new String(Charset.forName("UTF-8").encode(word).array(), "ASCII");
+		// TODO: startBytes need to be a byte string
+		String startBytes = word;//new String(Charset.forName("UTF-8").encode(word).array(), "ASCII");
 		String line;
 		String lineStart;
 		String[] splitLine;
