@@ -27,9 +27,10 @@ public class SearchEngineTest {
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 		//basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
-		basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
+		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
+		basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
+		basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
 		
 		String filePath = new File(basicPath).getAbsolutePath();
 		SearchEngineY test = new SearchEngineY();
