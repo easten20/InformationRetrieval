@@ -76,6 +76,8 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	Iterable<String> tokenizeWikiText(String wikiText) {
+		// TODO: most unicode characters that are higher than 128 are just usual characters
+		//       maybe we can split with this in  mind
 		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");
 		return Arrays.asList(tokens);
 	}
@@ -112,7 +114,10 @@ public class SearchEngineY extends SearchEngine {
 		for (String token : tokens) {
 			stemmer.setCurrent(token); 		
 			stemmer.stem();
-			stemmedTokens.add(stemmer.getCurrent());
+			token = stemmer.getCurrent();
+			// remove the s at the end
+			token = token.replaceAll("s+$", "");
+			stemmedTokens.add(token);
 		}
 		return stemmedTokens;
 	}
