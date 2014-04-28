@@ -103,7 +103,7 @@ public class Index {
 		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
 			writeToDisk();
 		}
-		System.out.println("page Id: " + wikiPage.getId() + " " + (wikiPage.getPositionInXMLFile() * 100 / wikipediaXMLFileSize) + "%");
+		System.out.println("page Id: " + wikiPage.getId() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
 		System.out.println(((List<String>) tokens).size());
 	}
 	

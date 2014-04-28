@@ -29,6 +29,8 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 	private WikiPage nextWikiPage;
 	FileInputStream inputStream;	
 	long lastPageLocation; // last end of a page tag
+	int lastCharacterOffset; // RANT: THESE damn integers... no way we will parse files greater 2GB.. man I hate them.....
+	boolean canParseSeveralWikiPages;
 	String xmlFile;
 
 	public ReadXMLParser(String xmlFile) throws IOException, XMLStreamException {
@@ -40,6 +42,8 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 		inputStream = new FileInputStream(xmlFile);	
 		inputStream.getChannel().position(position);
 		lastPageLocation = position;
+		lastCharacterOffset = 0; // I HATE IT
+		canParseSeveralWikiPages = position == 0;
 		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 		eventReader = inputFactory.createXMLEventReader(inputStream, "ASCII");
 	}
@@ -112,8 +116,12 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 				if (event.isEndElement()) {
 					EndElement endElement = event.asEndElement();
 					if (endElement.getName().getLocalPart() == (PAGE)) {
-						lastPageLocation = endElement.getLocation().getCharacterOffset();
-						nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
+						if (canParseSeveralWikiPages) {
+							int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
+							lastPageLocation += currentCharacterOffset - lastCharacterOffset;
+							lastCharacterOffset = currentCharacterOffset;
+							nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
+						}
 						return;
 					}
 				}

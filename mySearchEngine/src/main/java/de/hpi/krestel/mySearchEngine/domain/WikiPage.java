@@ -17,10 +17,14 @@ public class WikiPage {
 	private String id;   
 	private String text;
 	private long positionInXMLFile;
+	private boolean positionInXMLFileSet; 
 	private long stopPositionInXMLFile;
+	private boolean stopPositionInXMLFileSet;
 
 	public WikiPage(){  
 		text = "";
+		stopPositionInXMLFileSet = false;
+		positionInXMLFileSet = false;
 	}
 
 	public String getTitle() {
@@ -48,10 +52,12 @@ public class WikiPage {
 	}
 
 	public void setPositionInXMLFile(long position) {
+		positionInXMLFileSet = true;
 		positionInXMLFile = position;
 	}	
 	
 	public long getPositionInXMLFile() {
+		if (!positionInXMLFileSet) { throw new AssertionError();}
 		return positionInXMLFile;
 	}
 	
@@ -69,9 +75,11 @@ public class WikiPage {
 
 	public void setStopPositionInXMLFile(long lastPageLocation) {
 		stopPositionInXMLFile = lastPageLocation;
+		stopPositionInXMLFileSet = true;
 	}
 	
 	public long getStopPositionInXMLFile() {
+		if (!stopPositionInXMLFileSet) { throw new AssertionError();}
 		return stopPositionInXMLFile;
 	}
 }
