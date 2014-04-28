@@ -76,61 +76,72 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 		return unicodeString;
 	}	
 
-	private void readNewWikiPage() throws IOException{		
-		try {		
-			assert this.nextWikiPage == null;
-			XMLEvent event = eventReader.nextEvent();
-			while (eventReader.hasNext()) {
-				if (event.isStartElement()) {
-					StartElement startElement = event.asStartElement();
-					// If we have an page element, we create a new wikipage
-					if (startElement.getName().getLocalPart() == (PAGE)) {
-						this.nextWikiPage = new WikiPage();
-						nextWikiPage.setPositionInXMLFile(lastPageLocation);
-					}
-				}	    	
-				if (event.isStartElement()) {
-					if (event.asStartElement().getName().getLocalPart().equals(TEXT)) {
-						event = eventReader.nextEvent();
-						while (event.isCharacters()) {
-							this.nextWikiPage.addText(eventText(event));
+	private void readNewWikiPage() throws IOException{
+		for (int i = 0; i < 100; i++) {
+			try {		
+				assert this.nextWikiPage == null;
+				XMLEvent event = eventReader.nextEvent();
+				while (eventReader.hasNext()) {
+					if (event.isStartElement()) {
+						StartElement startElement = event.asStartElement();
+						// If we have an page element, we create a new wikipage
+						if (startElement.getName().getLocalPart() == (PAGE)) {
+							this.nextWikiPage = new WikiPage();
+							nextWikiPage.setPositionInXMLFile(lastPageLocation);
+						}
+					}	    	
+					if (event.isStartElement()) {
+						if (event.asStartElement().getName().getLocalPart().equals(TEXT)) {
 							event = eventReader.nextEvent();
+							while (event.isCharacters()) {
+								this.nextWikiPage.addText(eventText(event));
+								event = eventReader.nextEvent();
+							}
+							continue;
 						}
-						continue;
 					}
-				}
-				if (event.isStartElement()) {
-					if (event.asStartElement().getName().getLocalPart().equals(TITLE)) {
-						event = eventReader.nextEvent();
-						this.nextWikiPage.setTitle(eventText(event));
-						continue;
-					}
-				}
-				if (event.isStartElement()) {
-					if (event.asStartElement().getName().getLocalPart().equals(ID) && this.nextWikiPage.getId() == null) {
-						event = eventReader.nextEvent();
-						this.nextWikiPage.setId(eventText(event));	               
-						continue;
-					}
-				}
-				if (event.isEndElement()) {
-					EndElement endElement = event.asEndElement();
-					if (endElement.getName().getLocalPart() == (PAGE)) {
-						if (canParseSeveralWikiPages) {
-							int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
-							lastPageLocation += currentCharacterOffset - lastCharacterOffset;
-							lastCharacterOffset = currentCharacterOffset;
-							nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
+					if (event.isStartElement()) {
+						if (event.asStartElement().getName().getLocalPart().equals(TITLE)) {
+							event = eventReader.nextEvent();
+							this.nextWikiPage.setTitle(eventText(event));
+							continue;
 						}
-						return;
 					}
+					if (event.isStartElement()) {
+						if (event.asStartElement().getName().getLocalPart().equals(ID) && this.nextWikiPage.getId() == null) {
+							event = eventReader.nextEvent();
+							this.nextWikiPage.setId(eventText(event));	               
+							continue;
+						}
+					}
+					if (event.isEndElement()) {
+						EndElement endElement = event.asEndElement();
+						if (endElement.getName().getLocalPart() == (PAGE)) {
+							if (canParseSeveralWikiPages) {
+								int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
+								if (lastCharacterOffset > currentCharacterOffset) {
+									System.out.println("from " + currentCharacterOffset + " to " + currentCharacterOffset);
+								}
+								lastPageLocation += currentCharacterOffset - lastCharacterOffset;
+								lastCharacterOffset = currentCharacterOffset;
+								nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
+							}
+							return;
+						}
+					}
+					event = eventReader.nextEvent();
 				}
-				event = eventReader.nextEvent();
+			}
+			catch (XMLStreamException e) {
+				System.out.println("Fails to return Wikipage for " + lastPageLocation + ": " + e.getMessage());
+				try {
+					jumpToPosition(lastPageLocation - 1);
+				} catch (XMLStreamException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
-		catch (XMLStreamException e) {
-			System.out.println("Fails to return Wikipage: " + e.getMessage());
-		}				
 	}
 
 	@Override
@@ -141,7 +152,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 			return wikiPage;			
 		}
 		else {
-			throw new NoSuchElementException("check your code damn it!!! use hashNext() befor calling me.");
+			throw new NoSuchElementException("check your code damn it!!! use hashNext() before calling me.");
 		}
 	}
 

@@ -134,6 +134,9 @@ public class FileIndex {
 			seekList.seek(middle);
 			seekList.readLine(); // skip line
 			line = seekList.readLine();
+			if (line == null) {
+				throw new AssertionError("Somehow we iterate over an empty file. This is Wrong!");
+			}
 			entryLength = line.length() + 1;
 			splitLine = line.split(" ", 2);
 			lineStart = splitLine[0];

@@ -103,7 +103,7 @@ public class Index {
 		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
 			writeToDisk();
 		}
-		System.out.println("page Id: " + wikiPage.getId() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
+		System.out.println("page position: " + wikiPage.getPositionInXMLFile() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
 		System.out.println(((List<String>) tokens).size());
 	}
 	
@@ -146,7 +146,7 @@ public class Index {
 	}
 	
 	FileIndex fileIndex() {
-		return new FileIndex(indexFilePath());
+		return new FileIndex(this.wikipediaXMLFilePath);
 	}
 
 	public boolean isValid() {
