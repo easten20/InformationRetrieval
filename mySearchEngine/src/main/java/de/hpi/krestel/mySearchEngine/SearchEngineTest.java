@@ -25,7 +25,7 @@ public class SearchEngineTest {
 
 	public static void main(String[] args) throws IOException, XMLStreamException {
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
-		basicPath = "res/wiki.xml"; // comment this out/in
+		//basicPath = "res/wiki.xml"; // comment this out/in
 		String filePath = new File(basicPath).getAbsolutePath();
 		SearchEngineY test = new SearchEngineY();
 		if (!test.loadIndex(filePath)) {
