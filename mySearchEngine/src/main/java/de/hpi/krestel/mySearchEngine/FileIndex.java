@@ -94,6 +94,7 @@ public class FileIndex {
 		try {
 			indexInIndex = this.findIndexOfWordInSeekList(word);
 		} catch (NoSuchElementException e) {
+			System.out.println("ERROR: Word not found: " + word);
 			return new ArrayList<Occurence> ();
 		}
 		return this.findDocuments(indexInIndex, word);
@@ -125,9 +126,9 @@ public class FileIndex {
 		while (true) {
 			middle = (start + stop) / 2;
 			seekList.seek(middle);
-			entryLength = seekList.readLine().length() + 1; // skip line
+			seekList.readLine(); // skip line
 			line = seekList.readLine();
-			entryLength += line.length() + 1;
+			entryLength = line.length() + 1;
 			splitLine = line.split(" ", 2);
 			lineStart = splitLine[0];
 			comparism = lineStart.compareTo(startBytes);
