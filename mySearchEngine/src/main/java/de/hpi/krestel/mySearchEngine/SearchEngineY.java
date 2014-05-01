@@ -137,7 +137,12 @@ public class SearchEngineY extends SearchEngine {
 	
 	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
 		assert index.isValid();
+		
+		//check if query contains "and"
 		Iterable<String> queryTokens = preprocessText(query);
+		
+		//queryTokens.add("and");
+		
 		return index.wikiPagesMatchingQuery(queryTokens);
 	}
 	
