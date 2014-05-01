@@ -23,7 +23,7 @@ public abstract class SearchEngine {
 
 	}
 
-	void indexWrapper(){
+	void indexWrapper() throws IOException{
 
 		long start = System.currentTimeMillis();
 		if(!loadIndex(this.directory)){
@@ -70,7 +70,7 @@ public abstract class SearchEngine {
 
 	abstract boolean loadIndex(String directory);
 
-	abstract void index(String directory);
+	abstract void index(String directory) throws IOException;
 
 	abstract ArrayList<String> search(String query, int topK, int prf);
 

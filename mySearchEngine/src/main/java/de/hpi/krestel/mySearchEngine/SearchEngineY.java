@@ -1,8 +1,11 @@
 package de.hpi.krestel.mySearchEngine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.germanStemmer;
@@ -25,47 +28,65 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 // Replace 'Y' with your search engine name
 public class SearchEngineY extends SearchEngine {
+	
 	Index index;
+	private StopWord cachedStopWord;
+	private SnowballStemmer cachedStemmer;
+	
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
 		// This should stay as is! Don't add anything here!
 		super();
-		index = new Index();
 	}
 
 	@Override
-	void index(String dir) {
+	void index(String wikipediaFilePath) throws IOException {
 		// First you need to pre-process the raw input. Decide on how to tokenize, whether to
 		// use a stopword list and/or stemming. For these steps you can use existing code — you
 		// don’t need to come up with a stopword list or implement a new stemmer!
-		for (WikiPage wikiPage: listWikiPages(dir)) {						
+		Index index = new Index(wikipediaFilePath);
+		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
-			Iterable<String> tokens = tokenizeWikiText(cleanText);
-			tokens = removeStopWords(tokens);
-			tokens = stemText(tokens);
-			index(wikiPage, tokens);
+			Iterable<String> tokens = preprocessText(cleanText);
+			index.add(wikiPage, tokens);
 		}
+		index.save();
 	}
 	
-	Iterable<WikiPage> listWikiPages(String dir) {
-		WikiXMLIterable test = new WikiXMLIterable(dir);		
-		return test;
+	Iterable<String> preprocessText(String text) {
+		Iterable<String> tokens = tokenizeWikiText(text);
+		tokens = removeStopWords(tokens);
+		tokens = stemText(tokens);
+		return tokens;
+	}
+	
+	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
+		WikiXMLIterable parser = new WikiXMLIterable(wikipediaFilePath);
+		parser.setPosition(index.getlastPositionInXMLFile());
+		return parser;
 	}
 	
 	String cleanUpWikiText(WikiPage wikiPage) {
 		ParseHTMLToText htmlParser = new ParseHTMLToText();
-		String html = ParseWikiToHTMLUtility.parseMediaWiki(wikiPage.getText());
-		return htmlParser.parseHTML(html).toString();
+		String text = wikiPage.getText();
+		String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
+		html = html.replaceFirst("<\\?[^>]*\\?>", "");
+		String parsedHTML = htmlParser.parseHTML(html);
+		return parsedHTML.toString();
 	}
 	
 	Iterable<String> tokenizeWikiText(String wikiText) {
-		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
+		// TODO: most unicode characters that are higher than 128 are just usual characters
+		//       maybe we can split with this in  mind
+		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");
 		return Arrays.asList(tokens);
 	}
 	
 	StopWord getStopWord() {
-		// TODO: cache the result, do not create a new one every time. 
-		return StopWord.StopWordFromFiles();
+		if (cachedStopWord == null) {
+			cachedStopWord = StopWord.StopWordFromFiles(); 
+		}
+		return cachedStopWord;
 	}
 	
 	Iterable<String> removeStopWords(Iterable<String> tokens) {
@@ -81,8 +102,10 @@ public class SearchEngineY extends SearchEngine {
 	
 	
 	SnowballStemmer getStemmer() {
-		// TODO: cache the stemmer for better performance
-		return new germanStemmer();
+		if (cachedStemmer == null) {
+			cachedStemmer = new germanStemmer();
+		}
+		return cachedStemmer;
 	}
 	
 	Iterable<String> stemText(Iterable<String> tokens) {
@@ -91,21 +114,19 @@ public class SearchEngineY extends SearchEngine {
 		for (String token : tokens) {
 			stemmer.setCurrent(token); 		
 			stemmer.stem();
-			stemmedTokens.add(stemmer.getCurrent());
+			token = stemmer.getCurrent();
+			// remove the s at the end
+			token = token.replaceAll("s+$", "");
+			stemmedTokens.add(token);
 		}
 		return stemmedTokens;
 	}
-	
-	void index(WikiPage wikiPage, Iterable<String> tokens) {
-		index.addTerms(wikiPage.getId(), tokens);
-		System.out.println("page Id: " + wikiPage.getId());
-		System.out.println(((List<String>) tokens).size());
-	}
+
 
 	@Override
-	boolean loadIndex(String directory) {
-		// TODO Auto-generated method stub
-		return false;
+	boolean loadIndex(String wikipediaFilePath) {
+		index = new Index(wikipediaFilePath);
+		return index.isValid();
 	}
 
 	@Override
@@ -114,10 +135,25 @@ public class SearchEngineY extends SearchEngine {
 		return null;
 	}
 	
+	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
+		assert index.isValid();
+		Iterable<String> queryTokens = preprocessText(query);
+		return index.wikiPagesMatchingQuery(queryTokens);
+	}
+	
+	public List<String> searchTitles(String query) throws IOException, XMLStreamException {
+		List<String> titles = new ArrayList<String>();
+		for (WikiPage wikiPage : searchWikiPages(query)) {
+			titles.add(wikiPage.getTitle());
+		}
+		return titles;
+	}
+	
 	@Override
 	Double computeNdcg(String query, ArrayList<String> ranking, int ndcgAt) {
 	
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }
