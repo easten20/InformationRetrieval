@@ -76,12 +76,11 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 		return unicodeString;
 	}	
 
-	private void readNewWikiPage() throws IOException{
-		for (int i = 0; i < 100; i++) {
+	private void readNewWikiPage() throws IOException{		
 			try {		
-				assert this.nextWikiPage == null;
 				XMLEvent event = eventReader.nextEvent();
-				while (eventReader.hasNext()) {
+				assert this.nextWikiPage == null;				
+				while (eventReader.hasNext()) {					
 					if (event.isStartElement()) {
 						StartElement startElement = event.asStartElement();
 						// If we have an page element, we create a new wikipage
@@ -118,7 +117,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 						EndElement endElement = event.asEndElement();
 						if (endElement.getName().getLocalPart() == (PAGE)) {
 							if (canParseSeveralWikiPages) {
-								int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
+								int currentCharacterOffset = endElement.getLocation().getCharacterOffset();								
 								if (lastCharacterOffset > currentCharacterOffset) {
 									System.out.println("from " + currentCharacterOffset + " to " + currentCharacterOffset);
 								}
@@ -141,7 +140,10 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 					e1.printStackTrace();
 				}
 			}
-		}
+			catch (NoSuchElementException e) {
+				System.out.println("no such element.");
+				return;
+			}		
 	}
 
 	@Override
