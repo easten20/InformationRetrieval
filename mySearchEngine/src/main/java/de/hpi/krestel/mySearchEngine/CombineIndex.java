@@ -46,6 +46,7 @@ public class CombineIndex {
 					String insertWord = insertWordList.get(i);
 					
 					if(insertWord.compareTo(line) > 0) break;
+					//if insertWord equals to line, combine them. 
 					else if(insertWord.compareTo(line) == 0) break;
 					else{
 						bw.write(insertWord + "\n");
