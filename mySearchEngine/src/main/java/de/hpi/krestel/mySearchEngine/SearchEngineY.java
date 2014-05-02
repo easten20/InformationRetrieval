@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -60,7 +58,7 @@ public class SearchEngineY extends SearchEngine {
 		tokens = removeStopWords(tokens);
 		tokens = stemText(tokens);
 		return tokens;
-	}		
+	}
 	
 	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
 		WikiXMLIterable parser = new WikiXMLIterable(wikipediaFilePath);
@@ -80,14 +78,9 @@ public class SearchEngineY extends SearchEngine {
 	Iterable<String> tokenizeWikiText(String wikiText) {
 		// TODO: most unicode characters that are higher than 128 are just usual characters
 		//       maybe we can split with this in  mind
-		System.out.println(wikiText);		
-		//thks to http://stackoverflow.com/questions/163360/regular-expresion-to-match-urls-in-java
-		String regex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";		
-		wikiText = wikiText.toLowerCase().replaceAll(regex, "");
-		System.out.println(wikiText);
-		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");		
+		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");
 		return Arrays.asList(tokens);
-	}		
+	}
 	
 	StopWord getStopWord() {
 		if (cachedStopWord == null) {
@@ -143,11 +136,15 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
-		assert index.isValid();				
-		MyQuery queryResult = new MyQuery(this.index);
-		queryResult.setQuery(query);
-		return queryResult.wikiPagesMatchingQuery();		
-	}		
+		assert index.isValid();
+		
+		//check if query contains "and"
+		Iterable<String> queryTokens = preprocessText(query);
+		
+		//queryTokens.add("and");
+		
+		return index.wikiPagesMatchingQuery(queryTokens);
+	}
 	
 	public List<String> searchTitles(String query) throws IOException, XMLStreamException {
 		List<String> titles = new ArrayList<String>();
