@@ -1,8 +1,12 @@
 package de.hpi.krestel.mySearchEngine;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import de.hpi.krestel.mySearchEngine.domain.StarOp;
+import de.hpi.krestel.mySearchEngine.domain.Term;
 
 public class FileIndex {
 	
@@ -105,6 +112,34 @@ public class FileIndex {
 		return this.findDocuments(indexInIndex, word);
 	}
 	
+	public List<Occurence> findDocuments(Term term) throws IOException {
+		long indexInIndex;
+		List<Occurence> occurenceL = new ArrayList<Occurence>();		
+		try {			
+			if (term.getStarOp() == StarOp.NOSTAR){
+				indexInIndex = this.findIndexOfWordInSeekList(term.getText());
+				occurenceL.addAll(this.findDocuments(indexInIndex, term.getText()));
+			}
+			else {
+				FileInputStream fis = new FileInputStream(this.seekListPath);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+				String line, splitLine[];						
+				while ((line=reader.readLine())!=null) {                
+					splitLine = line.split(" ", 2);
+					if (term.isRegexMatch(splitLine[0])){
+						occurenceL.addAll(this.findDocuments(Long.parseLong(splitLine[1]),splitLine[0]));
+					}
+            	}		
+				reader.close();
+				fis.close();
+			}
+		} catch (NoSuchElementException e) {
+			System.out.println("ERROR: Word not found: " + term.getText());
+			return occurenceL;
+		}		
+		return occurenceL;
+	}
+	
 	public long seekListSize() {
 		assert hasSeekList(); // seek list mus be created
 		return new File(seekListPath).length();
@@ -157,7 +192,7 @@ public class FileIndex {
 
 	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
 		RandomAccessFile reader = getIndexReader();
-		reader.seek(indexInIndex);
+		reader.seek(indexInIndex);		
 		return documentsFor(word, reader.readLine());
 	}
 	
@@ -185,11 +220,23 @@ public class FileIndex {
 			    }
 			}
 		}
-
+		List<Long> sortedList = getWordInDescendingFreqOrder(map);		
+		return sortedList;		
+	}
+	
+	public List<Long> findDocumentPositionsInXMLFile(Term term) throws IOException {
+		// thanks to http://stackoverflow.com/a/15378048/1320237
+		Map<Long, Integer> map = new HashMap<Long, Integer>();
+		for (Occurence occurence : findDocuments(term)) {
+			long documentId = occurence.getPositionOfDocumentInXMLFile();
+			if (map.containsKey(documentId)) {
+				map.put(documentId, map.get(documentId) + 1);
+			} else {
+				map.put(documentId, 1);
+			}
+		}
 		List<Long> sortedList = getWordInDescendingFreqOrder(map);
-		
 		return sortedList;
-		
 	}
 	
 	static List<Long> getWordInDescendingFreqOrder(Map<Long, Integer> wordCount) {

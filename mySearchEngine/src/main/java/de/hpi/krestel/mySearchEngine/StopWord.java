@@ -12,6 +12,7 @@ public class StopWord {
 	
 	public StopWord(){		
 		stopWords = new HashSet<String>();
+		this.stopWords.add("zerfallstyp"); 
 	}
 	
 	public void FillStopWord(String fileName){
@@ -21,7 +22,7 @@ public class StopWord {
 	public static StopWord StopWordFromFiles() {
 		StopWord stopWord = new StopWord();        
         stopWord.FillStopWord(new File("res/stop-words_german_1_de.txt").getAbsolutePath());
-        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());
+        stopWord.FillStopWord(new File("res/stop-words_german_2_de.txt").getAbsolutePath());        
         return stopWord;		
 	}
 	

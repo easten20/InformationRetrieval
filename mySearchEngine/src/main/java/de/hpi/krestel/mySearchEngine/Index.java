@@ -27,6 +27,10 @@ public class Index {
 		}
 		temporaryIndex = new MemoryIndex();
 	}
+	
+	public String getXMLFilePath(){
+		return this.wikipediaXMLFilePath;
+	}
 		
 	//build an index for a  document
 	public void addTerms (long positionInXMLFile, Iterable <String> terms) throws IOException{
@@ -155,14 +159,15 @@ public class Index {
 
 	public List<Long> documentPositionsMatchingQuery(Iterable<String> queryTokens) throws IOException {
 		return fileIndex().findDocumentPositionsInXMLFile(queryTokens);
-	}
+	}	
 	
 	public List<WikiPage> wikiPagesMatchingQuery(Iterable<String> queryTokens) throws IOException, XMLStreamException {
-		List<WikiPage> wikiPages = new ArrayList<WikiPage> ();
+		List<WikiPage> wikiPages = new ArrayList<WikiPage> ();		
 		for (long positionInXMLFile : documentPositionsMatchingQuery(queryTokens)) {
 			WikiPage wikiPage = WikiPage.from(this.wikipediaXMLFilePath, positionInXMLFile);
 			wikiPages.add(wikiPage);
 		}
 		return wikiPages;
-	}
+	}		
+	
 }

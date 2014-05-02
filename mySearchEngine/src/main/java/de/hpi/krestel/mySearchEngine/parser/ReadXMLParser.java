@@ -1,13 +1,14 @@
 package de.hpi.krestel.mySearchEngine.parser;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -28,10 +29,11 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 	static final String PAGE = "page";	
 	private WikiPage nextWikiPage;
 	FileInputStream inputStream;	
+	RandomAccessFile rand;
 	long lastPageLocation; // last end of a page tag
 	int lastCharacterOffset; // RANT: THESE damn integers... no way we will parse files greater 2GB.. man I hate them.....
 	boolean canParseSeveralWikiPages;
-	String xmlFile;
+	String xmlFile;		
 
 	public ReadXMLParser(String xmlFile) throws IOException, XMLStreamException {
 		this.xmlFile = xmlFile;
@@ -39,13 +41,15 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 	}
 	
 	public void jumpToPosition(long position) throws IOException, XMLStreamException {
-		inputStream = new FileInputStream(xmlFile);	
-		inputStream.getChannel().position(position);
+		inputStream = new FileInputStream(xmlFile);				
+		inputStream.getChannel().position(position);		
 		lastPageLocation = position;
 		lastCharacterOffset = 0; // I HATE IT
-		canParseSeveralWikiPages = position == 0;
+		canParseSeveralWikiPages = position == 0;		
 		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-		eventReader = inputFactory.createXMLEventReader(inputStream, "ASCII");
+		//StreamSource source = new StreamSource(inputStream, "ASCII");		
+		eventReader = inputFactory.createXMLEventReader(inputStream, "ASCII");		
+		//XMLStreamReader reader = inputFactory.createXMLStreamReader(countStream, "ASCII");			    	    
 	}
 
 	@Override
@@ -117,7 +121,9 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 						EndElement endElement = event.asEndElement();
 						if (endElement.getName().getLocalPart() == (PAGE)) {
 							if (canParseSeveralWikiPages) {
-								int currentCharacterOffset = endElement.getLocation().getCharacterOffset();								
+								int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
+								if (inputStream.getChannel().position() < endElement.getLocation().getCharacterOffset())
+									System.out.println("stop!!!!");
 								if (lastCharacterOffset > currentCharacterOffset) {
 									System.out.println("from " + currentCharacterOffset + " to " + currentCharacterOffset);
 								}

@@ -1,7 +1,8 @@
 package de.hpi.krestel.mySearchEngine.domain;
 
+//inspired by Lucene Boolean Occur
 public enum BooleanOp {
-	AND,
-	OR,
-	BUTNOT
+	SHOULD,
+	MUST,
+	MUSTNOT
 }
