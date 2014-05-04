@@ -45,6 +45,7 @@ public class MyQuery {
 		//now stringList = [fish*, and, *tropical] or [fish*, butnot, *tropical]		         		
 		//in case of "but not", [fish, but, not, tropical] -> [fish, butnot, tropical]		
 		queryText = queryText.toLowerCase().replace("but not", butnotOP);			
+		//thks to http://stackoverflow.com/questions/366202/regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 		Matcher regexMatcher = regex.matcher(queryText);		
 		String operator = "";
