@@ -237,7 +237,7 @@ public class FileIndex {
 		}
 		List<Long> sortedList = getWordInDescendingFreqOrder(map);
 		return sortedList;
-	}
+	}		
 	
 	static List<Long> getWordInDescendingFreqOrder(Map<Long, Integer> wordCount) {
 		// thanks to http://stackoverflow.com/a/10159540/1320237

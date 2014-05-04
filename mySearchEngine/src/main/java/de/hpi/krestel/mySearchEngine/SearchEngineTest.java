@@ -5,6 +5,8 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
+import de.hpi.krestel.mySearchEngine.domain.PhraseClause;
+
 
 // This file will be used to evaluate your search engine!
 // You can use/change this file for development. But
@@ -39,15 +41,19 @@ public class SearchEngineTest {
 			test.index(filePath);
 		}
 		assert test.loadIndex(filePath);
+					
 		System.out.println("Created index!");
-		System.out.println("Searching Terms...");
+		System.out.println("Searching Terms...");						
 		System.out.println("---------------------- Artikel AND Smithee ----------------------");
 		System.out.println(test.searchTitles("Artikel AND Smithee"));
 		System.out.println("---------------------- Artikel OR Reaktion ----------------------");
 		System.out.println(test.searchTitles("Artikel OR Reaktion"));
 		System.out.println("---------------------- Art* BUT NOT Artikel ----------------------");
-		System.out.println(test.searchTitles("Art* BUT NOT Artikel"));		
+		System.out.println(test.searchTitles("Art* BUT NOT Artikel"));
+		System.out.println("---------------------- 'Filmfestspiele in Venedig' ----------------------");
+		System.out.println(test.searchTitles("'Filmfestspiele in Venedig'"));
 		System.out.println("Searched Terms!");
+		
 	}
 
 	@SuppressWarnings("unused")

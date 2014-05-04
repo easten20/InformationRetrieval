@@ -3,7 +3,7 @@ package de.hpi.krestel.mySearchEngine.domain;
 public class Term {
 	
 	private String text;
-	private StarOp starOp;
+	private StarOp starOp;	
 	
 	public Term(String text)
 	{
@@ -66,4 +66,5 @@ public class Term {
 	public boolean isRegexMatch(String word){
 		return word.matches(this.getRegexRep());
 	}
+		
 }

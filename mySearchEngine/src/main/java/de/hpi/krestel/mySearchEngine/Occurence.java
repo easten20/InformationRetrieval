@@ -6,7 +6,7 @@ import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
-public class Occurence {
+public class Occurence implements Comparable<Occurence>{
 
 	private long positionOfDocumentInXMLFile;
 	private int positionOfWordInDocument;
@@ -40,6 +40,14 @@ public class Occurence {
 	
 	public WikiPage getWikiPage() throws IOException, XMLStreamException {
 		return WikiPage.from(xmlFilePath, getPositionOfDocumentInXMLFile());
+	}
+
+	@Override
+	public int compareTo(Occurence comparedObj) {
+		if (this.positionOfDocumentInXMLFile != comparedObj.positionOfDocumentInXMLFile)
+			return (int) (this.positionOfDocumentInXMLFile - comparedObj.positionOfDocumentInXMLFile);
+		else 
+			return this.positionOfWordInDocument - comparedObj.positionOfWordInDocument;		
 	}
 
 

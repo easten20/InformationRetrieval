@@ -32,13 +32,13 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class SearchEngineY extends SearchEngine {
 	
 	Index index;
-	private StopWord cachedStopWord;
-	private SnowballStemmer cachedStemmer;
+	TokenStream token;
 	
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
 		// This should stay as is! Don't add anything here!
 		super();
+		token = new TokenStream();
 	}
 
 	@Override
@@ -49,17 +49,10 @@ public class SearchEngineY extends SearchEngine {
 		Index index = new Index(wikipediaFilePath);
 		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
 			String cleanText = cleanUpWikiText(wikiPage);
-			Iterable<String> tokens = preprocessText(cleanText);
+			Iterable<String> tokens = this.token.preprocessText(cleanText);
 			index.add(wikiPage, tokens);
 		}
 		index.save();
-	}
-	
-	Iterable<String> preprocessText(String text) {
-		Iterable<String> tokens = tokenizeWikiText(text);
-		tokens = removeStopWords(tokens);
-		tokens = stemText(tokens);
-		return tokens;
 	}		
 	
 	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
@@ -75,60 +68,7 @@ public class SearchEngineY extends SearchEngine {
 		html = html.replaceFirst("<\\?[^>]*\\?>", "");
 		String parsedHTML = htmlParser.parseHTML(html);
 		return parsedHTML.toString();
-	}
-	
-	Iterable<String> tokenizeWikiText(String wikiText) {
-		// TODO: most unicode characters that are higher than 128 are just usual characters
-		//       maybe we can split with this in  mind
-		System.out.println(wikiText);		
-		//thks to http://stackoverflow.com/questions/163360/regular-expresion-to-match-urls-in-java
-		String regex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";		
-		wikiText = wikiText.toLowerCase().replaceAll(regex, "");
-		System.out.println(wikiText);
-		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");		
-		return Arrays.asList(tokens);
 	}		
-	
-	StopWord getStopWord() {
-		if (cachedStopWord == null) {
-			cachedStopWord = StopWord.StopWordFromFiles(); 
-		}
-		return cachedStopWord;
-	}
-	
-	Iterable<String> removeStopWords(Iterable<String> tokens) {
-		StopWord stopWord = getStopWord();
-		List<String> stopWordFreeTokens = new ArrayList<String>();
-		for (String token : tokens) {
-			if (token.length() < 3 || stopWord.GetHashSet().contains(token))
-				continue;
-			stopWordFreeTokens.add(token);
-		}
-		return stopWordFreeTokens;
-	}
-	
-	
-	SnowballStemmer getStemmer() {
-		if (cachedStemmer == null) {
-			cachedStemmer = new germanStemmer();
-		}
-		return cachedStemmer;
-	}
-	
-	Iterable<String> stemText(Iterable<String> tokens) {
-		SnowballStemmer stemmer  = this.getStemmer();
-		List<String> stemmedTokens = new ArrayList<String>();
-		for (String token : tokens) {
-			stemmer.setCurrent(token); 		
-			stemmer.stem();
-			token = stemmer.getCurrent();
-			// remove the s at the end
-			token = token.replaceAll("s+$", "");
-			stemmedTokens.add(token);
-		}
-		return stemmedTokens;
-	}
-
 
 	@Override
 	boolean loadIndex(String wikipediaFilePath) {
@@ -144,8 +84,8 @@ public class SearchEngineY extends SearchEngine {
 	
 	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
 		assert index.isValid();				
-		MyQuery queryResult = new MyQuery(this.index);
-		queryResult.setQuery(query);
+		MyQuery queryResult = new MyQuery(this.index);		
+		queryResult.setQuery(query);		
 		return queryResult.wikiPagesMatchingQuery();		
 	}		
 	

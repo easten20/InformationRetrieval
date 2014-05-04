@@ -1,17 +1,21 @@
 package de.hpi.krestel.mySearchEngine.domain;
 
-public class BooleanClause {
+import java.util.Set;
+import java.util.TreeSet;
+
+public class BooleanClause implements BooleanImpl {
 	private BooleanOp boolOp;
 	private Term term;
+	private Set<Long> docPositionST;
 	
 	public BooleanClause(Term term, BooleanOp boolOp){
 		this.setBoolOp(boolOp);
-		this.setTerm(term);
+		this.setTerm(term);	
+		this.docPositionST = new TreeSet<Long>();
 	}
 	
 	public BooleanClause(Term term){
-		this.setBoolOp(BooleanOp.SHOULD);
-		this.setTerm(term);		
+		this(term, BooleanOp.SHOULD);		
 	}
 
 	public Term getTerm() {
@@ -28,5 +32,9 @@ public class BooleanClause {
 
 	public void setBoolOp(BooleanOp boolOp) {
 		this.boolOp = boolOp;
+	}
+	
+	public Set<Long> getDocPositionST(){
+		return this.docPositionST;
 	}
 }
