@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
-import de.hpi.krestel.mySearchEngine.domain.PhraseClause;
-
 
 // This file will be used to evaluate your search engine!
 // You can use/change this file for development. But

@@ -2,15 +2,9 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
-
-import org.tartarus.snowball.SnowballStemmer;
-import org.tartarus.snowball.ext.germanStemmer;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
