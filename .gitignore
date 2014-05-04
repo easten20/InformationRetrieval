@@ -9,3 +9,13 @@ mySearchEngine/.settings/org.eclipse.m2e.core.prefs
 /mySearchEngine/res/dewiki-20140216-pages-articles-multistream.xml
 mySearchEngine/res/dewiki-20140216-pages-articles-multistream.xml.bz2
 .metadata
+/mySearchEngine/res/*.index
+mySearchEngine/res/_dewiki-20140216-pages-articles-multistream.xml
+/mySearchEngine/res/*.skl
+/mySearchEngine/res/*.lastPosition
+/mySearchEngine/res/dewiki-20140216-pages-articles-multistream.10000.xml
+/mySearchEngine/res/dewiki-20140216-pages-articles-multistream.100000.xml
+*.index
+*.lastPosition
+*.skl
+
