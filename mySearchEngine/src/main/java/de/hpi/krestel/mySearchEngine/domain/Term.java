@@ -66,5 +66,9 @@ public class Term {
 	public boolean isRegexMatch(String word){
 		return word.matches(this.getRegexRep());
 	}
+
+	public boolean matches(String token) {
+		return isRegexMatch(token);
+	}
 		
 }

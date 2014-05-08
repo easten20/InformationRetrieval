@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.stream.XMLStreamException;
 
+import de.hpi.krestel.mySearchEngine.domain.Term;
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
 public class Index {
@@ -168,6 +170,18 @@ public class Index {
 			wikiPages.add(wikiPage);
 		}
 		return wikiPages;
+	}
+
+	public int totalNumberOfDocumets() {
+		return 5;
+	}
+
+	public long numberOfDocumentsContaining(Term term) throws IOException {
+		return fileIndex().findDocumentPositionsInXMLFile(term).size();
+	}
+
+	public long averageNumberOfDocumentLength() {
+		return 500;
 	}		
 	
 }

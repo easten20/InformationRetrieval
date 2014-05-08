@@ -1,9 +1,13 @@
 package de.hpi.krestel.mySearchEngine.domain;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
+import de.hpi.krestel.mySearchEngine.TokenStream;
+import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
+import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
 import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser;
 import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
@@ -20,6 +24,7 @@ public class WikiPage {
 	private boolean positionInXMLFileSet; 
 	private long stopPositionInXMLFile;
 	private boolean stopPositionInXMLFileSet;
+	private List<String> tokens;
 
 	public WikiPage(){  
 		text = "";
@@ -81,5 +86,36 @@ public class WikiPage {
 	public long getStopPositionInXMLFile() {
 		if (!stopPositionInXMLFileSet) { throw new AssertionError();}
 		return stopPositionInXMLFile;
+	}
+	
+	String cleanUpWikiText() {
+		ParseHTMLToText htmlParser = new ParseHTMLToText();
+		String text = this.getText();
+		String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
+		html = html.replaceFirst("<\\?[^>]*\\?>", "");
+		String parsedHTML = htmlParser.parseHTML(html);
+		return parsedHTML.toString();
+	}
+	
+	public long numberOfTerms() {
+		return asTokens().size();
+	}
+
+	public List<String> asTokens() {
+		if (tokens == null) {
+			TokenStream tokenStream = new TokenStream();
+			tokens = tokenStream.preprocessText(cleanUpWikiText());
+		}
+		return tokens;
+	}
+
+	public int countOfTerm(Term term) {
+		int number = 0;
+		for (String token : asTokens()) {
+			if (term.matches(token)) {
+				number += 1;
+			}
+		}
+		return number;
 	}
 }

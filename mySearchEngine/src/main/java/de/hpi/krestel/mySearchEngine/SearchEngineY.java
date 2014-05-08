@@ -26,13 +26,12 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class SearchEngineY extends SearchEngine {
 	
 	Index index;
-	TokenStream token;
+	
 	
 	// Replace 'Y' with your search engine name
 	public SearchEngineY() {
 		// This should stay as is! Don't add anything here!
 		super();
-		token = new TokenStream();
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class SearchEngineY extends SearchEngine {
 		// don’t need to come up with a stopword list or implement a new stemmer!
 		Index index = new Index(wikipediaFilePath);
 		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
-			String cleanText = cleanUpWikiText(wikiPage);
-			Iterable<String> tokens = this.token.preprocessText(cleanText);
+			Iterable<String> tokens = wikiPage.asTokens();
 			index.add(wikiPage, tokens);
 		}
 		index.save();
@@ -53,15 +51,6 @@ public class SearchEngineY extends SearchEngine {
 		WikiXMLIterable parser = new WikiXMLIterable(wikipediaFilePath);
 		parser.setPosition(index.getlastPositionInXMLFile());
 		return parser;
-	}
-	
-	String cleanUpWikiText(WikiPage wikiPage) {
-		ParseHTMLToText htmlParser = new ParseHTMLToText();
-		String text = wikiPage.getText();
-		String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
-		html = html.replaceFirst("<\\?[^>]*\\?>", "");
-		String parsedHTML = htmlParser.parseHTML(html);
-		return parsedHTML.toString();
 	}		
 
 	@Override

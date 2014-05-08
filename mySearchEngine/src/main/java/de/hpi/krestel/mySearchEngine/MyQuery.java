@@ -3,6 +3,7 @@ package de.hpi.krestel.mySearchEngine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,7 +24,8 @@ public class MyQuery {
 		
 	private BooleanQuery booleanQuery;	
 	private Index index;	
-	private Set<Long> docPositionST;	
+	private Set<Long> docPositionST;
+	private List<String> queryTokens;	
 	
 	public MyQuery(Index index){		
 		this.index = index;
@@ -42,6 +44,7 @@ public class MyQuery {
 		Matcher regexMatcher = regex.matcher(queryText);		
 		String operator = "";
 		TokenStream token = new TokenStream();
+		queryTokens = token.preprocessText(queryText);
 		this.booleanQuery = new BooleanQuery();
 		while (regexMatcher.find()) {
 		    if (regexMatcher.group(1) != null || regexMatcher.group(2) != null) {
@@ -110,7 +113,25 @@ public class MyQuery {
 			wikiPages.add(wikiPage);
 		}		
 		return wikiPages;
-	}					
+	}
+
+	public List<WikiPage> wikiPagesMatchingQuery(int topN) throws IOException, XMLStreamException {
+		List<WikiPage> wikiPages = wikiPagesMatchingQuery();
+		// thanks to http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property
+		final List<Term> queryTerms = new PhraseClause(queryTokens, BooleanOp.MUST).getTerms();
+		Collections.sort(wikiPages, new Comparator<WikiPage>() {
+	        public int compare(WikiPage o1, WikiPage o2) {
+	            try {
+					return Double.compare(new BM25(index, queryTerms, o1).compute(), new BM25(index, queryTerms, o2).compute());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return 0;
+	        }
+	    });
+		return wikiPages;
+	}
 	
 	private List<Long> getDocumentPositions(BooleanClause booleanClause) throws IOException, XMLStreamException{
 		return this.index.fileIndex().findDocumentPositionsInXMLFile(booleanClause.getTerm()); 

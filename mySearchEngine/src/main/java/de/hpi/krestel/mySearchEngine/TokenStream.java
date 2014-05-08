@@ -16,14 +16,14 @@ public class TokenStream {
 		
 	}
 	
-	public Iterable<String> preprocessText(String text) {
-		Iterable<String> tokens = tokenizeWikiText(text);
+	public List<String> preprocessText(String text) {
+		List<String> tokens = tokenizeWikiText(text);
 		tokens = removeStopWords(tokens);
 		tokens = stemText(tokens);
 		return tokens;
 	}											
 	
-	public Iterable<String> tokenizeWikiText(String wikiText) {
+	public List<String> tokenizeWikiText(String wikiText) {
 		// TODO: most unicode characters that are higher than 128 are just usual characters
 		//       maybe we can split with this in  mind
 		System.out.println(wikiText);		
@@ -35,7 +35,7 @@ public class TokenStream {
 		return Arrays.asList(tokens);
 	}	
 	
-	Iterable<String> removeStopWords(Iterable<String> tokens) {		
+	List<String> removeStopWords(Iterable<String> tokens) {		
 		List<String> stopWordFreeTokens = new ArrayList<String>();
 		for (String token : tokens) {
 			if (isStopWord(token))
@@ -64,7 +64,7 @@ public class TokenStream {
 		return cachedStemmer;
 	}
 	
-	Iterable<String> stemText(Iterable<String> tokens) {			
+	List<String> stemText(Iterable<String> tokens) {			
 		List<String> stemmedTokens = new ArrayList<String>();
 		for (String token : tokens) {						
 			stemmedTokens.add(this.stemText(token));
