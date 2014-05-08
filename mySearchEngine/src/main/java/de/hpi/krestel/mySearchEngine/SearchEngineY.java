@@ -69,7 +69,7 @@ public class SearchEngineY extends SearchEngine {
 		assert index.isValid();				
 		MyQuery queryResult = new MyQuery(this.index);		
 		queryResult.setQuery(query);		
-		return queryResult.wikiPagesMatchingQuery();		
+		return queryResult.wikiPagesMatchingQuery(5);		
 	}		
 	
 	public List<String> searchTitles(String query) throws IOException, XMLStreamException {

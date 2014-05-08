@@ -41,17 +41,20 @@ public class SearchEngineTest {
 		assert test.loadIndex(filePath);
 					
 		System.out.println("Created index!");
-		System.out.println("Searching Terms...");						
-		System.out.println("---------------------- Artikel AND Smithee ----------------------");
-		System.out.println(test.searchTitles("Artikel AND Smithee"));
-		System.out.println("---------------------- Artikel OR Reaktion ----------------------");
-		System.out.println(test.searchTitles("Artikel OR Reaktion"));
-		System.out.println("---------------------- Art* BUT NOT Artikel ----------------------");
-		System.out.println(test.searchTitles("Art* BUT NOT Artikel"));
-		System.out.println("---------------------- 'Filmfestspiele in Venedig' ----------------------");
-		System.out.println(test.searchTitles("'Filmfestspiele in Venedig'"));
+		System.out.println("Searching Terms...");
+		searchTitles("artikel regisseur", test);
+		searchTitles("regisseur", test);
+		searchTitles("deutsch", test);
+		searchTitles("anschluss", test);
 		System.out.println("Searched Terms!");
 		
+		
+		
+	}
+
+	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
+		System.out.println("---------------------- " + query + " ----------------------");
+		System.out.println(test.searchTitles(query));		
 	}
 
 	@SuppressWarnings("unused")

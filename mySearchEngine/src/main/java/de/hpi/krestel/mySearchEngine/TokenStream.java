@@ -26,11 +26,11 @@ public class TokenStream {
 	public List<String> tokenizeWikiText(String wikiText) {
 		// TODO: most unicode characters that are higher than 128 are just usual characters
 		//       maybe we can split with this in  mind
-		System.out.println(wikiText);		
+		//System.out.println(wikiText);		
 		//thks to http://stackoverflow.com/questions/163360/regular-expresion-to-match-urls-in-java
 		String regex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";		
 		wikiText = wikiText.toLowerCase().replaceAll(regex, "");
-		System.out.println(wikiText);
+		//System.out.println(wikiText);
 		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");		
 		return Arrays.asList(tokens);
 	}	

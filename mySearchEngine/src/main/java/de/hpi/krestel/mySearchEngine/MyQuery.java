@@ -122,7 +122,7 @@ public class MyQuery {
 		Collections.sort(wikiPages, new Comparator<WikiPage>() {
 	        public int compare(WikiPage o1, WikiPage o2) {
 	            try {
-					return Double.compare(new BM25(index, queryTerms, o1).compute(), new BM25(index, queryTerms, o2).compute());
+					return new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -130,6 +130,9 @@ public class MyQuery {
 				return 0;
 	        }
 	    });
+		for (WikiPage wikiPage : wikiPages) {
+			System.out.println(wikiPage.getTitle() + " #" + new BM25(index, queryTerms, wikiPage).compute());
+		}
 		return wikiPages;
 	}
 	
