@@ -45,9 +45,6 @@ public class SearchEngineTest {
 		searchTitles("artikel", test);
 		searchTitles("deutsch", test);
 		System.out.println("Searched Terms!");
-		
-		
-		
 	}
 
 	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
