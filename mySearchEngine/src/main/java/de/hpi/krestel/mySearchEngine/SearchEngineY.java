@@ -7,8 +7,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
-import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
-import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
 import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 /* This is your file! implement your search engine here!
@@ -80,11 +78,24 @@ public class SearchEngineY extends SearchEngine {
 		return titles;
 	}
 	
+	public List<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
+		List<String> titles = new ArrayList<String>();
+		for (WikiPage wikiPage : searchWikiPages(query)) {
+			String frequentWord = wikiPage.mostFrequentWord();
+			query+= " " + frequentWord;
+		}
+		
+		titles = searchTitles(query);
+		return titles;
+	}
+	
 	@Override
 	Double computeNdcg(String query, ArrayList<String> ranking, int ndcgAt) {
 	
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
 
 }
