@@ -42,10 +42,8 @@ public class SearchEngineTest {
 					
 		System.out.println("Created index!");
 		System.out.println("Searching Terms...");
-		searchTitles("artikel regisseur", test);
-		searchTitles("regisseur", test);
+		searchTitles("artikel", test);
 		searchTitles("deutsch", test);
-		searchTitles("anschluss", test);
 		System.out.println("Searched Terms!");
 		
 		
