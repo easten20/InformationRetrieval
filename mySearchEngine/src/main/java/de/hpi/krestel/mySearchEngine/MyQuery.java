@@ -121,8 +121,8 @@ public class MyQuery {
 		final List<Term> queryTerms = new PhraseClause(queryTokens, BooleanOp.MUST).getTerms();
 		Collections.sort(wikiPages, new Comparator<WikiPage>() {
 	        public int compare(WikiPage o1, WikiPage o2) {
-	            try {
-					return new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute());
+	            try {	            	
+					return (new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute()));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

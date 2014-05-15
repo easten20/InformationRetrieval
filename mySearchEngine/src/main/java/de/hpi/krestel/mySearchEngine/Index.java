@@ -11,6 +11,8 @@ import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.domain.Term;
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
+import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser;
+import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 public class Index {
 	
@@ -19,6 +21,7 @@ public class Index {
 	private MemoryIndex temporaryIndex;
 	long wikipediaXMLFileSize;
 	private WikiPage lastWikiPage;
+	private double avgDocLength;
 	
 	Index (String wikipediaXMLFilePath) {
 		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
@@ -180,8 +183,18 @@ public class Index {
 		return fileIndex().findDocumentPositionsInXMLFile(term).size();
 	}
 
-	public long averageNumberOfDocumentLength() {
-		return 500;
+	public double averageNumberOfDocumentLength() {
+		if (this.avgDocLength == 0.0) {
+			WikiXMLIterable parser = new WikiXMLIterable(this.wikipediaXMLFilePath);
+			double totalLength = 0.0;
+			double totalDoc = 0.0;
+			for (WikiPage wikiPage: parser) {						
+				totalLength += wikiPage.asTokens().size();
+				totalDoc++;
+			}		
+			this.avgDocLength = totalLength/totalDoc;
+		}
+		return this.avgDocLength;
 	}		
 	
 }
