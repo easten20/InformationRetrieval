@@ -2,6 +2,7 @@ package de.hpi.krestel.mySearchEngine.domain;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -117,5 +118,26 @@ public class WikiPage {
 			}
 		}
 		return number;
+	}
+	
+	public String mostFrequentWord (){
+		List<String> tokens = this.asTokens();
+		TreeMap<String, Integer> frequency = new TreeMap<String,Integer>();
+		String mostUsedToken = "";
+		int freq = 0;
+		for (String token:tokens){
+			if (frequency.containsKey(token)){
+				frequency.put(token, frequency.get(token)+1);
+			}
+			else{
+				frequency.put(token, 1);
+			}
+			if (frequency.get(token) > freq){
+				freq=frequency.get(token);
+				mostUsedToken=token;
+			}
+		}
+		return mostUsedToken;
+		
 	}
 }
