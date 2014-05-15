@@ -80,9 +80,14 @@ public class SearchEngineY extends SearchEngine {
 	
 	public List<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
 		List<String> titles = new ArrayList<String>();
+		int flag=0;
 		for (WikiPage wikiPage : searchWikiPages(query)) {
+			if (flag>= prf){
+				break;
+			}
 			String frequentWord = wikiPage.mostFrequentWord();
 			query+= " " + frequentWord;
+			flag++;
 		}
 		
 		titles = searchTitles(query);
