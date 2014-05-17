@@ -1,3 +1,4 @@
+
 package de.hpi.krestel.mySearchEngine;
 
 import java.io.IOException;

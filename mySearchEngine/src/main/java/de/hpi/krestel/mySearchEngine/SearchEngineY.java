@@ -3,6 +3,7 @@ package de.hpi.krestel.mySearchEngine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -24,6 +25,7 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class SearchEngineY extends SearchEngine {
 	
 	Index index;
+	int resultSize = 10; // Nicco and Elina, we have to display different results. Change this size. Timur and I will use 10. 
 	
 	
 	// Replace 'Y' with your search engine name
@@ -78,20 +80,79 @@ public class SearchEngineY extends SearchEngine {
 		return titles;
 	}
 	
-	public List<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
+//	public List<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
+//		List<String> titles = new ArrayList<String>();
+//		int flag=0;
+//		for (WikiPage wikiPage : searchWikiPages(query)) {
+//			if (flag>= prf){
+//				break;
+//			}
+//			String frequentWord = wikiPage.mostFrequentWord();
+//			query+= " " + frequentWord;
+//			flag++;
+//			//System.out.print("title: ");
+//			//System.out.println(wikiPage.getTitle());
+//			//System.out.print("text");
+//			//System.out.println(wikiPage.getText());
+//		}
+//		
+//		titles = searchTitles(query);
+//		return titles;
+//	}
+	
+	public void searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
 		List<String> titles = new ArrayList<String>();
+		String newQuery = query;
 		int flag=0;
 		for (WikiPage wikiPage : searchWikiPages(query)) {
 			if (flag>= prf){
 				break;
 			}
 			String frequentWord = wikiPage.mostFrequentWord();
-			query+= " " + frequentWord;
+			newQuery+= " " + frequentWord;
 			flag++;
+			
+			System.out.println("***** " + flag + "." + wikiPage.getTitle() + " *****");
+			resultGenerate(query, wikiPage);
 		}
 		
-		titles = searchTitles(query);
-		return titles;
+		titles = searchTitles(newQuery);
+		System.out.println(titles);
+
+	}
+	
+	public void resultGenerate(String query, WikiPage wikiPage)
+	{
+		String entireText = wikiPage.getText();
+		String key = null;
+		int tot = 0;
+		int queryPosition = 0;
+		StringTokenizer stringTokenizer = new StringTokenizer(entireText, " ");
+		while(stringTokenizer.hasMoreTokens())
+		{
+			tot = tot + 1;
+			key = stringTokenizer.nextToken();
+			if(key.toLowerCase().contains(query.toLowerCase()))
+			{
+				queryPosition = tot ;
+				break;
+			}	
+		}
+		
+		tot = 0;
+		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
+		while(stringTokenizer2.hasMoreTokens())
+		{
+			tot = tot + 1;
+			key = stringTokenizer2.nextToken();
+			
+			if(queryPosition - resultSize <= tot && tot <= queryPosition + resultSize)
+			{
+				System.out.print(key + " ");
+			}
+			
+		}
+		System.out.print("\n");
 	}
 	
 	@Override
