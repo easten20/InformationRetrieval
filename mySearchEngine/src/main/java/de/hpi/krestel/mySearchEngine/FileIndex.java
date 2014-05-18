@@ -105,7 +105,7 @@ public class FileIndex {
 		try {
 			indexInIndex = this.findIndexOfWordInSeekList(word);
 		} catch (NoSuchElementException e) {
-			System.out.println("ERROR: Word not found: " + word);
+			//System.out.println("ERROR: Word not found: " + word);
 			return new ArrayList<Occurence> ();
 		}
 		return this.findDocuments(indexInIndex, word);
@@ -133,7 +133,7 @@ public class FileIndex {
 				fis.close();
 			}
 		} catch (NoSuchElementException e) {
-			System.out.println("ERROR: Word not found: " + term.getText());
+			//System.out.println("ERROR: Word not found: " + term.getText());
 			return occurenceL;
 		}		
 		return occurenceL;

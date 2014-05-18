@@ -50,7 +50,7 @@ public class SearchEngineTest {
 
 	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
 		System.out.println("---------------------- " + query + " ----------------------");
-		System.out.println(test.searchTitles(query, prf, topK));
+		//System.out.println(test.searchTitles(query, prf, topK));
 		
 		SearchResult searchResult = new SearchResult(query, prf, test.searchTitles(query, prf, topK), test);
 		

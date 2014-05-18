@@ -90,13 +90,9 @@ public class SearchEngineY extends SearchEngine {
 			String frequentWord = wikiPage.mostFrequentWord();
 			newQuery+= " " + frequentWord;
 			flag++;
-			
-			//System.out.println("***** " + flag + "." + wikiPage.getTitle() + " *****");
-			//wikiPage.resultGenerate(query, wikiPage, resultSize, flag);
 		}
 		
 		titles = searchTitles(newQuery);
-		//System.out.println(titles);
 		return titles;
 
 	}

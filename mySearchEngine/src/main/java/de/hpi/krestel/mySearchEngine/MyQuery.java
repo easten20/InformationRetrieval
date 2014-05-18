@@ -131,7 +131,7 @@ public class MyQuery {
 	        }
 	    });
 		for (WikiPage wikiPage : wikiPages) {
-			System.out.println(wikiPage.getTitle() + " #" + new BM25(index, queryTerms, wikiPage).compute());
+			//System.out.println(wikiPage.getTitle() + " #" + new BM25(index, queryTerms, wikiPage).compute());
 		}
 		return wikiPages;
 	}
