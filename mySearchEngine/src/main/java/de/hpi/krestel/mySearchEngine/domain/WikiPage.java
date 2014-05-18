@@ -2,6 +2,7 @@ package de.hpi.krestel.mySearchEngine.domain;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.xml.stream.XMLStreamException;
@@ -137,7 +138,45 @@ public class WikiPage {
 				mostUsedToken=token;
 			}
 		}
-		return mostUsedToken;
+		return mostUsedToken;	
+	}
+	
+	public String resultGenerate(String query, WikiPage wikiPage, int resultSize, int flag)
+	{
+		String returnString = "";
+		returnString += "***** " + flag + "." + wikiPage.getTitle() + " *****" + "\n";
 		
+		String entireText = wikiPage.getText();
+		String key = null;
+		int tot = 0;
+		int queryPosition = 0;
+		StringTokenizer stringTokenizer = new StringTokenizer(entireText, " ");
+		while(stringTokenizer.hasMoreTokens())
+		{
+			tot = tot + 1;
+			key = stringTokenizer.nextToken();
+			if(key.toLowerCase().contains(query.toLowerCase()))
+			{
+				queryPosition = tot ;
+				break;
+			}	
+		}
+		
+		tot = 0;
+		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
+		while(stringTokenizer2.hasMoreTokens())
+		{
+			tot = tot + 1;
+			key = stringTokenizer2.nextToken();
+			
+			if(queryPosition - resultSize <= tot && tot <= queryPosition + resultSize)
+			{
+				returnString += key + " ";
+			}
+			
+		}
+		returnString += "\n";
+		
+		return returnString;
 	}
 }

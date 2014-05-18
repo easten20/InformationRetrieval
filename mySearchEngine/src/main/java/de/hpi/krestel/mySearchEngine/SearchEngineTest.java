@@ -2,11 +2,9 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.stream.XMLStreamException;
-
-import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
 
 // This file will be used to evaluate your search engine!
@@ -52,9 +50,18 @@ public class SearchEngineTest {
 
 	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
 		System.out.println("---------------------- " + query + " ----------------------");
-		//System.out.println(test.searchTitles(query, prf, topK));	
-		test.searchTitles(query, prf, topK);
+		System.out.println(test.searchTitles(query, prf, topK));
 		
+		SearchResult searchResult = new SearchResult(query, prf, test.searchTitles(query, prf, topK), test);
+		
+		ArrayList<String> snippetsList = new ArrayList<String>();
+		snippetsList = searchResult.makeSnippets();
+		
+		for(int i = 0;i<snippetsList.size();i++)
+		{
+			System.out.println(snippetsList.get(i));
+		}
+	
 	}
 
 	@SuppressWarnings("unused")
