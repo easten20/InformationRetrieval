@@ -34,16 +34,21 @@ public class SearchEngineY extends SearchEngine {
 	}
 
 	@Override
-	void index(String wikipediaFilePath) throws IOException {
-		// First you need to pre-process the raw input. Decide on how to tokenize, whether to
-		// use a stopword list and/or stemming. For these steps you can use existing code — you
-		// don’t need to come up with a stopword list or implement a new stemmer!
-		Index index = new Index(wikipediaFilePath);
-		for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
-			Iterable<String> tokens = wikiPage.asTokens();
-			index.add(wikiPage, tokens);
-		}
-		index.save();
+	void index(String wikipediaFilePath) {
+		try {
+			// First you need to pre-process the raw input. Decide on how to tokenize, whether to
+			// use a stopword list and/or stemming. For these steps you can use existing code — you
+			// don’t need to come up with a stopword list or implement a new stemmer!
+			Index index = new Index(wikipediaFilePath);
+			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
+				Iterable<String> tokens = wikiPage.asTokens();
+				index.add(wikiPage, tokens);
+			}		
+				index.save();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
 	}		
 	
 	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
@@ -96,14 +101,13 @@ public class SearchEngineY extends SearchEngine {
 		return titles;
 
 	}
-	
+
 	@Override
-	Double computeNdcg(String query, ArrayList<String> ranking, int ndcgAt) {
-	
+	Double computeNdcg(ArrayList<String> goldRanking,
+			ArrayList<String> myRanking, int at) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
+	}			
 	
 
 }
