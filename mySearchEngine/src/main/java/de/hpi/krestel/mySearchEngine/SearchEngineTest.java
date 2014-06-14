@@ -40,11 +40,13 @@ public class SearchEngineTest {
 			test.index(filePath);
 		}
 		assert test.loadIndex(filePath);
-					
+		
+		
+		
 		System.out.println("Created index!");
 		System.out.println("Searching Terms...");
-		searchTitles("artikel", test);
-		searchTitles("deutsch", test);
+		searchTitles("Anschluss", test);
+		searchTitles("Soziologie", test);
 		System.out.println("Searched Terms!");
 	}
 
@@ -52,16 +54,21 @@ public class SearchEngineTest {
 		System.out.println("---------------------- " + query + " ----------------------");
 		//System.out.println(test.searchTitles(query, prf, topK));
 		
-		SearchResult searchResult = new SearchResult(query, prf, test.searchTitles(query, prf, topK), test);
+		ArrayList<String> results = test.searchTitles(query, prf, topK);
+		SearchResult searchResult = new SearchResult(query, prf, results, test);
+		ArrayList <String> goldenList = test.getGoldRanking(query);
+		System.out.println(goldenList);
+		double ndcg = test.computeNdcg(goldenList,results, topK);
+		System.out.println("ndcg@"+topK + " : " + ndcg);
 		
-		ArrayList<String> snippetsList = new ArrayList<String>();
-		snippetsList = searchResult.makeSnippets();
-		
-		for(int i = 0;i<snippetsList.size();i++)
-		{
-			System.out.println(snippetsList.get(i));
-		}
-	
+//		ArrayList<String> snippetsList = new ArrayList<String>();
+//		snippetsList = searchResult.makeSnippets();
+//		
+//		for(int i = 0;i<snippetsList.size();i++)
+//		{
+//			System.out.println(snippetsList.get(i));
+//		}
+//	
 	}
 
 	@SuppressWarnings("unused")

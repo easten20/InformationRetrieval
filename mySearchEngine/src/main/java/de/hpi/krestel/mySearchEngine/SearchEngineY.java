@@ -1,7 +1,9 @@
 package de.hpi.krestel.mySearchEngine;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -84,6 +86,24 @@ public class SearchEngineY extends SearchEngine {
 		return titles;
 	}
 	
+	public int checkRelevance (String title, ArrayList <String> goldenStandard){
+		int i = 0;
+		for (String goldenTitle : goldenStandard){
+			i++;
+			if (title.equals(goldenTitle))
+				return i;
+		}
+		return -1;
+	}
+	
+	public double calculateRelevance (int rankNumber ){
+		double relevance = 0;
+		
+			relevance= 1+ Math.floor(10*Math.pow(0.5, 0.1*rankNumber));
+			return relevance;
+		
+	}
+	
 	public ArrayList<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
 		ArrayList<String> titles = new ArrayList<String>();
 		String newQuery = query;
@@ -102,11 +122,72 @@ public class SearchEngineY extends SearchEngine {
 
 	}
 
+	ArrayList<Double> computeDG (ArrayList<Double> gains){
+		ArrayList<Double> dg = new ArrayList<Double>();
+		int i=0;
+		for (Double gain : gains){
+			double temp = Math.log(i)/ Math.log (2);
+			gain = gain /temp;
+			dg.add(gain);
+			i++;
+		}
+		return dg;
+	}
+	
+	ArrayList<Double> computeDCG (ArrayList<Double> dg){
+		ArrayList<Double> dcg = new ArrayList<Double>(); 
+		double tmp =0;
+		for (double gain :dg ){
+			tmp = tmp +gain;
+			dcg.add(tmp);
+				
+		}
+		return dcg;
+	}
+	
 	@Override
-	Double computeNdcg(ArrayList<String> goldRanking,
-			ArrayList<String> myRanking, int at) {
+	Double computeNdcg(ArrayList<String> goldRanking,ArrayList<String> myRanking, int at) {
+		ArrayList<Double> gains = new ArrayList<Double> ();
+		for (int i=0; i<=at; i++){
+			String title = goldRanking.get(i);
+			if (myRanking.contains(title)){
+				double gain = calculateRelevance(i);
+				gains.add(gain);
+			}else
+				gains.add((double) 0);
+		}
+		
+		ArrayList<Double> dg = computeDG(gains);
+		ArrayList<Double> dcg = computeDCG(dg); 
+		double tmp =0;
+		for (double gain :dg ){
+			tmp = tmp +gain;
+			dcg.add(tmp);
+				
+		}
+		
+		Collections.sort(gains);
+		Collections.reverse(gains);
+		ArrayList<Double> dgNorm = computeDG(gains);
+		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
+		
+		int j = dcgNorm.size();
+		ArrayList<Double> ndcg = new ArrayList<Double>();
+		for (int i= 0; i<j; i++){
+			if (ndcg.get(i) == 0){
+				double ndcgValue = 0;
+				ndcg.add(ndcgValue);
+			}else{
+				
+				double ndcgValue = dcg.get(i)/ndcg.get(i);
+				ndcg.add(ndcgValue);
+			}
+			
+		}
+		
+		
 		// TODO Auto-generated method stub
-		return null;
+		return ndcg.get(at);
 	}			
 	
 
