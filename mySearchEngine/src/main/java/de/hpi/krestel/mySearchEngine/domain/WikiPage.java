@@ -11,6 +11,7 @@ import de.hpi.krestel.mySearchEngine.TokenStream;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
 import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser;
+import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser2;
 import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
 
@@ -25,6 +26,7 @@ public class WikiPage {
 	private long positionInXMLFile;
 	private boolean positionInXMLFileSet; 
 	private long stopPositionInXMLFile;
+	private long positionInTitleListFile;
 	private boolean stopPositionInXMLFileSet;
 	private List<String> tokens;
 
@@ -53,6 +55,10 @@ public class WikiPage {
 	public String getText() {
 		return text;
 	}
+	
+	public void setText(String text) {
+		this.text = text;
+	}
 
 	public void addText(String data) {
 		text += data;
@@ -63,6 +69,14 @@ public class WikiPage {
 		positionInXMLFile = position;
 	}	
 	
+	public void setPositionInTitleListFile(long position) {
+		this.positionInTitleListFile = position;
+	}
+	
+	public long getPositionInTitleListFile(long position) {
+		return this.positionInTitleListFile;
+	}
+	
 	public long getPositionInXMLFile() {
 		if (!positionInXMLFileSet) { throw new AssertionError();}
 		return positionInXMLFile;
@@ -70,10 +84,8 @@ public class WikiPage {
 	
 	public static WikiPage from(String xmlFilePath, long positionInXMLFile) throws IOException, XMLStreamException {
 		WikiXMLIterable wikiPages = new WikiXMLIterable(xmlFilePath);
-		ReadXMLParser parser = wikiPages.iterator();
-		parser.jumpToPosition(positionInXMLFile);
-		boolean thereIsAWikiPage = parser.hasNext(); 
-		assert thereIsAWikiPage;
+		ReadXMLParser2 parser = wikiPages.iterator();
+		parser.jumpToPosition(positionInXMLFile);		
 		WikiPage wikiPage =  parser.next();
 		assert wikiPage.getPositionInXMLFile() == positionInXMLFile;
 		wikiPage.setPositionInXMLFile(positionInXMLFile);

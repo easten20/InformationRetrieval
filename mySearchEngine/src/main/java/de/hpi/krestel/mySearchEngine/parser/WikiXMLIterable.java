@@ -18,10 +18,10 @@ public class WikiXMLIterable implements Iterable<WikiPage> {
 		startPosition = position;
 	}
 	@Override
-	public ReadXMLParser iterator() {
-		ReadXMLParser parser;
+	public ReadXMLParser2 iterator() {
+		ReadXMLParser2 parser;
 		try {
-			parser = new ReadXMLParser(fileName);
+			parser = new ReadXMLParser2(fileName);
 			parser.jumpToPosition(startPosition);
 			return parser;
 		} catch (IOException | XMLStreamException e) {
