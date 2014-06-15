@@ -57,7 +57,6 @@ public class SearchEngineTest {
 		ArrayList<String> results = test.searchTitles(query, prf, topK);
 		SearchResult searchResult = new SearchResult(query, prf, results, test);
 		ArrayList <String> goldenList = test.getGoldRanking(query);
-		System.out.println(goldenList);
 		double ndcg = test.computeNdcg(goldenList,results, topK);
 		System.out.println("ndcg@"+topK + " : " + ndcg);
 		

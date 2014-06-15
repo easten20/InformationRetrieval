@@ -124,12 +124,16 @@ public class SearchEngineY extends SearchEngine {
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){
 		ArrayList<Double> dg = new ArrayList<Double>();
-		int i=0;
-		for (Double gain : gains){
-			double temp = Math.log(i)/ Math.log (2);
-			gain = gain /temp;
-			dg.add(gain);
-			i++;
+		int size = gains.size();
+		
+		for (int i=0; i<size; i++){
+			
+			//the problem is here!
+			double temp = Math.log(i+1)/ Math.log (2);
+			double value = gains.get(i)/temp;
+			
+			dg.add(value);
+			
 		}
 		return dg;
 	}
@@ -148,14 +152,34 @@ public class SearchEngineY extends SearchEngine {
 	@Override
 	Double computeNdcg(ArrayList<String> goldRanking,ArrayList<String> myRanking, int at) {
 		ArrayList<Double> gains = new ArrayList<Double> ();
-		for (int i=0; i<=at; i++){
-			String title = goldRanking.get(i);
-			if (myRanking.contains(title)){
-				double gain = calculateRelevance(i);
-				gains.add(gain);
-			}else
-				gains.add((double) 0);
+		
+		//add relevance values to myRanking
+		int size = goldRanking.size();
+		boolean flag = false;
+		for (String title : myRanking){
+			
+			for (int i=0; i<size; i++){
+				if (goldRanking.get(i).equals(title)){
+					double gain = calculateRelevance(i);
+					gains.add(gain);
+					flag = true;
+					break;
+				}
+			}
+			if (!flag)
+				gains.add((double) 0);	
+			flag=false;
 		}
+		
+		
+//		for (int i=0; i<=at; i++){
+//			String title = goldRanking.get(i);
+//			if (myRanking.contains(title)){
+//				double gain = calculateRelevance(i);
+//				gains.add(gain);
+//			}else
+//				gains.add((double) 0);
+//		}
 		
 		ArrayList<Double> dg = computeDG(gains);
 		ArrayList<Double> dcg = computeDCG(dg); 
