@@ -25,13 +25,7 @@ import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
 
 public class ReadXMLParser2 implements Iterator<WikiPage> {
-
-	static final String START_TITLE = "<title>";
-	static final String END_TITLE = "</title>";
-	static final String START_TEXT = "<text>";
-	static final String END_TEXT = "</text>";
-	static final String START_PAGE = "<page>";
-	static final String END_PAGE = "</page>";	
+	
 	private WikiPage nextWikiPage;
 	FileInputStream inputStream;	
 	RandomAccessFile rand;
