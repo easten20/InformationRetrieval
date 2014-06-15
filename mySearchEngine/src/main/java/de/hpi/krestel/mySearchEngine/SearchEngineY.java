@@ -129,10 +129,15 @@ public class SearchEngineY extends SearchEngine {
 		for (int i=0; i<size; i++){
 			
 			//the problem is here!
-			double temp = Math.log(i+1)/ Math.log (2);
-			double value = gains.get(i)/temp;
-			
-			dg.add(value);
+			if (i==0){
+				dg.add(gains.get(i));
+			}else{
+				
+				double temp = Math.log(i+1)/ Math.log (2);
+				double value = gains.get(i)/temp;
+				
+				dg.add(value);
+			}
 			
 		}
 		return dg;
@@ -183,12 +188,7 @@ public class SearchEngineY extends SearchEngine {
 		
 		ArrayList<Double> dg = computeDG(gains);
 		ArrayList<Double> dcg = computeDCG(dg); 
-		double tmp =0;
-		for (double gain :dg ){
-			tmp = tmp +gain;
-			dcg.add(tmp);
-				
-		}
+
 		
 		Collections.sort(gains);
 		Collections.reverse(gains);
@@ -198,12 +198,12 @@ public class SearchEngineY extends SearchEngine {
 		int j = dcgNorm.size();
 		ArrayList<Double> ndcg = new ArrayList<Double>();
 		for (int i= 0; i<j; i++){
-			if (ndcg.get(i) == 0){
+			if (dcgNorm.get(i) == null){
 				double ndcgValue = 0;
 				ndcg.add(ndcgValue);
 			}else{
 				
-				double ndcgValue = dcg.get(i)/ndcg.get(i);
+				double ndcgValue = dcg.get(i)/dcgNorm.get(i);
 				ndcg.add(ndcgValue);
 			}
 			
