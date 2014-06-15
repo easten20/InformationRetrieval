@@ -128,7 +128,7 @@ public class SearchEngineY extends SearchEngine {
 		
 		for (int i=0; i<size; i++){
 			
-			//the problem is here!
+			
 			if (i==0){
 				dg.add(gains.get(i));
 			}else{
@@ -176,15 +176,6 @@ public class SearchEngineY extends SearchEngine {
 			flag=false;
 		}
 		
-		
-//		for (int i=0; i<=at; i++){
-//			String title = goldRanking.get(i);
-//			if (myRanking.contains(title)){
-//				double gain = calculateRelevance(i);
-//				gains.add(gain);
-//			}else
-//				gains.add((double) 0);
-//		}
 		
 		ArrayList<Double> dg = computeDG(gains);
 		ArrayList<Double> dcg = computeDCG(dg); 
