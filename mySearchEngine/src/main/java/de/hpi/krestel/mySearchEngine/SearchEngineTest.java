@@ -58,6 +58,22 @@ public class SearchEngineTest {
 		SearchResult searchResult = new SearchResult(query, prf, results, test);
 		ArrayList <String> goldenList = test.getGoldRanking(query);
 		
+		//trim results
+		for(int i = 0;i<results.size();i++){
+			results.set(i, results.get(i).trim());
+		}
+		
+		
+		//debug
+//		System.out.println("goldenList: " + goldenList);
+//		System.out.println("goldenList Size: " + goldenList.size());
+//		System.out.println("results: " + results);
+//		System.out.println("goldenList contains Anschluss (Soziologie): " + goldenList.contains("Anschluss (Soziologie)"));
+//		System.out.println("results contains Anschluss (Soziologie): " + results.contains("Anschluss (Soziologie)"));
+
+		
+		
+		
 		//CHANGE TO TOPK!!!!!!!!
 		double ndcg = test.computeNdcg(goldenList,results, 1);
 		System.out.println("ndcg@"+topK + " : " + ndcg);

@@ -154,37 +154,7 @@ public class SearchEngineY extends SearchEngine {
 		return dcg;
 	}
 	
-	@Override
-	Double computeNdcg(ArrayList<String> goldRanking,ArrayList<String> myRanking, int at) {
-		ArrayList<Double> gains = new ArrayList<Double> ();
-		
-		//add relevance values to myRanking
-		int size = goldRanking.size();
-		boolean flag = false;
-		for (String title : myRanking){
-			
-			for (int i=0; i<size; i++){
-				if (goldRanking.get(i).equals(title)){
-					double gain = calculateRelevance(i);
-					gains.add(gain);
-					flag = true;
-					break;
-				}
-			}
-			if (!flag)
-				gains.add((double) 0);	
-			flag=false;
-		}
-		
-		
-		ArrayList<Double> dg = computeDG(gains);
-		ArrayList<Double> dcg = computeDCG(dg); 
-
-		
-		Collections.sort(gains);
-		Collections.reverse(gains);
-		ArrayList<Double> dgNorm = computeDG(gains);
-		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
+	ArrayList<Double> computeNDCG (ArrayList<Double> dcg, ArrayList<Double> dcgNorm){
 		
 		int j = dcgNorm.size();
 		ArrayList<Double> ndcg = new ArrayList<Double>();
@@ -199,6 +169,68 @@ public class SearchEngineY extends SearchEngine {
 			}
 			
 		}
+		
+		return ndcg;
+	}
+	
+	@Override
+	Double computeNdcg(ArrayList<String> goldRanking,ArrayList<String> myRanking, int at) {
+		ArrayList<Double> myRankingRelevance = new ArrayList<Double> ();
+		
+		//add relevance values to myRanking
+		int size = goldRanking.size();
+		boolean flag = false;
+		for (String title : myRanking){
+			
+			for (int i=0; i<size; i++){
+				if (goldRanking.get(i).equals(title)){
+					
+					//debug
+					//System.out.println("hit!!");
+					
+					double gain = calculateRelevance(i);
+					myRankingRelevance.add(gain);
+					flag = true;
+					break;
+				}
+			}
+			if (!flag) myRankingRelevance.add((double) 0);	
+			flag=false;
+		}
+		
+		//debug
+//		System.out.println("++++++debug+++++++");
+//		ArrayList<Double> test = new ArrayList<Double>();
+//		test.add((double)3);
+//		test.add((double)2);
+//		test.add((double)3);
+//		test.add((double)0);
+//		test.add((double)0);
+//		test.add((double)1);
+//		test.add((double)2);
+//		test.add((double)2);
+//		test.add((double)3);
+//		test.add((double)0);
+//		System.out.println("test: " + test);
+//		ArrayList<Double> dgTest = computeDG(test);
+//		ArrayList<Double> dcgTest = computeDCG(dgTest); 
+//		Collections.sort(test);
+//		Collections.reverse(test);
+//		ArrayList<Double> dgNormTest = computeDG(test);
+//		ArrayList<Double> dcgNormTest = computeDCG(dgNormTest); 
+//		System.out.println(computeNDCG(dcgTest, dcgNormTest));
+//		
+		
+		
+		ArrayList<Double> dg = computeDG(myRankingRelevance);
+		ArrayList<Double> dcg = computeDCG(dg); 
+
+		
+		Collections.sort(myRankingRelevance);
+		Collections.reverse(myRankingRelevance);
+		ArrayList<Double> dgNorm = computeDG(myRankingRelevance);
+		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
+		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
 		
 		
 		// TODO Auto-generated method stub

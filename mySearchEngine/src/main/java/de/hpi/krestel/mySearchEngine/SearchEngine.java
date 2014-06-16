@@ -102,6 +102,9 @@ public abstract class SearchEngine {
 				Matcher m = p.matcher(lines[i]);
 				m.find();
 				gold.add(m.group(1));
+				
+				//debug
+				//System.out.println("m.group(1): " + m.group(1));
 			}
 		}		
 		try {
@@ -113,6 +116,10 @@ public abstract class SearchEngine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		//debug
+		//System.out.println("gold return: " + gold);
+		
 		return gold;
 	}
 
