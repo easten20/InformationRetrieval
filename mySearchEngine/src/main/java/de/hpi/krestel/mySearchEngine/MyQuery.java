@@ -130,10 +130,10 @@ public class MyQuery {
 				return 0;
 	        }
 	    });
-		for (WikiPage wikiPage : wikiPages) {
-			//System.out.println(wikiPage.getTitle() + " #" + new BM25(index, queryTerms, wikiPage).compute());
-		}
-		return wikiPages;
+		List<WikiPage> wikiPagesTopN = new ArrayList<>();
+		for (int i = 0; i < topN; i++)
+			wikiPagesTopN.add(wikiPages.get(i));		
+		return wikiPagesTopN;
 	}
 	
 	private List<Long> getDocumentPositions(BooleanClause booleanClause) throws IOException, XMLStreamException{
