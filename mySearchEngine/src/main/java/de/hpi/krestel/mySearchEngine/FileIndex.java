@@ -1,9 +1,12 @@
 package de.hpi.krestel.mySearchEngine;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
@@ -17,6 +20,7 @@ import java.util.NoSuchElementException;
 
 import de.hpi.krestel.mySearchEngine.domain.StarOp;
 import de.hpi.krestel.mySearchEngine.domain.Term;
+import de.hpi.krestel.mySearchEngine.parser.BufferedRaf;
 
 public class FileIndex {
 	
@@ -31,6 +35,7 @@ public class FileIndex {
 	String seekListPath;
 	String xmlPath;
 	Map<String, List<Occurence>> cachedFindDocuments;
+	BufferedReader myReader;
 	
 	
 	FileIndex(String xmlPath, String indexPath, String seekListPath) {		
@@ -54,15 +59,17 @@ public class FileIndex {
 	}
 	
 	private void initFileIndex(String xmlPath, String indexPath, String seekListPath) {
-		cachedFindDocuments = new HashMap<>();
+		cachedFindDocuments = new HashMap<>();		
 		this.indexPath = indexPath;
 		this.seekListPath = seekListPath;
-		this.xmlPath = xmlPath;
+		this.xmlPath = xmlPath;		
 	}
 
-	RandomAccessFile getIndexReader () throws FileNotFoundException {
-		return new RandomAccessFile(indexPath, "r");
-	}
+	BufferedReader getIndexReader() throws FileNotFoundException {
+		if (this.myReader == null)
+			this.myReader = new BufferedReader(new FileReader(this.indexPath));		
+		return this.myReader;		
+	}			
 	
 	RandomAccessFile getSeekListReader () throws IOException {
 		if (!hasSeekList()) {
@@ -76,27 +83,27 @@ public class FileIndex {
 	}
 	
 	public void createSeekList() throws IOException {
-		RandomAccessFile writer = new RandomAccessFile(seekListPath, "rw");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(seekListPath));
 		createSeekList(writer);
 		writer.close();
 	}
 	
-	void createSeekList(RandomAccessFile writer) throws IOException {
+	void createSeekList(BufferedWriter writer) throws IOException {
 		String line;
 		String term;
 		int position = 0;
-		RandomAccessFile reader = getIndexReader();
-		writer.writeBytes("\n");
+		BufferedReader reader = getIndexReader();
+		writer.write("\n");
 		while (true) {
 			line = reader.readLine();
 			if (line == null) {
 				break;
 			}
 			term = line.split(" ", 2)[0];
-			writer.writeBytes(term);
-			writer.writeBytes(" ");
-			writer.writeBytes(Integer.toString(position));
-			writer.writeBytes("\n");
+			writer.write(term);
+			writer.write(" ");
+			writer.write(Integer.toString(position));
+			writer.write("\n");
 			// end of loop
 			position += line.length() + 1;
 		}
@@ -106,6 +113,8 @@ public class FileIndex {
 	public List<Occurence> findDocuments(String word) throws IOException {
 		long indexInIndex;
 		try {
+			if (this.cachedFindDocuments.get(word) != null)
+				return this.cachedFindDocuments.get(word);
 			indexInIndex = this.findIndexOfWordInSeekList(word);
 		} catch (NoSuchElementException e) {
 			//System.out.println("ERROR: Word not found: " + word);
@@ -115,6 +124,8 @@ public class FileIndex {
 	}
 	
 	public List<Occurence> findDocuments(Term term) throws IOException {
+		if (this.cachedFindDocuments.get(term.getText()) != null)
+			return this.cachedFindDocuments.get(term.getText());
 		long indexInIndex;
 		List<Occurence> occurenceL = new ArrayList<Occurence>();		
 		try {			
@@ -194,9 +205,13 @@ public class FileIndex {
 		
 	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
 		if (this.cachedFindDocuments.get(word) != null)
-			return this.cachedFindDocuments.get(word);				
-		RandomAccessFile reader = getIndexReader();
-		reader.seek(indexInIndex);		
+			return this.cachedFindDocuments.get(word);	
+		/*if (this.indexFileRaf == null){
+			File file = new File(this.indexPath);
+			this.indexFileRaf  = new BufferedRaf(file, "r");
+		}*/
+		BufferedReader reader = this.getIndexReader();
+		reader.skip(indexInIndex);		
 		List<Occurence> occurences = documentsFor(word, reader.readLine());
 		this.cachedFindDocuments.put(word, occurences);
 		return occurences;

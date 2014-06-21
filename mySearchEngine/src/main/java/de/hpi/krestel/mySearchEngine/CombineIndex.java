@@ -27,9 +27,9 @@ public class CombineIndex {
 	}
 	
 	public void saveToFile(String combinedIndexPath) throws IOException{
-		List<RandomAccessFile> inputFiles = listOfInputFiles();
+		List<BufferedReader> inputFiles = listOfInputFiles();
 		List<String> lines = readOneLineFromEachFile(inputFiles);
-		RandomAccessFile combinedIndex = openCombinedIndex(combinedIndexPath);
+		BufferedWriter combinedIndex = openCombinedIndex(combinedIndexPath);
 		while (!lines.isEmpty()) {
 			writeNextLine(lines, inputFiles, combinedIndex);
 		}
@@ -48,10 +48,10 @@ public class CombineIndex {
 	}
 		
 	private List<String> readOneLineFromEachFile(
-			List<RandomAccessFile> inputFiles) throws IOException {
+			List<BufferedReader> inputFiles) throws IOException {
 		List<String> lines = new ArrayList<String>();
 		String line;
-		RandomAccessFile file;
+		BufferedReader file;
 		for (int index = 0; index < inputFiles.size(); ) {
 			file = inputFiles.get(index);
 			line = file.readLine();
@@ -66,25 +66,24 @@ public class CombineIndex {
 	}
 
 	private void writeNextLine(List<String> lines,
-			List<RandomAccessFile> inputFiles, RandomAccessFile combinedIndex) throws IOException {
+			List<BufferedReader> inputFiles, BufferedWriter combinedIndex) throws IOException {
 		List<Integer> smallestLineIndices = getindicesOfLowestLines(lines);
 		mergeLinesIntoOneLineAt(lines, smallestLineIndices, combinedIndex);
 		replaceAt(lines, inputFiles, smallestLineIndices);
 	}
 
 	private void replaceAt(List<String> lines,
-			List<RandomAccessFile> files,
+			List<BufferedReader> files,
 			List<Integer> indicesToReplace) throws IOException {
 		int indexToReplace;
 		int lastIndexToReplace = lines.size();
 		String line;
-		RandomAccessFile file;
+		//RandomAccessFile file;
 		for (int index = indicesToReplace.size() - 1;  index >= 0; index --) {
 			indexToReplace =  indicesToReplace.get(index);
 			assert indexToReplace < lastIndexToReplace; // we remove elements so we start at the end and go to the smaller indices because otherwise we would remove the wrng lines
-			lastIndexToReplace = indexToReplace;
-			file = files.get(indexToReplace);
-			line = file.readLine();
+			lastIndexToReplace = indexToReplace;			
+			line = files.get(indexToReplace).readLine();
 			if (line == null) {
 				files.remove(indexToReplace).close();
 				lines.remove(indexToReplace);
@@ -95,23 +94,23 @@ public class CombineIndex {
 		
 	}
 
-	private void mergeLinesIntoOneLineAt(List<String> lines, List<Integer> lineIndices, RandomAccessFile combinedIndex) throws IOException {
+	private void mergeLinesIntoOneLineAt(List<String> lines, List<Integer> lineIndices, BufferedWriter combinedIndex) throws IOException {
 		String line;
 		String[] splitLine;
 		String positionsOfTheWord;
 		String wordOfTheLine;
 		String word = wordOfLine(lines.get(lineIndices.get(0)));
-		combinedIndex.writeBytes(word);
+		combinedIndex.write(word);
 		for (int lineIndex : lineIndices) {
 			line = lines.get(lineIndex);
 			splitLine = line.split(" ", 2);
 			wordOfTheLine = splitLine[0]; 
 			positionsOfTheWord = splitLine[1];
 			assert wordOfTheLine == word; // we only merge "documentId:position" for the same word
-			combinedIndex.writeBytes(" ");
-			combinedIndex.writeBytes(positionsOfTheWord);
+			combinedIndex.write(" ");
+			combinedIndex.write(positionsOfTheWord);
 		}
-		combinedIndex.writeBytes("\n");
+		combinedIndex.write("\n");
 	}
 	
 	private String wordOfLine(String line) {
@@ -138,14 +137,14 @@ public class CombineIndex {
 		return lineIndices;
 	}
 
-	private RandomAccessFile openCombinedIndex(String combinedIndexPath) throws FileNotFoundException {
-		return new RandomAccessFile(combinedIndexPath, "rw");
+	private BufferedWriter openCombinedIndex(String combinedIndexPath) throws IOException {
+		return new BufferedWriter(new FileWriter(combinedIndexPath));
 	}
 
-	private List<RandomAccessFile> listOfInputFiles() throws FileNotFoundException {
-		List<RandomAccessFile> inputFiles = new ArrayList<RandomAccessFile>();
+	private List<BufferedReader> listOfInputFiles() throws FileNotFoundException {		
+		List<BufferedReader> inputFiles = new ArrayList<BufferedReader>();
 		for (String filePath : indexFilePaths) {
-			inputFiles.add(new RandomAccessFile(filePath, "r"));
+			inputFiles.add(new BufferedReader(new FileReader(filePath)));
 		}
 		return inputFiles;
 	}
