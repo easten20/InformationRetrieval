@@ -1,25 +1,13 @@
 package de.hpi.krestel.mySearchEngine.parser;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
@@ -28,20 +16,21 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 	
 	private WikiPage nextWikiPage;
 	FileInputStream inputStream;	
-	RandomAccessFile rand;
+	BufferedRaf rand;	
 	long lastPageLocation; // last end of a page tag
 	int lastCharacterOffset; // RANT: THESE damn integers... no way we will parse files greater 2GB.. man I hate them.....
 	boolean canParseSeveralWikiPages;
 	String xmlFile;		
+	File file;		
 
 	public ReadXMLParser2(String xmlFile) throws IOException, XMLStreamException {
-		this.xmlFile = xmlFile;
-		jumpToPosition(0);		
-	}
+		this.xmlFile = xmlFile;		
+		file = new File(xmlFile);
+		this.rand = new BufferedRaf(file, "r");			
+		jumpToPosition(0);
+	}	
 	
-	public void jumpToPosition(long position) throws IOException, XMLStreamException {
-		File file = new File(xmlFile);
-		this.rand = new RandomAccessFile(file, "r");
+	public void jumpToPosition(long position) throws IOException, XMLStreamException {		
 		this.rand.seek(position);
 		lastPageLocation = position;				
 	}
@@ -69,10 +58,9 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 		StringBuilder strBuilderText = new StringBuilder();
 		boolean isText = false;
 		boolean isPage = false;
-		boolean isTitle = false;	
-		int count = 0;
+		boolean isTitle = false;			
 		long lastPointerOffset = lastPageLocation;			
-		while ((line = rand.readLine()) != null){				
+		while ((line = rand.readLine2()) != null){				
 			if (isPage == false){
 				if (line.matches(".*<page>.*")){
 					this.nextWikiPage = new WikiPage();
@@ -85,8 +73,7 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 					isTitle = true;
 					line = line.replaceAll("<title>", "");
 					line = line.replaceAll("</title>", "");
-					this.nextWikiPage.setTitle(line);
-					count++;							
+					this.nextWikiPage.setTitle(line);					
 					System.out.println("parse : " + line);
 				}
 			}					
@@ -105,14 +92,18 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 						{								
 							String s1 = m.group(1);			            			           
 							this.nextWikiPage.setText(s1);
-							nextWikiPage.setStopPositionInXMLFile(rand.getFilePointer());
+							nextWikiPage.setStopPositionInXMLFile(this.getByteOffset());
 							return;
 						}
 					}
 				}
 			}				
-			lastPointerOffset = rand.getFilePointer();								
+			lastPointerOffset = this.getByteOffset();								
 		}
+	}
+	
+	private long getByteOffset() throws IOException {
+		return this.rand.getFilePointer();
 	}
 
 	@Override
