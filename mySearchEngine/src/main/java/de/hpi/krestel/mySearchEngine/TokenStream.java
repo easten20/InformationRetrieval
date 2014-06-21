@@ -19,7 +19,7 @@ public class TokenStream {
 	public List<String> preprocessText(String text) {
 		List<String> tokens = tokenizeWikiText(text);
 		tokens = removeStopWords(tokens);
-		tokens = stemText(tokens);
+		tokens = stemText(tokens);		
 		return tokens;
 	}											
 	
@@ -31,7 +31,7 @@ public class TokenStream {
 		String regex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";		
 		wikiText = wikiText.toLowerCase().replaceAll(regex, "");
 		//System.out.println(wikiText);
-		String[] tokens = wikiText.replaceAll("[^a-zA-Z ]", " ").split("\\s+");		
+		String[] tokens = wikiText.replaceAll("[^a-zA-Z]", " ").split("\\s+");		
 		return Arrays.asList(tokens);
 	}	
 	
@@ -66,8 +66,12 @@ public class TokenStream {
 	
 	List<String> stemText(Iterable<String> tokens) {			
 		List<String> stemmedTokens = new ArrayList<String>();
-		for (String token : tokens) {						
-			stemmedTokens.add(this.stemText(token));
+		String stemmedToken;
+		for (String token : tokens) 
+		{
+			stemmedToken = this.stemText(token);
+			if (!stemmedToken.isEmpty())
+				stemmedTokens.add(stemmedToken);
 		}
 		return stemmedTokens;
 	}
@@ -78,7 +82,7 @@ public class TokenStream {
 		stemmer.stem();
 		token = stemmer.getCurrent();
 		// remove the s at the end
-		token = token.replaceAll("s+$", "");					
+		token = token.replaceAll("s+$", "");		
 		return token;
 	}
 

@@ -103,12 +103,13 @@ public class WikiPage {
 	}
 	
 	String cleanUpWikiText() {
-		ParseHTMLToText htmlParser = new ParseHTMLToText();
+		//ParseHTMLToText htmlParser = new ParseHTMLToText();
 		String text = this.getText();
-		String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
+		//String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
+		String html = text;
 		html = html.replaceFirst("<\\?[^>]*\\?>", "");
-		String parsedHTML = htmlParser.parseHTML(html);
-		return parsedHTML.toString();
+		//String parsedHTML = htmlParser.parseHTML(html);
+		return html.toString();
 	}
 	
 	public long numberOfTerms() {
