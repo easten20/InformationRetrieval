@@ -159,7 +159,7 @@ public class SearchEngineY extends SearchEngine {
 		int j = dcgNorm.size();
 		ArrayList<Double> ndcg = new ArrayList<Double>();
 		for (int i= 0; i<j; i++){
-			if (dcgNorm.get(i) == null){
+			if (dcgNorm.get(i) == 0.0 || Double.isNaN(dcgNorm.get(i))){
 				double ndcgValue = 0;
 				ndcg.add(ndcgValue);
 			}else{
@@ -197,6 +197,12 @@ public class SearchEngineY extends SearchEngine {
 			if (!flag) myRankingRelevance.add((double) 0);	
 			flag=false;
 		}
+		int rankSize = myRankingRelevance.size();
+		if (rankSize < at){
+			int i = at -rankSize;
+			for (int j = 0; j< i; j++)
+				myRankingRelevance.add((double) 0);
+		}
 		
 		//debug
 //		System.out.println("++++++debug+++++++");
@@ -232,9 +238,8 @@ public class SearchEngineY extends SearchEngine {
 		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
 		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
 		
-		
 		// TODO Auto-generated method stub
-		return ndcg.get(at);
+		return ndcg.get(at-1);
 	}			
 	
 
