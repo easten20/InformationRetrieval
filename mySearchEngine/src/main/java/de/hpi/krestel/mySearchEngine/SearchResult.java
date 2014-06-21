@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
+import java.util.List;
+
 import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
@@ -24,9 +26,14 @@ public class SearchResult {
 		int flag = 1;
 		
 		ArrayList<String> snippetsList = new ArrayList<String>();
+		
+		//debug
+		System.out.println("titles: " + titles.toString());
 	
 		for(WikiPage wikiPage : searchEngineY.searchWikiPages(query))
 		{
+			//debug
+			System.out.println("wikiPage.title: " + wikiPage.getTitle());
 	
 			if(titles.size() == 0) break;
 			
@@ -34,9 +41,13 @@ public class SearchResult {
 			{
 				if(titles.get(i).equals(wikiPage.getTitle()))
 				{
+					//debug
+					//System.out.println("titles.size: " + titles.size());
+					
 					snippetsList.add(wikiPage.resultGenerate(query, wikiPage, resultSize, flag));
 					titles.remove(i);
 					flag++;
+					break;
 				}//end if
 			}//end for
 		}//end for

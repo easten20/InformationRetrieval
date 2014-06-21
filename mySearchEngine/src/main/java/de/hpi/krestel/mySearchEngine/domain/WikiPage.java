@@ -166,6 +166,8 @@ public class WikiPage {
 		int tot = 0;
 		int queryPosition = 0;
 		StringTokenizer stringTokenizer = new StringTokenizer(entireText, " ");
+		
+		//find queryPosition
 		while(stringTokenizer.hasMoreTokens())
 		{
 			tot = tot + 1;
@@ -187,6 +189,13 @@ public class WikiPage {
 			if(queryPosition - resultSize <= tot && tot <= queryPosition + resultSize)
 			{
 				returnString += key + " ";
+				returnString = returnString.replaceAll("\\[", "");
+				returnString = returnString.replaceAll("\\]", "");
+				returnString = returnString.replaceAll("\\{", "");
+				returnString = returnString.replaceAll("\\}", "");
+
+				//debug
+				//System.out.println("added string: " + returnString);
 			}
 			
 		}

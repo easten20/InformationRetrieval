@@ -28,8 +28,8 @@ public class SearchEngineTest {
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 		basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
-		basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
+		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
+		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
 		
@@ -55,38 +55,26 @@ public class SearchEngineTest {
 		//System.out.println(test.searchTitles(query, prf, topK));
 		
 		ArrayList<String> results = test.searchTitles(query, prf, topK);
-		//SearchResult searchResult = new SearchResult(query, prf, results, test);
+		SearchResult searchResult = new SearchResult(query, prf, results, test);
 		//ArrayList <String> goldenList = test.getGoldRanking(query);
 		
-		
 		//trim results
-		for(int i = 0;i<results.size();i++){
-			System.out.println(results.set(i, results.get(i).trim()));
-		}
+//		for(int i = 0;i<results.size();i++){
+//			System.out.println(results.set(i, results.get(i).trim()));
+//		}
 				
-		
-		//debug
-//		System.out.println("goldenList: " + goldenList);
-//		System.out.println("goldenList Size: " + goldenList.size());
-//		System.out.println("results: " + results);
-//		System.out.println("goldenList contains Anschluss (Soziologie): " + goldenList.contains("Anschluss (Soziologie)"));
-//		System.out.println("results contains Anschluss (Soziologie): " + results.contains("Anschluss (Soziologie)"));
-
-		
-		
-		
 		//CHANGE TO TOPK!!!!!!!!
 		//double ndcg = test.computeNdcg(goldenList,results, 1);
 		//System.out.println("ndcg@"+topK + " : " + ndcg);
 		
 		ArrayList<String> snippetsList = new ArrayList<String>();
-		//snippetsList = searchResult.makeSnippets();
-//		
-		//for(int i = 0;i<snippetsList.size();i++)
-		//{
-			//System.out.println(snippetsList.get(i));
-		//}
-//	
+		snippetsList = searchResult.makeSnippets();
+
+		for(int i = 0;i<snippetsList.size();i++)
+		{
+			System.out.println(snippetsList.get(i));
+		}
+	
 	}
 
 	@SuppressWarnings("unused")

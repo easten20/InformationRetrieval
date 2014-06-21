@@ -203,31 +203,7 @@ public class SearchEngineY extends SearchEngine {
 			for (int j = 0; j< i; j++)
 				myRankingRelevance.add((double) 0);
 		}
-		
-		//debug
-//		System.out.println("++++++debug+++++++");
-//		ArrayList<Double> test = new ArrayList<Double>();
-//		test.add((double)3);
-//		test.add((double)2);
-//		test.add((double)3);
-//		test.add((double)0);
-//		test.add((double)0);
-//		test.add((double)1);
-//		test.add((double)2);
-//		test.add((double)2);
-//		test.add((double)3);
-//		test.add((double)0);
-//		System.out.println("test: " + test);
-//		ArrayList<Double> dgTest = computeDG(test);
-//		ArrayList<Double> dcgTest = computeDCG(dgTest); 
-//		Collections.sort(test);
-//		Collections.reverse(test);
-//		ArrayList<Double> dgNormTest = computeDG(test);
-//		ArrayList<Double> dcgNormTest = computeDCG(dgNormTest); 
-//		System.out.println(computeNDCG(dcgTest, dcgNormTest));
-//		
-		
-		
+				
 		ArrayList<Double> dg = computeDG(myRankingRelevance);
 		ArrayList<Double> dcg = computeDCG(dg); 
 
