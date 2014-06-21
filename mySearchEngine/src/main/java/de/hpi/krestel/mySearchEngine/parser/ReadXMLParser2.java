@@ -73,8 +73,7 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 					isTitle = true;
 					line = line.replaceAll("<title>", "");
 					line = line.replaceAll("</title>", "");
-					this.nextWikiPage.setTitle(line);					
-					System.out.println("parse : " + line);
+					this.nextWikiPage.setTitle(line);										
 				}
 			}					
 			if (isPage == true && isTitle == true) {					

@@ -28,7 +28,7 @@ public class SearchEngineTest {
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 		basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
+		basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
@@ -55,14 +55,15 @@ public class SearchEngineTest {
 		//System.out.println(test.searchTitles(query, prf, topK));
 		
 		ArrayList<String> results = test.searchTitles(query, prf, topK);
-		SearchResult searchResult = new SearchResult(query, prf, results, test);
-		ArrayList <String> goldenList = test.getGoldRanking(query);
+		//SearchResult searchResult = new SearchResult(query, prf, results, test);
+		//ArrayList <String> goldenList = test.getGoldRanking(query);
+		
 		
 		//trim results
 		for(int i = 0;i<results.size();i++){
-			results.set(i, results.get(i).trim());
+			System.out.println(results.set(i, results.get(i).trim()));
 		}
-		
+				
 		
 		//debug
 //		System.out.println("goldenList: " + goldenList);
@@ -75,16 +76,16 @@ public class SearchEngineTest {
 		
 		
 		//CHANGE TO TOPK!!!!!!!!
-		double ndcg = test.computeNdcg(goldenList,results, 1);
-		System.out.println("ndcg@"+topK + " : " + ndcg);
+		//double ndcg = test.computeNdcg(goldenList,results, 1);
+		//System.out.println("ndcg@"+topK + " : " + ndcg);
 		
-//		ArrayList<String> snippetsList = new ArrayList<String>();
-//		snippetsList = searchResult.makeSnippets();
+		ArrayList<String> snippetsList = new ArrayList<String>();
+		//snippetsList = searchResult.makeSnippets();
 //		
-//		for(int i = 0;i<snippetsList.size();i++)
-//		{
-//			System.out.println(snippetsList.get(i));
-//		}
+		//for(int i = 0;i<snippetsList.size();i++)
+		//{
+			//System.out.println(snippetsList.get(i));
+		//}
 //	
 	}
 

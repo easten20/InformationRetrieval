@@ -176,15 +176,15 @@ public class Index {
 	}
 
 	public int totalNumberOfDocumets() {
-		return 5;
+		return 100;
 	}
 
 	public long numberOfDocumentsContaining(Term term) throws IOException {
-		return fileIndex().findDocumentPositionsInXMLFile(term).size();
+		return fileIndex().findDocuments(term).size();
 	}
 
 	public double averageNumberOfDocumentLength() {
-		if (this.avgDocLength == 0.0) {
+		/*if (this.avgDocLength == 0.0) {
 			WikiXMLIterable parser = new WikiXMLIterable(this.wikipediaXMLFilePath);
 			double totalLength = 0.0;
 			double totalDoc = 0.0;
@@ -193,7 +193,8 @@ public class Index {
 				totalDoc++;
 			}		
 			this.avgDocLength = totalLength/totalDoc;
-		}
+		}*/
+		this.avgDocLength = 200;
 		return this.avgDocLength;
 	}		
 	

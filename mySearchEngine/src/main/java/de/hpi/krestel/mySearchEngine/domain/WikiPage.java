@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import javax.xml.stream.XMLStreamException;
 
+import de.hpi.krestel.mySearchEngine.BM25;
 import de.hpi.krestel.mySearchEngine.TokenStream;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
@@ -23,6 +24,7 @@ public class WikiPage {
 	private String title;
 	private String id;   
 	private String text;
+	private double score;
 	private long positionInXMLFile;
 	private boolean positionInXMLFileSet; 
 	private long stopPositionInXMLFile;
@@ -191,5 +193,13 @@ public class WikiPage {
 		returnString += "\n";
 		
 		return returnString;
+	}
+	
+	public double getScore(){
+		return this.score;
+	}
+	
+	public void setScore(double result){
+		this.score = result;
 	}
 }

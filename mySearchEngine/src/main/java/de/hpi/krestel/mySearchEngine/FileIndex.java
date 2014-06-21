@@ -30,8 +30,10 @@ public class FileIndex {
 	String indexPath;
 	String seekListPath;
 	String xmlPath;
+	Map<String, List<Occurence>> cachedFindDocuments;
 	
-	FileIndex(String xmlPath, String indexPath, String seekListPath) {
+	
+	FileIndex(String xmlPath, String indexPath, String seekListPath) {		
 		initFileIndex(xmlPath, indexPath, seekListPath);
 	}
 	
@@ -52,6 +54,7 @@ public class FileIndex {
 	}
 	
 	private void initFileIndex(String xmlPath, String indexPath, String seekListPath) {
+		cachedFindDocuments = new HashMap<>();
 		this.indexPath = indexPath;
 		this.seekListPath = seekListPath;
 		this.xmlPath = xmlPath;
@@ -188,11 +191,15 @@ public class FileIndex {
 		}
 		
 	}
-
+		
 	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
+		if (this.cachedFindDocuments.get(word) != null)
+			return this.cachedFindDocuments.get(word);				
 		RandomAccessFile reader = getIndexReader();
 		reader.seek(indexInIndex);		
-		return documentsFor(word, reader.readLine());
+		List<Occurence> occurences = documentsFor(word, reader.readLine());
+		this.cachedFindDocuments.put(word, occurences);
+		return occurences;
 	}
 	
 	private List<Occurence> documentsFor(String word, String line) {

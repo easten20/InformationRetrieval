@@ -30,6 +30,8 @@ public class BM25 {
 		double score = 0;
 		// normalizes TF component document length
 		double dl = wikiPage.numberOfTerms();
+		if(wikiPage.getScore() != 0)
+			return wikiPage.getScore();
 		double avdl = index.averageNumberOfDocumentLength();
 		double K = k1 * ((1 - b) + b * dl / avdl);		
 		Set<Term> setTerms = new HashSet<Term>(this.terms);
@@ -51,6 +53,7 @@ public class BM25 {
 			double idf = Math.log(((ri + 0.5) / (R - ri + 0.5)) / ((ni - ri + 0.5) / (N - ni - R + ri + 0.5)) + 1); 
 			score += idf * ((k1 + 1) * fi) / (K + fi) * ((k2 + 1) * qfi) / (k2 + qfi);
 		}
+		wikiPage.setScore(score);		
 		return score;
 	}
 
