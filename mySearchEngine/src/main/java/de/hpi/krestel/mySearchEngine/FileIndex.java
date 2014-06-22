@@ -36,6 +36,8 @@ public class FileIndex {
 	String xmlPath;
 	Map<String, List<Occurence>> cachedFindDocuments;
 	BufferedReader myReader;
+	BufferedRaf bufferedRaf;
+	BufferedRaf seekBufferedRaf;
 	
 	
 	FileIndex(String xmlPath, String indexPath, String seekListPath) {		
@@ -71,11 +73,23 @@ public class FileIndex {
 		return this.myReader;		
 	}			
 	
-	RandomAccessFile getSeekListReader () throws IOException {
+	BufferedRaf getIndexReaderRaf() throws FileNotFoundException {
+		if (this.bufferedRaf == null)
+			this.bufferedRaf = new BufferedRaf(new File(this.indexPath), "r");		
+		return this.bufferedRaf;		
+	}			
+	
+	BufferedRaf getSeekReaderRaf() throws FileNotFoundException {
+		if (this.seekBufferedRaf == null)
+			this.seekBufferedRaf = new BufferedRaf(new File(this.seekListPath), "r");		
+		return this.seekBufferedRaf;		
+	}			
+	
+	RandomAccessFile getSeekListReader() throws IOException {
 		if (!hasSeekList()) {
 			createSeekList();
 		}
-		return new RandomAccessFile(seekListPath, "r");
+		return this.getSeekReaderRaf();
 	}
 	
 	public boolean hasSeekList() {
@@ -91,7 +105,7 @@ public class FileIndex {
 	void createSeekList(BufferedWriter writer) throws IOException {
 		String line;
 		String term;
-		int position = 0;
+		long position = 0;
 		BufferedReader reader = getIndexReader();
 		writer.write("\n");
 		while (true) {
@@ -102,7 +116,7 @@ public class FileIndex {
 			term = line.split(" ", 2)[0];
 			writer.write(term);
 			writer.write(" ");
-			writer.write(Integer.toString(position));
+			writer.write(Long.toString(position));
 			writer.write("\n");
 			// end of loop
 			position += line.length() + 1;
@@ -205,14 +219,10 @@ public class FileIndex {
 		
 	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
 		if (this.cachedFindDocuments.get(word) != null)
-			return this.cachedFindDocuments.get(word);	
-		/*if (this.indexFileRaf == null){
-			File file = new File(this.indexPath);
-			this.indexFileRaf  = new BufferedRaf(file, "r");
-		}*/
-		BufferedReader reader = this.getIndexReader();
-		reader.skip(indexInIndex);		
-		List<Occurence> occurences = documentsFor(word, reader.readLine());
+			return this.cachedFindDocuments.get(word);			
+		BufferedRaf bufferedRaf = this.getIndexReaderRaf();
+		bufferedRaf.seek(indexInIndex);		
+		List<Occurence> occurences = documentsFor(word, bufferedRaf.readLine());
 		this.cachedFindDocuments.put(word, occurences);
 		return occurences;
 	}
