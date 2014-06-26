@@ -208,12 +208,15 @@ public class SearchEngineY extends SearchEngine {
 		ArrayList<Double> dg = computeDG(myRankingRelevance);
 		ArrayList<Double> dcg = computeDCG(dg); 
 
+//		
+//		Collections.sort(myRankingRelevance);
+//		Collections.reverse(myRankingRelevance);
 		
-		Collections.sort(myRankingRelevance);
-		Collections.reverse(myRankingRelevance);
-		ArrayList<Double> dgNorm = computeDG(myRankingRelevance);
-		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
-		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
+		
+//		ArrayList<Double> dgNorm = computeDG(myRankingRelevance);
+//		
+//		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
+		ArrayList<Double> ndcg = computeNDCG(dcg, myRankingRelevance);
 		
 		// TODO Auto-generated method stub
 		return ndcg.get(at-1);
