@@ -219,11 +219,12 @@ public class WikiPage {
 		// synchronize with MyQuery.setQuery
 		List<String> links = new ArrayList<String>();
 		// from http://stackoverflow.com/questions/6020384/create-array-of-regex-matches
-		Matcher m = Pattern.compile("\\[\\[\\s*([^\\]\\|]*)\\s*(\\|[^\\]]*\\s*)?\\]\\]").matcher(getText());
+		Matcher m = Pattern.compile("\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]").matcher(getText());
 		 while (m.find()) {
 			 String link;
 			 link = m.group(1);
 			 link = link.replaceAll(" ", "]"); // we shall have no spaces there because they destroy the index
+			 link.toLowerCase();
 			 links.add("[[" + link + "]]");
 		 }
 		 return links;
