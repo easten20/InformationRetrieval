@@ -216,9 +216,10 @@ public class WikiPage {
 	}
 	
 	public List<String> getLinks() {
+		// synchronize with MyQuery.setQuery
 		List<String> links = new ArrayList<String>();
 		// from http://stackoverflow.com/questions/6020384/create-array-of-regex-matches
-		Matcher m = Pattern.compile("\\[\\[([^\\]\\|]*)(\\|[^\\]]*)?\\]\\]").matcher(getText());
+		Matcher m = Pattern.compile("\\[\\[\\s*([^\\]\\|]*)\\s*(\\|[^\\]]*\\s*)?\\]\\]").matcher(getText());
 		 while (m.find()) {
 			 String link;
 			 link = m.group(1);
