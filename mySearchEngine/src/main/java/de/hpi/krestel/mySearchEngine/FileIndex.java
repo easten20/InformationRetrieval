@@ -66,20 +66,16 @@ public class FileIndex {
 		this.seekListPath = seekListPath;
 		this.xmlPath = xmlPath;		
 	}
-
-	BufferedReader getIndexReader() throws FileNotFoundException {
-		if (this.myReader == null)
-			this.myReader = new BufferedReader(new FileReader(this.indexPath));		
-		return this.myReader;		
-	}			
 	
-	BufferedRaf getIndexReaderRaf() throws FileNotFoundException {
+	BufferedRaf getIndexReader() throws FileNotFoundException {
+		// THERE MUST BE ONLY ONE INDEX READER FOR CONSISTENCY!
 		if (this.bufferedRaf == null)
 			this.bufferedRaf = new BufferedRaf(new File(this.indexPath), "r");		
 		return this.bufferedRaf;		
 	}			
 	
 	BufferedRaf getSeekReaderRaf() throws FileNotFoundException {
+		// THERE MUST BE ONLY ONE SEEK READER FOR CONSISTENCY!
 		if (this.seekBufferedRaf == null)
 			this.seekBufferedRaf = new BufferedRaf(new File(this.seekListPath), "r");		
 		return this.seekBufferedRaf;		
@@ -106,7 +102,7 @@ public class FileIndex {
 		String line;
 		String term;
 		long position = 0;
-		BufferedReader reader = getIndexReader();
+		BufferedRaf reader = getIndexReader();
 		writer.write("\n");
 		while (true) {
 			line = reader.readLine();
@@ -220,20 +216,24 @@ public class FileIndex {
 	List<Occurence> findDocuments(long indexInIndex, String word) throws IOException {
 		if (this.cachedFindDocuments.get(word) != null)
 			return this.cachedFindDocuments.get(word);			
-		BufferedRaf bufferedRaf = this.getIndexReaderRaf();
+		BufferedRaf bufferedRaf = this.getIndexReader();
 		bufferedRaf.seek(indexInIndex);		
-		List<Occurence> occurences = documentsFor(word, bufferedRaf.readLine());
+		List<Occurence> occurences = documentsFor(word, bufferedRaf.readLine(), indexInIndex);
 		this.cachedFindDocuments.put(word, occurences);
 		return occurences;
 	}
 	
-	private List<Occurence> documentsFor(String word, String line) {
+	private List<Occurence> documentsFor(String word, String line, long indexInIndex) {
 		List<Occurence> occurences = new ArrayList<>();
 		String[] splitLine = line.split(" ");
-		assert (word.equals(splitLine[0]));
+		if (!word.equals(splitLine[0])) {
+			throw new AssertionError("First word in line must be the searched word " + word + 
+					                 " and not " + splitLine[0] + " ." + 
+					                 " Seems like the seeklist does not work.");
+		}
 		for (String item : splitLine){
 			if (item.equals(word)) continue; // skip word
-			occurences.add(new Occurence(item, word, xmlPath));
+			occurences.add(new Occurence(item, word, xmlPath, indexInIndex));
 		}
 		return occurences;
 	}
