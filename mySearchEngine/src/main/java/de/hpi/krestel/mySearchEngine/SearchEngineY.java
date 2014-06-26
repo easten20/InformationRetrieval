@@ -198,9 +198,21 @@ public class SearchEngineY extends SearchEngine {
 			if (!flag) myRankingRelevance.add((double) 0);	
 			flag=false;
 		}
-		int rankSize = myRankingRelevance.size();
-		if (rankSize < at){
-			int i = at -rankSize;
+		
+		ArrayList<Double> goldenRanking = new ArrayList<>();
+		for (int i= 0; i<50; i++){
+			double gain = calculateRelevance (i);
+			goldenRanking.add(gain);
+		}
+		
+		ArrayList<Double> dgNorm = computeDG(goldenRanking);
+		ArrayList<Double> dcgNorm = computeDCG(dgNorm);
+		
+		//put missing 0 to make sizes equal
+		int rankSizeGold = goldenRanking.size();
+		int rankSizeMy = myRankingRelevance.size();
+		if (rankSizeMy < rankSizeGold){
+			int i = rankSizeGold - rankSizeMy;
 			for (int j = 0; j< i; j++)
 				myRankingRelevance.add((double) 0);
 		}
@@ -208,15 +220,12 @@ public class SearchEngineY extends SearchEngine {
 		ArrayList<Double> dg = computeDG(myRankingRelevance);
 		ArrayList<Double> dcg = computeDCG(dg); 
 
-//		
+		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
 //		Collections.sort(myRankingRelevance);
 //		Collections.reverse(myRankingRelevance);
 		
 		
-//		ArrayList<Double> dgNorm = computeDG(myRankingRelevance);
 //		
-//		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
-		ArrayList<Double> ndcg = computeNDCG(dcg, myRankingRelevance);
 		
 		// TODO Auto-generated method stub
 		return ndcg.get(at-1);

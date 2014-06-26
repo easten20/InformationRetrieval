@@ -59,16 +59,16 @@ public class SearchEngineTest {
 		ArrayList<WikiPage> resultPages = new ArrayList<>();
 		ArrayList<String> results = test.searchTitles(query, prf, topK, resultPages);
 		SearchResult searchResult = new SearchResult(query, prf, results, test, resultPages);
-		//ArrayList <String> goldenList = test.getGoldRanking(query);
+		ArrayList <String> goldenList = test.getGoldRanking(query);
 		
-		//trim results
-//		for(int i = 0;i<results.size();i++){
-//			System.out.println(results.set(i, results.get(i).trim()));
-//		}
+//		trim results
+		for(int i = 0;i<results.size();i++){
+			System.out.println(results.set(i, results.get(i).trim()));
+		}
 				
 		//CHANGE TO TOPK!!!!!!!!
-		//double ndcg = test.computeNdcg(goldenList,results, 1);
-		//System.out.println("ndcg@"+topK + " : " + ndcg);
+		double ndcg = test.computeNdcg(goldenList,results, 10);
+		System.out.println("ndcg@"+topK + " : " + ndcg);
 		
 		ArrayList<String> snippetsList = new ArrayList<String>();
 		snippetsList = searchResult.makeSnippets();
