@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import javax.xml.stream.XMLStreamException;
 
+import de.hpi.krestel.mySearchEngine.domain.WikiPage;
+
 
 // This file will be used to evaluate your search engine!
 // You can use/change this file for development. But
@@ -54,8 +56,9 @@ public class SearchEngineTest {
 		System.out.println("---------------------- " + query + " ----------------------");
 		//System.out.println(test.searchTitles(query, prf, topK));
 		
-		ArrayList<String> results = test.searchTitles(query, prf, topK);
-		SearchResult searchResult = new SearchResult(query, prf, results, test);
+		ArrayList<WikiPage> resultPages = new ArrayList<>();
+		ArrayList<String> results = test.searchTitles(query, prf, topK, resultPages);
+		SearchResult searchResult = new SearchResult(query, prf, results, test, resultPages);
 		//ArrayList <String> goldenList = test.getGoldRanking(query);
 		
 		//trim results

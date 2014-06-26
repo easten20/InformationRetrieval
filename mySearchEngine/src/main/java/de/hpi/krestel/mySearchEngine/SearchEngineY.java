@@ -104,7 +104,7 @@ public class SearchEngineY extends SearchEngine {
 		
 	}
 	
-	public ArrayList<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
+	public ArrayList<String> searchTitles (String query, int prf, int topK, ArrayList<WikiPage> pages)throws IOException, XMLStreamException {
 		ArrayList<String> titles = new ArrayList<String>();
 		String newQuery = query;
 		int flag=0;
@@ -115,6 +115,7 @@ public class SearchEngineY extends SearchEngine {
 			String frequentWord = wikiPage.mostFrequentWord();
 			newQuery+= " " + frequentWord;
 			flag++;
+			pages.add(wikiPage);
 		}
 		
 		titles = searchTitles(newQuery);

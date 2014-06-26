@@ -14,12 +14,14 @@ public class SearchResult {
 	private String query;
 	private int resultSize = 10;
 	private ArrayList<String> titles;
+	private ArrayList<WikiPage> resultPages;
 	private SearchEngineY searchEngineY;
 	
-	public SearchResult(String query, int prf, ArrayList<String> titles, SearchEngineY test){		
+	public SearchResult(String query, int prf, ArrayList<String> titles, SearchEngineY test, ArrayList<WikiPage> pages){		
 		this.query = query;
 		this.titles = titles;
 		this.searchEngineY = test;
+		this.resultPages = pages;
 	}
 	
 	public ArrayList<String> makeSnippets() throws IOException, XMLStreamException{
@@ -27,13 +29,11 @@ public class SearchResult {
 		
 		ArrayList<String> snippetsList = new ArrayList<String>();
 		
-		//debug
-		System.out.println("titles: " + titles.toString());
 	
-		for(WikiPage wikiPage : searchEngineY.searchWikiPages(query))
+		for(WikiPage wikiPage : resultPages)
 		{
-			//debug
-			System.out.println("wikiPage.title: " + wikiPage.getTitle());
+//			//debug
+//			System.out.println("wikiPage.title: " + wikiPage.getTitle());
 	
 			if(titles.size() == 0) break;
 			
