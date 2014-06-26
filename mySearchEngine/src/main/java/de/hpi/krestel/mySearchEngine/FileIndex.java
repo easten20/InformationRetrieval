@@ -204,7 +204,7 @@ public class FileIndex {
 			} else if (comparism > 0) {
 				stop = middle;
 			} else {
-				return Integer.parseInt(splitLine[1]);
+				return Long.parseLong(splitLine[1]);
 			}
 			if (start + entryLength + 1 > stop) {
 				throw new NoSuchElementException();

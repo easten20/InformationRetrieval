@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import javax.xml.stream.XMLStreamException;
 
+import de.hpi.krestel.mySearchEngine.domain.WikiPage;
+
 
 // This file will be used to evaluate your search engine!
 // You can use/change this file for development. But
@@ -54,18 +56,19 @@ public class SearchEngineTest {
 		System.out.println("---------------------- " + query + " ----------------------");
 		//System.out.println(test.searchTitles(query, prf, topK));
 		
-		ArrayList<String> results = test.searchTitles(query, prf, topK);
-		SearchResult searchResult = new SearchResult(query, prf, results, test);
-		//ArrayList <String> goldenList = test.getGoldRanking(query);
+		ArrayList<WikiPage> resultPages = new ArrayList<>();
+		ArrayList<String> results = test.searchTitles(query, prf, topK, resultPages);
+		SearchResult searchResult = new SearchResult(query, prf, results, test, resultPages);
+		ArrayList <String> goldenList = test.getGoldRanking(query);
 		
-		//trim results
-//		for(int i = 0;i<results.size();i++){
-//			System.out.println(results.set(i, results.get(i).trim()));
-//		}
+//		trim results
+		for(int i = 0;i<results.size();i++){
+			System.out.println(results.set(i, results.get(i).trim()));
+		}
 				
 		//CHANGE TO TOPK!!!!!!!!
-		//double ndcg = test.computeNdcg(goldenList,results, 1);
-		//System.out.println("ndcg@"+topK + " : " + ndcg);
+		double ndcg = test.computeNdcg(goldenList,results, 10);
+		System.out.println("ndcg@"+topK + " : " + ndcg);
 		
 		ArrayList<String> snippetsList = new ArrayList<String>();
 		snippetsList = searchResult.makeSnippets();
