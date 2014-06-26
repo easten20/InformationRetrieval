@@ -196,6 +196,13 @@ public class Index {
 		}*/
 		this.avgDocLength = 200;
 		return this.avgDocLength;
+	}
+
+	public void add(WikiPage wikiPage) throws IOException {
+		Iterable<String> tokens = wikiPage.asTokens();
+		add(wikiPage, tokens);
+		Iterable<String> links = wikiPage.getLinks();
+		add(wikiPage, links);
 	}		
 	
 }

@@ -1,9 +1,12 @@
 package de.hpi.krestel.mySearchEngine.domain;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -211,4 +214,20 @@ public class WikiPage {
 	public void setScore(double result){
 		this.score = result;
 	}
+	
+	public List<String> getLinks() {
+		List<String> links = new ArrayList<String>();
+		// from http://stackoverflow.com/questions/6020384/create-array-of-regex-matches
+		Matcher m = Pattern.compile("\\[\\[([^\\]\\|]*)(\\|[^\\]]*)?\\]\\]").matcher(getText());
+		 while (m.find()) {
+			 String link;
+			 link = m.group(1);
+			 link = link.replaceAll(" ", "]"); // we shall have no spaces there because they destroy the index
+			 links.add("[[" + link + "]]");
+		 }
+		 return links;
+	}
+	
+	
+	
 }
