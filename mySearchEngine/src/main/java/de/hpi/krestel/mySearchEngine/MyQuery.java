@@ -35,7 +35,15 @@ public class MyQuery {
 	public void setQuery(String queryText){
 		String andOp = "and";
 		String orOp = "or";
-		String butnotOP = "butnot";		     
+		String butnotOP = "butnot";
+		String LINKTO = "LINKTO";
+		if (queryText.startsWith(LINKTO)) {
+			// synchronize with WikiPage.getLinks
+			queryText = queryText.substring(LINKTO.length());
+			queryText = queryText.trim();
+			queryText = queryText.replace(" ", "]");
+			queryText = "[[" + queryText + "]]";
+		}
 		//now stringList = [fish*, and, *tropical] or [fish*, butnot, *tropical]		         		
 		//in case of "but not", [fish, but, not, tropical] -> [fish, butnot, tropical]		
 		queryText = queryText.toLowerCase().replace("but not", butnotOP);			
