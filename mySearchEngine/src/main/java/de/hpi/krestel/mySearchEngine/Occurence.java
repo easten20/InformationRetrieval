@@ -12,14 +12,20 @@ public class Occurence implements Comparable<Occurence>{
 	private int positionOfWordInDocument;
 	private String word;
 	private String xmlFilePath;
+	private long indexInIndex;
 	
-	public Occurence(String item, String word, String xmlFilePath) {
+	public Occurence(String item, String word, String xmlFilePath, long indexInIndex) {
 		
 		String[] splitItem = item.split(":");
-		this.positionOfDocumentInXMLFile = Long.parseLong(splitItem[0]);
-		this.positionOfWordInDocument = Integer.parseInt(splitItem[1]);
+		try {
+			this.positionOfDocumentInXMLFile = Long.parseLong(splitItem[0]);
+			this.positionOfWordInDocument = Integer.parseInt(splitItem[1]);
+		} catch (NumberFormatException e) {
+			throw e;
+		}
 		this.word = word;
 		this.xmlFilePath = xmlFilePath;
+		this.indexInIndex = indexInIndex;
 	}
 	
 	public String getWord(){
@@ -50,5 +56,9 @@ public class Occurence implements Comparable<Occurence>{
 			return this.positionOfWordInDocument - comparedObj.positionOfWordInDocument;		
 	}
 
+	public long getIndexInIndex() {
+		// for debug purposes
+		return indexInIndex;
+	}
 
 }
