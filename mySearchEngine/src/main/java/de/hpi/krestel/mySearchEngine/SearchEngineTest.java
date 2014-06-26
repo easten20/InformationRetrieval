@@ -47,9 +47,10 @@ public class SearchEngineTest {
 		};
 		
 		System.out.println("Searching Terms...");
-		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
-		searchTitles("Anschluss", test);
-		searchTitles("Soziologie", test);
+		searchTitles("LINKTO Kulturapfel", test); // should be Bodensee
+		//searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
+		//searchTitles("Anschluss", test);
+		//searchTitles("Soziologie", test);
 		System.out.println("Searched Terms!");
 	}
 

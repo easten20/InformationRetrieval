@@ -42,7 +42,12 @@ public class MyQuery {
 			queryText = queryText.substring(LINKTO.length());
 			queryText = queryText.trim();
 			queryText = queryText.replace(" ", "]");
+			queryText = queryText.toLowerCase();
 			queryText = "[[" + queryText + "]]";
+			// queryText is now the word we need to look for.
+			// I do not understand what is going on behind this point.
+			// I will not spend hours to complete the task.
+			// TODO: May somebody do it who knows about the BooleanQuery.
 		}
 		//now stringList = [fish*, and, *tropical] or [fish*, butnot, *tropical]		         		
 		//in case of "but not", [fish, but, not, tropical] -> [fish, butnot, tropical]		
