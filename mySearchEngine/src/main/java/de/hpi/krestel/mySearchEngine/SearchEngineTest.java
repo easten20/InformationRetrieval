@@ -40,13 +40,14 @@ public class SearchEngineTest {
 		if (!test.loadIndex(filePath)) {
 			System.out.println("Creating index...");
 			test.index(filePath);
+			System.out.println("Created index!");
 		}
-		assert test.loadIndex(filePath);
+		if (!test.loadIndex(filePath)) {
+			throw new AssertionError("Index should be loaded.");
+		};
 		
-		
-		
-		System.out.println("Created index!");
 		System.out.println("Searching Terms...");
+		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
 		searchTitles("Anschluss", test);
 		searchTitles("Soziologie", test);
 		System.out.println("Searched Terms!");
