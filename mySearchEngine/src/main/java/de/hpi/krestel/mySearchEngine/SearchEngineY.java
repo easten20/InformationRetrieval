@@ -42,17 +42,16 @@ public class SearchEngineY extends SearchEngine {
 			// use a stopword list and/or stemming. For these steps you can use existing code — you
 			// don’t need to come up with a stopword list or implement a new stemmer!
 			Index index = new Index(wikipediaFilePath);
-			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
-				Iterable<String> tokens = wikiPage.asTokens();
-				index.add(wikiPage, tokens);
+			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {
+				index.add(wikiPage);
 			}		
-				index.save();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
+			index.save();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
 	}		
-	
+		
 	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
 		WikiXMLIterable parser = new WikiXMLIterable(wikipediaFilePath);
 		parser.setPosition(index.getlastPositionInXMLFile());
