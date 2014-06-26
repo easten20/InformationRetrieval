@@ -39,11 +39,11 @@ public class WikiPage {
 	}
 
 	public String getTitle() {
-		return title.trim();
+		return title;
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title.trim();
 	}
 
 	public String getId() {
