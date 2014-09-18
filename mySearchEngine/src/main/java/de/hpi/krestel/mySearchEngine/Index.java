@@ -23,6 +23,8 @@ public class Index {
 	private WikiPage lastWikiPage;
 	private double avgDocLength;
 	private int numberOfIndexedArticles;
+	private FileIndex fileIndexDND;
+	
 	
 	Index (String wikipediaXMLFilePath) {
 		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
@@ -33,6 +35,7 @@ public class Index {
 		}
 		temporaryIndex = new MemoryIndex();
 		numberOfIndexedArticles = 0;
+		fileIndexDND = new FileIndex (this.wikipediaXMLFilePath);
 	}
 	
 	public String getXMLFilePath(){
@@ -161,7 +164,7 @@ public class Index {
 	}
 	
 	FileIndex fileIndex() {
-		return new FileIndex(this.wikipediaXMLFilePath);
+		return this.fileIndexDND;
 	}
 
 	public boolean isValid() {

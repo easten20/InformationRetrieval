@@ -123,4 +123,7 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 
 	}
 
+	public void close() throws IOException{
+		this.rand.close();
+	}
 }

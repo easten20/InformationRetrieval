@@ -94,6 +94,7 @@ public class WikiPage {
 		WikiPage wikiPage =  parser.next();
 		assert wikiPage.getPositionInXMLFile() == positionInXMLFile;
 		wikiPage.setPositionInXMLFile(positionInXMLFile);
+		parser.close();
 		return wikiPage;
 	}
 
