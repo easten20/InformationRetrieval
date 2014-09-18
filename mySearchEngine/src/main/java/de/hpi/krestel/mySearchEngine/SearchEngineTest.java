@@ -28,10 +28,10 @@ public class SearchEngineTest {
 
 	public static void main(String[] args) throws IOException, XMLStreamException {
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
-		basicPath = "res/wiki.xml"; // comment this out/in
+//		basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
-		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
+//		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
 		
@@ -61,7 +61,6 @@ public class SearchEngineTest {
 		ArrayList<WikiPage> resultPages = new ArrayList<>();
 		ArrayList<String> results = test.searchTitles(query, prf, topK, resultPages);
 		SearchResult searchResult = new SearchResult(query, prf, results, test, resultPages);
-		ArrayList <String> goldenList = test.getGoldRanking(query);
 		
 //		trim results
 		for(int i = 0;i<results.size();i++){
@@ -69,8 +68,9 @@ public class SearchEngineTest {
 		}
 				
 		//CHANGE TO TOPK!!!!!!!!
-		double ndcg = test.computeNdcg(goldenList,results, 10);
-		System.out.println("ndcg@"+topK + " : " + ndcg);
+//		ArrayList <String> goldenList = test.getGoldRanking(query);
+//		double ndcg = test.computeNdcg(goldenList,results, 10);
+//		System.out.println("ndcg@"+topK + " : " + ndcg);
 		
 		ArrayList<String> snippetsList = new ArrayList<String>();
 		snippetsList = searchResult.makeSnippets();

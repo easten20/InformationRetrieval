@@ -22,6 +22,7 @@ public class Index {
 	long wikipediaXMLFileSize;
 	private WikiPage lastWikiPage;
 	private double avgDocLength;
+	private int numberOfIndexedArticles;
 	
 	Index (String wikipediaXMLFilePath) {
 		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
@@ -31,6 +32,7 @@ public class Index {
 			wikipediaXMLFileSize = 1;
 		}
 		temporaryIndex = new MemoryIndex();
+		numberOfIndexedArticles = 0;
 	}
 	
 	public String getXMLFilePath(){
@@ -112,8 +114,12 @@ public class Index {
 		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
 			writeToDisk();
 		}
-		System.out.println("page position: " + wikiPage.getPositionInXMLFile() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
-		System.out.println(((List<String>) tokens).size());
+		numberOfIndexedArticles ++;
+		if (numberOfIndexedArticles > 100) {
+			System.out.println("page position: " + wikiPage.getPositionInXMLFile() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
+			//System.out.println(((List<String>) tokens).size());
+			numberOfIndexedArticles = 0;
+		}
 	}
 	
 	public String indexFilePath() {
