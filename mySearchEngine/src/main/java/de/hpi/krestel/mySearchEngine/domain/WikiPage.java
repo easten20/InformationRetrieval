@@ -160,37 +160,39 @@ public class WikiPage {
 		return mostUsedToken;	
 	}
 	
-	public String resultGenerate(String query, WikiPage wikiPage, int resultSize, int flag)
+	public String generateSnippet (String query, int resultSize, int snippetNumber)
 	{
 		String returnString = "";
-		returnString += "***** " + flag + "." + wikiPage.getTitle() + " *****" + "\n";
+		returnString += "***** " + snippetNumber + "." + this.getTitle() + " *****" + "\n";
 		
-		String entireText = wikiPage.getText();
+		String entireText = this.getText();
 		String key = null;
-		int tot = 0;
-		int queryPosition = 0;
+		int position = 0;
+		int queryPosition = -1;
 		StringTokenizer stringTokenizer = new StringTokenizer(entireText, " ");
 		
 		//find queryPosition
 		while(stringTokenizer.hasMoreTokens())
 		{
-			tot = tot + 1;
+			position = position + 1;
 			key = stringTokenizer.nextToken();
 			if(key.toLowerCase().contains(query.toLowerCase()))
 			{
-				queryPosition = tot ;
+				queryPosition = position ;
 				break;
-			}	
+			}
 		}
-		
-		tot = 0;
+		if (queryPosition == -1){
+			throw new AssertionError("Query: "+ query + " not found in WikiPage " + this.getTitle()) ;
+		}
+		position = 0;
 		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
 		while(stringTokenizer2.hasMoreTokens())
 		{
-			tot = tot + 1;
+			position = position + 1;
 			key = stringTokenizer2.nextToken();
 			
-			if(queryPosition - resultSize <= tot && tot <= queryPosition + resultSize)
+			if(queryPosition - resultSize <= position && position <= queryPosition + resultSize)
 			{
 				returnString += key + " ";
 				returnString = returnString.replaceAll("\\[", "");

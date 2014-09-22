@@ -39,12 +39,14 @@ public class SearchResult {
 			
 			for( int i = 0 ; i < titles.size(); i++)
 			{
+//				System.out.println(titles.get(i));
+//				System.out.println((wikiPage.getTitle()));
 				if(titles.get(i).equals(wikiPage.getTitle()))
 				{
 					//debug
 					//System.out.println("titles.size: " + titles.size());
 					
-					snippetsList.add(wikiPage.resultGenerate(query, wikiPage, resultSize, flag));
+					snippetsList.add(wikiPage.generateSnippet(query, resultSize, flag));
 					titles.remove(i);
 					flag++;
 					break;

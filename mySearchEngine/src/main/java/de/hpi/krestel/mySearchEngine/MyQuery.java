@@ -132,17 +132,19 @@ public class MyQuery {
 		List<WikiPage> wikiPages = wikiPagesMatchingQuery();
 		// thanks to http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property
 		final List<Term> queryTerms = new PhraseClause(queryTokens, BooleanOp.MUST).getTerms();
-		Collections.sort(wikiPages, new Comparator<WikiPage>() {
-	        public int compare(WikiPage o1, WikiPage o2) {
-	            try {	            	
-					return (new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return 0;
-	        }
-	    });		
+		Collections.sort(
+			wikiPages, new Comparator<WikiPage>() {
+		        public int compare(WikiPage o1, WikiPage o2) {
+		            try {	            	
+						return (new Double(new BM25(index, queryTerms, o1).compute()).compareTo(new BM25(index, queryTerms, o2).compute()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return 0;
+		        }
+			}
+		);		
 		if (topN > wikiPages.size())
 			topN = wikiPages.size();
 		return wikiPages.subList(0, topN);					

@@ -74,7 +74,7 @@ public class SearchEngineY extends SearchEngine {
 		assert index.isValid();				
 		MyQuery queryResult = new MyQuery(this.index);		
 		queryResult.setQuery(query);		
-		return queryResult.wikiPagesMatchingQuery(5);		
+		return queryResult.wikiPagesMatchingQuery(5);	// TODO: prf	
 	}		
 	
 	public ArrayList<String> searchTitles(String query) throws IOException, XMLStreamException {
