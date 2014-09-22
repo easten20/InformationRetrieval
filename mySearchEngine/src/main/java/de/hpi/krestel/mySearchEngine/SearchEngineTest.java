@@ -30,7 +30,7 @@ public class SearchEngineTest {
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 //		basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
+//		basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
 //		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
@@ -49,31 +49,24 @@ public class SearchEngineTest {
 		System.out.println("Searching Terms...");
 //		searchTitles("LINKTO Kulturapfel", test); // should be Bodensee
 //		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
-		searchTitles("Anschluss", test);
-		//searchTitles("Soziologie", test);
+//		searchTitles("Art* BUT NOT Artikel", test);
+		searchTitles("Soziologie", test);
+		//”Art* BUT NOT Artikel”
+		//”Artikel OR Reaktion”
+		//”Artikel AND Smithee”
+		//”’Filmfestspiele in Venedig’”
 		System.out.println("Searched Terms!");
 	}
 
 	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
 		System.out.println("---------------------- " + query + " ----------------------");
-		//System.out.println(test.searchTitles(query, prf, topK));
+
+		SearchResult searchResult = test.searchWikiPages(query, prf, topK);
 		
-		ArrayList<WikiPage> resultPages = new ArrayList<>();
-		ArrayList<String> results = test.searchTitles(query, prf, topK, resultPages);
-		SearchResult searchResult = new SearchResult(query, prf, results, test, resultPages);
+		double ndcg = searchResult.computeNDCG();
+		System.out.println("ndcg@"+topK + " : " + ndcg);
 		
-//		trim results
-		for(int i = 0;i<results.size();i++){
-			System.out.println(results.set(i, results.get(i).trim()));
-		}
-				
-		//CHANGE TO TOPK!!!!!!!!
-//		ArrayList <String> goldenList = test.getGoldRanking(query);
-//		double ndcg = test.computeNdcg(goldenList,results, 10);
-//		System.out.println("ndcg@"+topK + " : " + ndcg);
-		
-		ArrayList<String> snippetsList = new ArrayList<String>();
-		snippetsList = searchResult.makeSnippets();
+		ArrayList<String> snippetsList = searchResult.makeSnippets();
 
 		for(int i = 0;i<snippetsList.size();i++)
 		{
