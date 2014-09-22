@@ -106,9 +106,9 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
-		query = pseudoRelevaceFeedback(query, prf);
+		String newQuery = pseudoRelevaceFeedback(query, prf);
 		
-		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
+		return new SearchResult(query, prf, this, searchWikiPages(newQuery, topK), topK) ;
 	}
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){
