@@ -70,20 +70,13 @@ public class SearchEngineY extends SearchEngine {
 		return null;
 	}
 	
-	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
+	public List<WikiPage> searchWikiPages(String query, int numberOfWikiPages) throws IOException, XMLStreamException {
 		assert index.isValid();				
 		MyQuery queryResult = new MyQuery(this.index);		
 		queryResult.setQuery(query);		
-		return queryResult.wikiPagesMatchingQuery(5);	// TODO: prf	
+		return queryResult.wikiPagesMatchingQuery(numberOfWikiPages);	// TODO: prf	
 	}		
 	
-	public ArrayList<String> searchTitles(String query) throws IOException, XMLStreamException {
-		ArrayList<String> titles = new ArrayList<String>();
-		for (WikiPage wikiPage : searchWikiPages(query)) {
-			titles.add(wikiPage.getTitle());
-		}
-		return titles;
-	}
 	
 	public int checkRelevance (String title, ArrayList <String> goldenStandard){
 		int i = 0;
@@ -103,23 +96,19 @@ public class SearchEngineY extends SearchEngine {
 		
 	}
 	
-	public ArrayList<String> searchTitles (String query, int prf, int topK, ArrayList<WikiPage> pages)throws IOException, XMLStreamException {
-		ArrayList<String> titles = new ArrayList<String>();
+	public String pseudoRelevaceFeedback (String query, int prf) throws IOException, XMLStreamException{
 		String newQuery = query;
-		int flag=0;
-		for (WikiPage wikiPage : searchWikiPages(query)) {
-			if (flag>= prf){
-				break;
-			}
-			String frequentWord = wikiPage.mostFrequentWord();
-			newQuery+= " " + frequentWord;
-			flag++;
-			pages.add(wikiPage);
+		for (WikiPage wikiPage : searchWikiPages(query, prf)) {
+			newQuery+= " " + wikiPage.mostFrequentWord();
 		}
+		return newQuery;
 		
-		titles = searchTitles(newQuery);
-		return titles;
-
+	}
+	
+	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
+		query = pseudoRelevaceFeedback(query, prf);
+		
+		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
 	}
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){

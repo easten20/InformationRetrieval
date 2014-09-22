@@ -2,8 +2,6 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,49 +12,42 @@ public class SearchResult {
 	private String query;
 	private int resultSize = 10;
 	private ArrayList<String> titles;
-	private ArrayList<WikiPage> resultPages;
+	private List<WikiPage> resultPages;
 	private SearchEngineY searchEngineY;
-	
-	public SearchResult(String query, int prf, ArrayList<String> titles, SearchEngineY test, ArrayList<WikiPage> pages){		
+	private int topK;
+
+	public SearchResult(String query, int prf, SearchEngineY test, List<WikiPage> pages, int topK) {
 		this.query = query;
-		this.titles = titles;
 		this.searchEngineY = test;
 		this.resultPages = pages;
+		this.topK = topK;
+	}
+
+	public ArrayList<String> makeSnippets() throws IOException, XMLStreamException {
+		
+		int numberOfSnippet = 1;
+		ArrayList<String> snippetsList = new ArrayList<String>();
+
+		for (WikiPage wikiPage : resultPages) {
+			snippetsList.add(wikiPage.generateSnippet(query, resultSize, numberOfSnippet));
+			numberOfSnippet ++;
+		}
+
+		return snippetsList;
 	}
 	
-	public ArrayList<String> makeSnippets() throws IOException, XMLStreamException{
-		int flag = 1;
-		
-		ArrayList<String> snippetsList = new ArrayList<String>();
-		
+	public double computeNDCG (){
+		ArrayList <String> goldenList = this.searchEngineY.getGoldRanking(query);
+		return this.searchEngineY.computeNdcg(goldenList, getTitles(), this.topK);
+	}
 	
-		for(WikiPage wikiPage : resultPages)
-		{
-//			//debug
-//			System.out.println("wikiPage.title: " + wikiPage.getTitle());
+	ArrayList<String> getTitles() {
+		ArrayList<String> titles = new ArrayList<String>();
+		for (WikiPage wikiPage : resultPages) {
+			titles.add(wikiPage.getTitle());
+		}
+		return titles;
+	}
 	
-			if(titles.size() == 0) break;
-			
-			for( int i = 0 ; i < titles.size(); i++)
-			{
-//				System.out.println(titles.get(i));
-//				System.out.println((wikiPage.getTitle()));
-				if(titles.get(i).equals(wikiPage.getTitle()))
-				{
-					//debug
-					//System.out.println("titles.size: " + titles.size());
-					
-					snippetsList.add(wikiPage.generateSnippet(query, resultSize, flag));
-					titles.remove(i);
-					flag++;
-					break;
-				}//end if
-			}//end for
-		}//end for
-		
-		return snippetsList;
-		
-	}//end makeSnippets()
+	
 }
-
-
