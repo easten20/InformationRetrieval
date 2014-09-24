@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.BM25;
+import de.hpi.krestel.mySearchEngine.Index;
 import de.hpi.krestel.mySearchEngine.TokenStream;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
@@ -32,6 +33,9 @@ public class WikiPage {
 	private long positionInTitleListFile;
 	private boolean stopPositionInXMLFileSet;
 	private List<String> tokens;
+	private Double BM25;
+	private Index BM25Index;
+	private List<Term> BM25QueryTerms;
 
 	public WikiPage() {
 		text = "";
@@ -136,7 +140,7 @@ public class WikiPage {
 	public int countOfTerm(Term term) {
 		int number = 0;
 		for (String token : asTokens()) {
-			if (term.matches(token)) {
+			if (term.equals(token)) {
 				number += 1;
 			}
 		}
@@ -237,6 +241,16 @@ public class WikiPage {
 			links.add("[[" + link + "]]");
 		}
 		return links;
+	}
+
+	public Double BM25(Index index, List<Term> queryTerms) throws IOException {
+		if (BM25Index == index && BM25QueryTerms == queryTerms) {
+			return BM25;
+		}
+		BM25Index = index;
+		BM25QueryTerms = queryTerms;
+		BM25 = new Double(new BM25(index, queryTerms, this).compute());
+		return BM25;
 	}
 
 }

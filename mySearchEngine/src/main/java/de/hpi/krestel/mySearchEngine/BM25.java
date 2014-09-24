@@ -20,7 +20,7 @@ public class BM25 {
 	double b = 0.75f;
 	double k2 = 100;	 
 	
-	BM25 (Index index, List<Term> searchTerms, WikiPage wikiPage) {
+	public BM25 (Index index, List<Term> searchTerms, WikiPage wikiPage) {
 		this.index = index;
 		this.terms = searchTerms;
 		this.wikiPage = wikiPage;		
