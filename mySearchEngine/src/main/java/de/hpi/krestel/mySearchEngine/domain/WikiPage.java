@@ -166,53 +166,62 @@ public class WikiPage {
 		return mostUsedToken;
 	}
 
-	public String generateSnippet(String query, int resultSize,
+	public String generateSnippet(String query, int snippetLengthInCharacters,
 			int snippetNumber) {
-		String returnString = "";
-		returnString += "***** " + snippetNumber + "." + this.getTitle()
-				+ " *****" + "\n";
-
-		String entireText = this.getText();
-		String key = null;
-		int position = 0;
-		int queryPosition = -1;
-		StringTokenizer stringTokenizer = new StringTokenizer(entireText, " ");
-
-		// find queryPosition
-		while (stringTokenizer.hasMoreTokens()) {
-			position = position + 1;
-			key = stringTokenizer.nextToken();
-			if (key.toLowerCase().contains(query.toLowerCase())) {
-				queryPosition = position;
-				break;
+		String readableWikiPage = getReadableText();
+		String searchText = readableWikiPage.toLowerCase();
+		String[] queryWords = query.toLowerCase().split("\\s+");
+		
+		int bestSnippetPosition = 0;
+		int bestScore = -1;
+		
+		for (int positionOfSnippet = 0; 
+			 positionOfSnippet < searchText.length() - snippetLengthInCharacters; 
+			 positionOfSnippet ++) {
+			int score = 0;
+			String snippetText = searchText.substring(positionOfSnippet, positionOfSnippet + snippetLengthInCharacters);
+			for (String word : queryWords) {
+				// Find occurrences of substring in string thanks to 
+				// http://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
+				int lastIndex = 0;
+				while(lastIndex != -1){
+					lastIndex = snippetText.indexOf(word, lastIndex);
+					if( lastIndex != -1){
+						score ++;
+						lastIndex += word.length();
+					}
+				}
+				if (score > bestScore) {
+					bestSnippetPosition = positionOfSnippet;
+				}
 			}
 		}
-		if (queryPosition == -1) {
-			throw new AssertionError("Query: " + query
-					+ " not found in WikiPage " + this.getTitle());
-		}
-		position = 0;
-		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
-		while (stringTokenizer2.hasMoreTokens()) {
-			position = position + 1;
-			key = stringTokenizer2.nextToken();
+		String snippet = readableWikiPage.substring(bestSnippetPosition, 
+				bestSnippetPosition + snippetLengthInCharacters);
+		return "***** " + snippetNumber + "." + this.getTitle() + " *****\n" + snippet;
+	}
 
-			if (queryPosition - resultSize <= position
-					&& position <= queryPosition + resultSize) {
-				returnString += key + " ";
-				returnString = returnString.replaceAll("\\[", "");
-				returnString = returnString.replaceAll("\\]", "");
-				returnString = returnString.replaceAll("\\{", "");
-				returnString = returnString.replaceAll("\\}", "");
-
-				// debug
-				// System.out.println("added string: " + returnString);
-			}
-
-		}
-		returnString += "\n";
-
-		return returnString;
+	private String getReadableText() {
+		String text = cleanUpWikiText();
+		//    in den [[Exposition (Literatur)|Expositionen]] vieler
+		// => m in den Expositionen vieler
+		text = text.replaceAll("\\[\\[[^\\[\\]]*\\||\\]\\]", "");
+		//    en [[Bernard Herrmann zus
+		// => en Bernard Herrmann zus
+		text = text.replaceAll("\\[\\[\\{\\{", "");
+		//    {{Zitat|Bei der üblichen Form von Suspense ist es unerlässlich, 
+		// => Bei der üblichen Form von Suspense ist es unerlässlich, 
+		text = text.replaceAll("\\{\\{[^\\{\\}]*\\||\\}\\}", "");
+		//    ===== Tricktechnik =====
+		//    Tricktechnik
+		text = text.replaceAll("=+", "");
+		//    &lt;
+		// => 
+		text = text.replaceAll("&[^;]{1,4};", "");
+		
+		//    replace multiple whitespaces by a whitespace
+		text = text.replaceAll("\\s+", " ");
+		return text;
 	}
 
 	public double getScore() {

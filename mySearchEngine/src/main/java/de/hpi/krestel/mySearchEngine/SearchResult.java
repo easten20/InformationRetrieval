@@ -10,7 +10,7 @@ import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 
 public class SearchResult {
 	private String query;
-	private int resultSize = 10;
+	private int resultSize = 100;
 	private ArrayList<String> titles;
 	private List<WikiPage> resultPages;
 	private SearchEngineY searchEngineY;
