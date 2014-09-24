@@ -153,7 +153,9 @@ public class MyQuery {
 			wikiPages, new Comparator<WikiPage>() {
 		        public int compare(WikiPage o1, WikiPage o2) {
 		            try {	            	
-						return (new Double(new BM25(index, queryTerms, o1).compute()).compareTo(new BM25(index, queryTerms, o2).compute()));
+						return (o1.BM25(index, queryTerms).compareTo(o2.BM25(index, queryTerms))
+								//new Double(new BM25(index, queryTerms, o1).compute()).compareTo(new BM25(index, queryTerms, o2).compute())
+								);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
