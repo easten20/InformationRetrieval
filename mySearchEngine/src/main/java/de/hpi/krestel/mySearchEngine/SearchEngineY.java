@@ -175,7 +175,7 @@ public class SearchEngineY extends SearchEngine {
 			else idcg += 1+Math.floor(10 * Math.pow(0.5,0.1*rank))/Math.log(rank);
 			if(iter.hasNext()){
 				//change to get the titles of your ranking
-				String title = iter.next().split("###")[1].trim();
+				String title = iter.next().trim();
 				int origRank = goldRanking.indexOf(title)+1;
 				if(origRank<1){
 					rank++;
