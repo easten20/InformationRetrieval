@@ -140,7 +140,7 @@ public class WikiPage {
 	public int countOfTerm(Term term) {
 		int number = 0;
 		for (String token : asTokens()) {
-			if (term.equals(token)) {
+			if (term.matches(token)) {
 				number += 1;
 			}
 		}

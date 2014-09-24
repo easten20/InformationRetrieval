@@ -41,7 +41,11 @@ public class Term {
  		}else{
  			this.starOp = StarOp.NOSTAR; 			 		
  		}
- }
+ 	}
+ 	
+ 	public boolean isRegularExpression() {
+ 		return this.starOp != StarOp.NOSTAR;
+ 	}
 	
 	private String getRegexRep()
 	{
@@ -68,7 +72,10 @@ public class Term {
 	}
 
 	public boolean matches(String token) {
-		return isRegexMatch(token);
+		if (this.isRegularExpression()) {
+			return isRegexMatch(token);
+		}
+		return this.text.equals(token);
 	}
 		
 }
