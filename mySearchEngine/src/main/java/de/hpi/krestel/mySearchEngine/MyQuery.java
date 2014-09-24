@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -117,19 +118,35 @@ public class MyQuery {
 		}		
 		return docPosL;
 	}
-	
-	public List<WikiPage> wikiPagesMatchingQuery() throws IOException, XMLStreamException {
-		List<WikiPage> wikiPages = new ArrayList<WikiPage>();			
-		this.fillDocumentPositions(this.booleanQuery);
-		for (Long docPosition : this.docPositionST){
-			WikiPage wikiPage = WikiPage.from(this.index.getXMLFilePath(), docPosition);
-			wikiPages.add(wikiPage);
-		}		
-		return wikiPages;
-	}
 
 	public List<WikiPage> wikiPagesMatchingQuery(int topN) throws IOException, XMLStreamException {
-		List<WikiPage> wikiPages = wikiPagesMatchingQuery();
+		// fill list of wikipages until we have topK 
+		List<WikiPage> wikiPages = new ArrayList<WikiPage>();			
+		this.fillDocumentPositions(this.booleanQuery);
+		Iterator<Long> allWikiPageDocumentPositions = this.docPositionST.iterator();
+		for (int i = 0; i < topN; i++) {
+			if (allWikiPageDocumentPositions.hasNext()) {
+				long positionInXMLFile = allWikiPageDocumentPositions.next();
+				wikiPages.add(WikiPage.from(this.index.getXMLFilePath(), positionInXMLFile));
+			} else {
+				return sortWikiPages(wikiPages);
+			}
+		}
+		
+		// use other wikipages, fill one in the list and remove worst wikipage
+		sortWikiPages(wikiPages);
+		while(allWikiPageDocumentPositions.hasNext()){
+			WikiPage wikiPage = WikiPage.from(this.index.getXMLFilePath(), allWikiPageDocumentPositions.next());
+			wikiPages.add(wikiPage);
+			sortWikiPages(wikiPages);
+			wikiPages.remove(topN);
+			
+		}
+		return wikiPages;
+	}
+	
+	List<WikiPage> sortWikiPages(List<WikiPage> wikiPages) {
+		//////
 		// thanks to http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property
 		final List<Term> queryTerms = new PhraseClause(queryTokens, BooleanOp.MUST).getTerms();
 		Collections.sort(
@@ -145,9 +162,7 @@ public class MyQuery {
 		        }
 			}
 		);		
-		if (topN > wikiPages.size())
-			topN = wikiPages.size();
-		return wikiPages.subList(0, topN);					
+		return wikiPages;					
 
 	}
 	
