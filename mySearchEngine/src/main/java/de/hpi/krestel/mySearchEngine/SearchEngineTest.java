@@ -47,14 +47,22 @@ public class SearchEngineTest {
 		};
 		
 		System.out.println("Searching Terms...");
-//		searchTitles("LINKTO Kulturapfel", test); // should be Bodensee
-//		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
-//		searchTitles("Art* BUT NOT Artikel", test);
-		searchTitles("Soziologie", test);
-		//”Art* BUT NOT Artikel”
-		//”Artikel OR Reaktion”
-		//”Artikel AND Smithee”
-		//”’Filmfestspiele in Venedig’”
+
+		searchTitles("08/15", test);
+		/*
+		 * test queries:
+					"ein trauriges Arschloch"
+					Toskana AND Wein 
+					sülz* AND staatlich
+					öffentlicher nahverkehr stadtpiraten
+					schnitzel AND kaffe BUT NOT schwein*
+					Dr. No
+					ICE BUT NOT T
+					Bierzelt Oktoberfest
+					Los Angeles sport
+					08/15
+		 */
+
 		System.out.println("Searched Terms!");
 	}
 
@@ -65,9 +73,8 @@ public class SearchEngineTest {
 		
 		double ndcg = searchResult.computeNDCG();
 		System.out.println("ndcg@"+topK + " : " + ndcg);
-		
+	
 		ArrayList<String> snippetsList = searchResult.makeSnippets();
-
 		for(int i = 0;i<snippetsList.size();i++)
 		{
 			System.out.println(snippetsList.get(i));
@@ -77,10 +84,7 @@ public class SearchEngineTest {
 
 	@SuppressWarnings("unused")
 	private static void evaluate(SearchEngine se) throws IOException {
-		
-		// Load or generate the index
 		se.indexWrapper();
-
 		for(int i=0;i<SearchEngineTest.queries.length;i++){
 			// Search and store results
 			se.searchWrapper(queries[i], topK, prf);
