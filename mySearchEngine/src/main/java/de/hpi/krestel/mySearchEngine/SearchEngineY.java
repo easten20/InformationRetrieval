@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -163,61 +164,34 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	@Override
-	Double computeNdcg(ArrayList<String> goldRanking,ArrayList<String> myRanking, int at) {
-		ArrayList<Double> myRankingRelevance = new ArrayList<Double> ();
-		
-		//add relevance values to myRanking
-		int size = goldRanking.size();
-		boolean flag = false;
-		for (String title : myRanking){
-			
-			for (int i=0; i<size; i++){
-				if (goldRanking.get(i).equals(title)){
-					
-					//debug
-					//System.out.println("hit!!");
-					
-					double gain = calculateRelevance(i);
-					myRankingRelevance.add(gain);
-					flag = true;
-					break;
-				}
-			}
-			if (!flag) myRankingRelevance.add((double) 0);	
-			flag=false;
-		}
-		
-		ArrayList<Double> goldenRanking = new ArrayList<>();
-		for (int i= 0; i<50; i++){
-			double gain = calculateRelevance (i);
-			goldenRanking.add(gain);
-		}
-		
-		ArrayList<Double> dgNorm = computeDG(goldenRanking);
-		ArrayList<Double> dcgNorm = computeDCG(dgNorm);
-		
-		//put missing 0 to make sizes equal
-		int rankSizeGold = goldenRanking.size();
-		int rankSizeMy = myRankingRelevance.size();
-		if (rankSizeMy < rankSizeGold){
-			int i = rankSizeGold - rankSizeMy;
-			for (int j = 0; j< i; j++)
-				myRankingRelevance.add((double) 0);
-		}
-				
-		ArrayList<Double> dg = computeDG(myRankingRelevance);
-		ArrayList<Double> dcg = computeDCG(dg); 
+	Double computeNdcg(ArrayList<String> goldRanking, ArrayList<String> ranking, int at) {
 
-		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
-//		Collections.sort(myRankingRelevance);
-//		Collections.reverse(myRankingRelevance);
-		
-		
-//		
-		
-		// TODO Auto-generated method stub
-		return ndcg.get(at-1);
-	}			
+		double dcg = 0.0;
+		double idcg = 0.0;
+		int rank=1;
+		Iterator<String> iter = ranking.iterator();
+		while(rank<=at){
+			if(rank==1) idcg += 1+Math.floor(10 * Math.pow(0.5,0.1*rank));
+			else idcg += 1+Math.floor(10 * Math.pow(0.5,0.1*rank))/Math.log(rank);
+			if(iter.hasNext()){
+				//change to get the titles of your ranking
+				String title = iter.next().split("###")[1].trim();
+				int origRank = goldRanking.indexOf(title)+1;
+				if(origRank<1){
+					rank++;
+					continue;
+				}
+				if(rank==1){
+					dcg += 1+Math.floor(10 * Math.pow(0.5,0.1*origRank));
+					rank++;
+					continue;
+				} 
+				dcg += 1+Math.floor(10 * Math.pow(0.5,0.1*origRank))/Math.log(rank);
+			}
+			rank++;
+		}
+		return dcg/idcg;
+	}	
 	
 
 }
