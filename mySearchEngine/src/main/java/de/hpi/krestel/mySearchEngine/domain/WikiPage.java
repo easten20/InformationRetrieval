@@ -24,7 +24,7 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class WikiPage {
 	private String title;
 	private String id;
-	private String text;
+	//private String text;
 	private double score;
 	private long positionInXMLFile;
 	private boolean positionInXMLFileSet;
@@ -32,11 +32,15 @@ public class WikiPage {
 	private long positionInTitleListFile;
 	private boolean stopPositionInXMLFileSet;
 	private List<String> tokens;
+	private StringBuilder strBuilderText;
+	private static final Pattern LINKS = Pattern.compile(
+			"\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]");	
 
 	public WikiPage() {
-		text = "";
+		//text = "";
+		this.strBuilderText = new StringBuilder();
 		stopPositionInXMLFileSet = false;
-		positionInXMLFileSet = false;
+		positionInXMLFileSet = false;		
 	}
 
 	public String getTitle() {
@@ -56,15 +60,17 @@ public class WikiPage {
 	}
 
 	public String getText() {
-		return text;
+		return strBuilderText.toString();
 	}
 
 	public void setText(String text) {
-		this.text = text;
+		this.strBuilderText = new StringBuilder();
+		this.strBuilderText.append(text);
 	}
 
 	public void addText(String data) {
-		text += data;
+		//text = text.concat(data);
+		this.strBuilderText.append(data);
 	}
 
 	public void setPositionInXMLFile(long position) {
@@ -90,12 +96,11 @@ public class WikiPage {
 	public static WikiPage from(String xmlFilePath, long positionInXMLFile)
 			throws IOException, XMLStreamException {
 		WikiXMLIterable wikiPages = new WikiXMLIterable(xmlFilePath);
-		ReadXMLParser2 parser = wikiPages.iterator();
+		ReadXMLParser parser = wikiPages.iterator();
 		parser.jumpToPosition(positionInXMLFile);
 		WikiPage wikiPage = parser.next();
 		assert wikiPage.getPositionInXMLFile() == positionInXMLFile;
-		wikiPage.setPositionInXMLFile(positionInXMLFile);
-		parser.close();
+		wikiPage.setPositionInXMLFile(positionInXMLFile);		
 		return wikiPage;
 	}
 
@@ -224,9 +229,10 @@ public class WikiPage {
 		List<String> links = new ArrayList<String>();
 		// from
 		// http://stackoverflow.com/questions/6020384/create-array-of-regex-matches
-		Matcher m = Pattern.compile(
-				"\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]")
-				.matcher(getText());
+		//Matcher m = Pattern.compile(
+		//		"\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]")
+		//		.matcher(getText());
+		Matcher m = LINKS.matcher(getText());
 		while (m.find()) {
 			String link;
 			link = m.group(1);

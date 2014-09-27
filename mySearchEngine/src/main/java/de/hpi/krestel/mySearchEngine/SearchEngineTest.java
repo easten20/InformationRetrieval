@@ -23,24 +23,27 @@ public class SearchEngineTest {
 	static String[] queries = {"artikel", "deutsch"};
 	
 	// some variables (will be explained when needed, ignore for now!)
-	static int topK = 10;
+	static int topK = 20;
 	static int prf = 5;
 
-	public static void main(String[] args) throws IOException, XMLStreamException {
+	public static void main(String[] args) throws IOException, XMLStreamException {		
 		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 //		basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
-//		basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
-//		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
+		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
+		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
 		
 		String filePath = new File(basicPath).getAbsolutePath();
 		SearchEngineY test = new SearchEngineY();
 		if (!test.loadIndex(filePath)) {
+			final long startTime = System.currentTimeMillis();
 			System.out.println("Creating index...");
 			test.index(filePath);
-			System.out.println("Created index!");
+			System.out.println("Created index!");			
+			final long endTime = System.currentTimeMillis();
+			System.out.println("Total execution time: " + (endTime - startTime) );
 		}
 		if (!test.loadIndex(filePath)) {
 			throw new AssertionError("Index should be loaded.");
@@ -50,7 +53,9 @@ public class SearchEngineTest {
 //		searchTitles("LINKTO Kulturapfel", test); // should be Bodensee
 //		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
 //		searchTitles("Art* BUT NOT Artikel", test);
-		searchTitles("Soziologie", test);
+		//searchTitles("Soziologie", test);
+		searchTitles("München", test);
+		//searchTitles("München", test);
 		//”Art* BUT NOT Artikel”
 		//”Artikel OR Reaktion”
 		//”Artikel AND Smithee”
@@ -63,6 +68,11 @@ public class SearchEngineTest {
 
 		SearchResult searchResult = test.searchWikiPages(query, prf, topK);
 		
+		for (String title: searchResult.getTitles()){
+			System.out.println(title);
+		}
+
+			/*
 		double ndcg = searchResult.computeNDCG();
 		System.out.println("ndcg@"+topK + " : " + ndcg);
 		
@@ -72,7 +82,7 @@ public class SearchEngineTest {
 		{
 			System.out.println(snippetsList.get(i));
 		}
-	
+		*/
 	}
 
 	@SuppressWarnings("unused")

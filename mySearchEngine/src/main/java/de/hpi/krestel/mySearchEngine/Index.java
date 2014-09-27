@@ -24,18 +24,22 @@ public class Index {
 	private double avgDocLength;
 	private int numberOfIndexedArticles;
 	private FileIndex fileIndexDND;
+	private NewXMLWriter xmlFileWriter;
 	
 	
 	Index (String wikipediaXMLFilePath) {
-		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
-		assert new File(wikipediaXMLFilePath).isFile();
+		this.wikipediaXMLFilePath = wikipediaXMLFilePath;		
+		assert new File(wikipediaXMLFilePath).isFile();		
 		wikipediaXMLFileSize = new File(wikipediaXMLFilePath).length();
 		if (wikipediaXMLFileSize == 0) {
 			wikipediaXMLFileSize = 1;
 		}
 		temporaryIndex = new MemoryIndex();
 		numberOfIndexedArticles = 0;
-		fileIndexDND = new FileIndex (this.wikipediaXMLFilePath);
+		this.xmlFileWriter = new NewXMLWriter(this.wikipediaXMLFilePath);
+		//set new filepath for XML Index
+		this.wikipediaXMLFilePath = this.xmlFileWriter.getCopyName(); 
+		fileIndexDND = new FileIndex (this.wikipediaXMLFilePath);		
 	}
 	
 	public String getXMLFilePath(){
@@ -52,7 +56,7 @@ public class Index {
 	
 	public void writeToDisk() throws IOException {
 		temporaryIndex.writeTo(freeIndexFilePath());
-		markLastLocationInWikiFile();
+		//markLastLocationInWikiFile();
 		temporaryIndex = new MemoryIndex();	
 	}
 	
@@ -208,10 +212,11 @@ public class Index {
 	}
 
 	public void add(WikiPage wikiPage) throws IOException {
+		this.xmlFileWriter.writeNewXMLFile(wikiPage);
 		Iterable<String> tokens = wikiPage.asTokens();
 		add(wikiPage, tokens);
 		Iterable<String> links = wikiPage.getLinks();
-		add(wikiPage, links);
+		add(wikiPage, links);	
 	}		
 	
 }

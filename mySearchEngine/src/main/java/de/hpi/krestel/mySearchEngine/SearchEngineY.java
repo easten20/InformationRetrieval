@@ -42,7 +42,7 @@ public class SearchEngineY extends SearchEngine {
 			// use a stopword list and/or stemming. For these steps you can use existing code — you
 			// don’t need to come up with a stopword list or implement a new stemmer!
 			Index index = new Index(wikipediaFilePath);
-			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {
+			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {				
 				index.add(wikiPage);
 			}		
 			index.save();
@@ -106,9 +106,9 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
-		String newQuery = pseudoRelevaceFeedback(query, prf);
+		//String newQuery = pseudoRelevaceFeedback(query, prf);
 		
-		return new SearchResult(query, prf, this, searchWikiPages(newQuery, topK), topK) ;
+		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
 	}
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){
