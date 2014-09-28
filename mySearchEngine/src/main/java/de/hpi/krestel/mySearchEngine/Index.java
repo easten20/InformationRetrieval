@@ -17,6 +17,7 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class Index {
 	
 	private long maximumMemoryUsageInBytes = 128 * 1024 * 1024;
+	//private long maximumMemoryUsageInBytes = 128 * 100 * 1024;
 	private String wikipediaXMLFilePath;
 	private MemoryIndex temporaryIndex;
 	long wikipediaXMLFileSize;
@@ -215,8 +216,8 @@ public class Index {
 		this.xmlFileWriter.writeNewXMLFile(wikiPage);
 		Iterable<String> tokens = wikiPage.asTokens();
 		add(wikiPage, tokens);
-		Iterable<String> links = wikiPage.getLinks();
-		add(wikiPage, links);	
+		//Iterable<String> links = wikiPage.getLinks();
+		//add(wikiPage, links);	
 	}		
 	
 }

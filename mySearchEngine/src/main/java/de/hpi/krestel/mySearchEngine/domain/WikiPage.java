@@ -33,8 +33,7 @@ public class WikiPage {
 	private boolean stopPositionInXMLFileSet;
 	private List<String> tokens;
 	private StringBuilder strBuilderText;
-	private static final Pattern LINKS = Pattern.compile(
-			"\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]");	
+	private static final Pattern LINKS = Pattern.compile("\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]");	
 
 	public WikiPage() {
 		//text = "";
