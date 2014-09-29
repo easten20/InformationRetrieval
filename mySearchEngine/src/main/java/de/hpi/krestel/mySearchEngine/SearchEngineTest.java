@@ -59,9 +59,9 @@ public class SearchEngineTest {
 		//ArrayList <String> goldenList = test.getGoldRanking(query);
 		
 		//trim results
-//		for(int i = 0;i<results.size();i++){
-//			System.out.println(results.set(i, results.get(i).trim()));
-//		}
+		for(int i = 0;i<results.size();i++){
+			System.out.println(results.set(i, results.get(i).trim()));
+		}
 				
 		//CHANGE TO TOPK!!!!!!!!
 		//double ndcg = test.computeNdcg(goldenList,results, 1);
