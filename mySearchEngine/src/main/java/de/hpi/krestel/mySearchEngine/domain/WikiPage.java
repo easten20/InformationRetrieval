@@ -24,7 +24,7 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class WikiPage {
 	private String title;
 	private String id;
-	//private String text;
+	private String text;
 	private double score;
 	private long positionInXMLFile;
 	private boolean positionInXMLFileSet;
@@ -36,7 +36,7 @@ public class WikiPage {
 	private static final Pattern LINKS = Pattern.compile("\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]");	
 
 	public WikiPage() {
-		//text = "";
+		text = "";
 		this.strBuilderText = new StringBuilder();
 		stopPositionInXMLFileSet = false;
 		positionInXMLFileSet = false;		
@@ -59,16 +59,19 @@ public class WikiPage {
 	}
 
 	public String getText() {
+		//return this.text;
 		return strBuilderText.toString();
 	}
 
 	public void setText(String text) {
+		//this.text = text;
 		this.strBuilderText = new StringBuilder();
 		this.strBuilderText.append(text);
 	}
 
 	public void addText(String data) {
-		//text = text.concat(data);
+		//text += data;
+		//text = text.concat(data);		
 		this.strBuilderText.append(data);
 	}
 
@@ -220,6 +223,8 @@ public class WikiPage {
 	}
 
 	public void setScore(double result) {
+		System.out.println("title: " + this.title);
+		System.out.println("score :" + result);
 		this.score = result;
 	}
 
