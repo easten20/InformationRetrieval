@@ -146,11 +146,20 @@ public class FileIndex {
 			else {
 				FileInputStream fis = new FileInputStream(this.seekListPath);
 				BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-				String line, splitLine[];						
+				String line, splitLine[];				
+				int termLength = term.getText().length();
+				boolean isFound = false;
 				while ((line=reader.readLine())!=null) {                
-					splitLine = line.split(" ", 2);
+					splitLine = line.split(" ", 2);					
 					if (term.isRegexMatch(splitLine[0])){
 						occurenceL.addAll(this.findDocuments(Long.parseLong(splitLine[1]),splitLine[0]));
+						isFound = true;
+					}
+					if (isFound && term.getStarOp() == StarOp.ENDSTAR && splitLine[0].length() >= termLength){
+						term.getText().compareTo(splitLine[0].substring(0, term.getText().length()));
+						if (term.getText().compareTo(splitLine[0].substring(0, term.getText().length())) < 0){
+							break;
+						}
 					}
             	}		
 				reader.close();
