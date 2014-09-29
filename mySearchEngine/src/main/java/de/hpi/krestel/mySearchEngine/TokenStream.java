@@ -3,6 +3,7 @@ package de.hpi.krestel.mySearchEngine;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.germanStemmer;
@@ -10,10 +11,16 @@ import org.tartarus.snowball.ext.germanStemmer;
 public class TokenStream {
 	
 	private StopWord cachedStopWord;
-	private SnowballStemmer cachedStemmer;
+	private SnowballStemmer cachedStemmer;	
+	//private static final Pattern PUNCTUATIONS = Pattern.compile("[^a-zA-Z]");
+	//private static final Pattern PUNCTUATIONS = Pattern.compile("\\p{Punct}");
+	//private static final Pattern PUNCTUATIONS = Pattern.compile("[^\\p{L}]");
+	private static final Pattern PUNCTUATIONS = Pattern.compile("[^\\p{L}\\s]+");	
+	//private static final Pattern PUNCTUATIONS = Pattern.compile("[^\\w]");
+	//private static final Pattern HTTP = Pattern.compile("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+	private static final Pattern SPLIT = Pattern.compile("\\s+");
 	
-	public TokenStream(){
-		
+	public TokenStream(){				
 	}
 	
 	public List<String> preprocessText(String text) {
@@ -28,11 +35,14 @@ public class TokenStream {
 		//       maybe we can split with this in  mind
 		//System.out.println(wikiText);		
 		//thks to http://stackoverflow.com/questions/163360/regular-expresion-to-match-urls-in-java
-		String regex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";		
-		wikiText = wikiText.toLowerCase().replaceAll(regex, "");
+		//String regex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";		
+		//wikiText = wikiText.toLowerCase().replaceAll(regex, "");
 		//System.out.println(wikiText);
-		String[] tokens = wikiText.replaceAll("[^a-zA-Z]", " ").split("\\s+");		
-		return Arrays.asList(tokens);
+		String wikiLowerCase = wikiText.toLowerCase();
+		//wikiLowerCase = HTTP.matcher(wikiLowerCase).replaceAll("");	
+		wikiLowerCase = PUNCTUATIONS.matcher(wikiLowerCase).replaceAll(" ");			
+		//String[] tokens = wikiText.toLowerCase().replaceAll("[^a-zA-Z]", " ").split("\\s+");		
+		return Arrays.asList(SPLIT.split(wikiLowerCase));
 	}	
 	
 	List<String> removeStopWords(Iterable<String> tokens) {		

@@ -30,12 +30,15 @@ public class MemoryIndex {
 	public void add (long documentId, Iterable<String> terms){
 		int i = 0;
 		for (String term:terms){
-			List<String> emptyList = new ArrayList<>();
+			if (term.matches(" |\n")) {
+				throw new AssertionError("There must be no ' ' or '\\n' in a term or the index gets destroyed.");
+			};
 			String entry = Long.toString(documentId) + ":" + Integer.toString(i);
 			if (index.containsKey(term)){
 				index.get(term).add(entry);
 				usedBytes+=entry.length();
 			}else{
+				List<String> emptyList = new ArrayList<>();
 				emptyList.add(entry);
 				index.put(term, emptyList);
 				usedBytes+=entry.length() + term.length();

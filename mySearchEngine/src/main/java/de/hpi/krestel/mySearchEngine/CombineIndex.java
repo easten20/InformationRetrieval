@@ -102,13 +102,19 @@ public class CombineIndex {
 		String word = wordOfLine(lines.get(lineIndices.get(0)));
 		combinedIndex.write(word);
 		for (int lineIndex : lineIndices) {
-			line = lines.get(lineIndex);
-			splitLine = line.split(" ", 2);
-			wordOfTheLine = splitLine[0]; 
-			positionsOfTheWord = splitLine[1];
-			assert wordOfTheLine == word; // we only merge "documentId:position" for the same word
-			combinedIndex.write(" ");
-			combinedIndex.write(positionsOfTheWord);
+			try {							
+				line = lines.get(lineIndex);
+				splitLine = line.split(" ", 2);
+				wordOfTheLine = splitLine[0]; 
+				positionsOfTheWord = splitLine[1];
+				assert wordOfTheLine == word; // we only merge "documentId:position" for the same word
+				combinedIndex.write(" ");
+				combinedIndex.write(positionsOfTheWord);
+			} catch (ArrayIndexOutOfBoundsException ex){
+				System.out.println(lineIndex);
+				System.out.println(lines.get(lineIndex));
+				continue;
+			}
 		}
 		combinedIndex.write("\n");
 	}
@@ -122,7 +128,7 @@ public class CombineIndex {
 		String wordOfLine;
 		ArrayList<Integer> lineIndices = new ArrayList<Integer>();
 		int lineIndex = 0;
-		int comparism;
+		int comparism;		
 		for (String line : lines) {
 			wordOfLine = wordOfLine(line);
 			comparism = wordOfLine.compareTo(lowestWord);
@@ -131,11 +137,12 @@ public class CombineIndex {
 			} else if (comparism < 0) {
 				lineIndices = new ArrayList<Integer>();
 				lineIndices.add(lineIndex);
+				lowestWord = wordOfLine;
 			}
 			lineIndex++;
 		}
 		return lineIndices;
-	}
+	}	
 
 	private BufferedWriter openCombinedIndex(String combinedIndexPath) throws IOException {
 		return new BufferedWriter(new FileWriter(combinedIndexPath));

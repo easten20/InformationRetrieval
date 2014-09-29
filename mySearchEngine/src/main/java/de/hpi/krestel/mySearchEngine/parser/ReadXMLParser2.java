@@ -62,14 +62,14 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 		long lastPointerOffset = lastPageLocation;			
 		while ((line = rand.readLine2()) != null){				
 			if (isPage == false){
-				if (line.matches(".*<page>.*")){
+				if (line.contains("<page>")){
 					this.nextWikiPage = new WikiPage();
 					this.nextWikiPage.setPositionInXMLFile(lastPointerOffset);
 					isPage = true;
 				}
 			}
 			if (isPage == true && isTitle == false){
-				if (line.matches(".*<title>.*")){
+				if (line.contains("<title>")){
 					isTitle = true;
 					line = line.replaceAll("<title>", "");
 					line = line.replaceAll("</title>", "");
@@ -77,13 +77,13 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 				}
 			}					
 			if (isPage == true && isTitle == true) {					
-				if (isText == true || line.matches(".*<text.*>.*")) {
+				if (isText == true || line.matches(".*?<text.*?>.*")) {
 					if (isText == false){
 						strBuilderText = new StringBuilder();
 						isText = true;
 					}											
 					strBuilderText.append(line);	
-					if (line.matches(".*</text.*>")) {
+					if (line.matches(".*?</text.*?>")) {
 						String reg = "<text.*?>(.*)<\\/text>";
 						Pattern p = Pattern.compile(reg, Pattern.DOTALL);			        
 						Matcher m = p.matcher(strBuilderText.toString());						
@@ -123,4 +123,7 @@ public class ReadXMLParser2 implements Iterator<WikiPage> {
 
 	}
 
+	public void close() throws IOException{
+		this.rand.close();
+	}
 }

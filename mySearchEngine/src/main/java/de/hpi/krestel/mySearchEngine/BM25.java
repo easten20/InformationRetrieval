@@ -29,9 +29,9 @@ public class BM25 {
 	public double compute() throws IOException {
 		double score = 0;
 		// normalizes TF component document length
-		double dl = wikiPage.numberOfTerms();
 		if(wikiPage.getScore() != 0)
 			return wikiPage.getScore();
+		double dl = wikiPage.numberOfTerms();
 		double avdl = index.averageNumberOfDocumentLength();
 		double K = k1 * ((1 - b) + b * dl / avdl);		
 		Set<Term> setTerms = new HashSet<Term>(this.terms);

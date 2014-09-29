@@ -42,17 +42,16 @@ public class SearchEngineY extends SearchEngine {
 			// use a stopword list and/or stemming. For these steps you can use existing code — you
 			// don’t need to come up with a stopword list or implement a new stemmer!
 			Index index = new Index(wikipediaFilePath);
-			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {						
-				Iterable<String> tokens = wikiPage.asTokens();
-				index.add(wikiPage, tokens);
+			for (WikiPage wikiPage: listWikiPages(wikipediaFilePath, index)) {				
+				index.add(wikiPage);
 			}		
-				index.save();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
+			index.save();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
 	}		
-	
+		
 	Iterable<WikiPage> listWikiPages(String wikipediaFilePath, Index index) {
 		WikiXMLIterable parser = new WikiXMLIterable(wikipediaFilePath);
 		parser.setPosition(index.getlastPositionInXMLFile());
@@ -71,20 +70,13 @@ public class SearchEngineY extends SearchEngine {
 		return null;
 	}
 	
-	public List<WikiPage> searchWikiPages(String query) throws IOException, XMLStreamException {
+	public List<WikiPage> searchWikiPages(String query, int numberOfWikiPages) throws IOException, XMLStreamException {
 		assert index.isValid();				
 		MyQuery queryResult = new MyQuery(this.index);		
 		queryResult.setQuery(query);		
-		return queryResult.wikiPagesMatchingQuery(5);		
+		return queryResult.wikiPagesMatchingQuery(numberOfWikiPages);	// TODO: prf	
 	}		
 	
-	public ArrayList<String> searchTitles(String query) throws IOException, XMLStreamException {
-		ArrayList<String> titles = new ArrayList<String>();
-		for (WikiPage wikiPage : searchWikiPages(query)) {
-			titles.add(wikiPage.getTitle());
-		}
-		return titles;
-	}
 	
 	public int checkRelevance (String title, ArrayList <String> goldenStandard){
 		int i = 0;
@@ -104,22 +96,19 @@ public class SearchEngineY extends SearchEngine {
 		
 	}
 	
-	public ArrayList<String> searchTitles (String query, int prf, int topK)throws IOException, XMLStreamException {
-		ArrayList<String> titles = new ArrayList<String>();
+	public String pseudoRelevaceFeedback (String query, int prf) throws IOException, XMLStreamException{
 		String newQuery = query;
-		int flag=0;
-		for (WikiPage wikiPage : searchWikiPages(query)) {
-			if (flag>= prf){
-				break;
-			}
-			String frequentWord = wikiPage.mostFrequentWord();
-			newQuery+= " " + frequentWord;
-			flag++;
+		for (WikiPage wikiPage : searchWikiPages(query, prf)) {
+			newQuery+= " " + wikiPage.mostFrequentWord();
 		}
+		return newQuery;
 		
-		titles = searchTitles(newQuery);
-		return titles;
-
+	}
+	
+	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
+		//String newQuery = pseudoRelevaceFeedback(query, prf);
+		
+		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
 	}
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){
@@ -197,9 +186,21 @@ public class SearchEngineY extends SearchEngine {
 			if (!flag) myRankingRelevance.add((double) 0);	
 			flag=false;
 		}
-		int rankSize = myRankingRelevance.size();
-		if (rankSize < at){
-			int i = at -rankSize;
+		
+		ArrayList<Double> goldenRanking = new ArrayList<>();
+		for (int i= 0; i<50; i++){
+			double gain = calculateRelevance (i);
+			goldenRanking.add(gain);
+		}
+		
+		ArrayList<Double> dgNorm = computeDG(goldenRanking);
+		ArrayList<Double> dcgNorm = computeDCG(dgNorm);
+		
+		//put missing 0 to make sizes equal
+		int rankSizeGold = goldenRanking.size();
+		int rankSizeMy = myRankingRelevance.size();
+		if (rankSizeMy < rankSizeGold){
+			int i = rankSizeGold - rankSizeMy;
 			for (int j = 0; j< i; j++)
 				myRankingRelevance.add((double) 0);
 		}
@@ -207,12 +208,12 @@ public class SearchEngineY extends SearchEngine {
 		ArrayList<Double> dg = computeDG(myRankingRelevance);
 		ArrayList<Double> dcg = computeDCG(dg); 
 
-		
-		Collections.sort(myRankingRelevance);
-		Collections.reverse(myRankingRelevance);
-		ArrayList<Double> dgNorm = computeDG(myRankingRelevance);
-		ArrayList<Double> dcgNorm = computeDCG(dgNorm); 
 		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
+//		Collections.sort(myRankingRelevance);
+//		Collections.reverse(myRankingRelevance);
+		
+		
+//		
 		
 		// TODO Auto-generated method stub
 		return ndcg.get(at-1);

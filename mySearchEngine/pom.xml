@@ -41,6 +41,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		<artifactId>wikitext.mediawiki</artifactId>
 		<version>0.9.4.I20090220-1600-e3x</version>
 	</dependency>
+	<dependency>
+		  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-lang3</artifactId>
+  <version>3.3.2</version>
+	</dependency>
 </dependencies>
 <build>
 <plugins>

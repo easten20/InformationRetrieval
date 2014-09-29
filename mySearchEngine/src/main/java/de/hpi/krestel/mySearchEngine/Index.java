@@ -17,20 +17,30 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class Index {
 	
 	private long maximumMemoryUsageInBytes = 128 * 1024 * 1024;
+	//private long maximumMemoryUsageInBytes = 128 * 100 * 1024;
 	private String wikipediaXMLFilePath;
 	private MemoryIndex temporaryIndex;
 	long wikipediaXMLFileSize;
 	private WikiPage lastWikiPage;
 	private double avgDocLength;
+	private int numberOfIndexedArticles;
+	private FileIndex fileIndexDND;
+	private NewXMLWriter xmlFileWriter;
+	
 	
 	Index (String wikipediaXMLFilePath) {
-		this.wikipediaXMLFilePath = wikipediaXMLFilePath;
-		assert new File(wikipediaXMLFilePath).isFile();
+		this.wikipediaXMLFilePath = wikipediaXMLFilePath;		
+		assert new File(wikipediaXMLFilePath).isFile();		
 		wikipediaXMLFileSize = new File(wikipediaXMLFilePath).length();
 		if (wikipediaXMLFileSize == 0) {
 			wikipediaXMLFileSize = 1;
 		}
 		temporaryIndex = new MemoryIndex();
+		numberOfIndexedArticles = 0;
+		this.xmlFileWriter = new NewXMLWriter(this.wikipediaXMLFilePath);
+		//set new filepath for XML Index
+		this.wikipediaXMLFilePath = this.xmlFileWriter.getCopyName(); 
+		fileIndexDND = new FileIndex (this.wikipediaXMLFilePath);		
 	}
 	
 	public String getXMLFilePath(){
@@ -47,7 +57,7 @@ public class Index {
 	
 	public void writeToDisk() throws IOException {
 		temporaryIndex.writeTo(freeIndexFilePath());
-		markLastLocationInWikiFile();
+		//markLastLocationInWikiFile();
 		temporaryIndex = new MemoryIndex();	
 	}
 	
@@ -112,8 +122,12 @@ public class Index {
 		if (temporaryIndex.bytesUsed() >= maximumMemoryUsageInBytes) {
 			writeToDisk();
 		}
-		System.out.println("page position: " + wikiPage.getPositionInXMLFile() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
-		System.out.println(((List<String>) tokens).size());
+		numberOfIndexedArticles ++;
+		if (numberOfIndexedArticles > 100) {
+			System.out.println("page position: " + wikiPage.getPositionInXMLFile() + " " + (wikiPage.getPositionInXMLFile() / (wikipediaXMLFileSize / 100) + "%"));
+			//System.out.println(((List<String>) tokens).size());
+			numberOfIndexedArticles = 0;
+		}
 	}
 	
 	public String indexFilePath() {
@@ -155,7 +169,7 @@ public class Index {
 	}
 	
 	FileIndex fileIndex() {
-		return new FileIndex(this.wikipediaXMLFilePath);
+		return this.fileIndexDND;
 	}
 
 	public boolean isValid() {
@@ -196,6 +210,14 @@ public class Index {
 		}*/
 		this.avgDocLength = 200;
 		return this.avgDocLength;
+	}
+
+	public void add(WikiPage wikiPage) throws IOException {
+		this.xmlFileWriter.writeNewXMLFile(wikiPage);
+		Iterable<String> tokens = wikiPage.asTokens();
+		add(wikiPage, tokens);
+		//Iterable<String> links = wikiPage.getLinks();
+		//add(wikiPage, links);	
 	}		
 	
 }

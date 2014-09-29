@@ -35,11 +35,24 @@ public class MyQuery {
 	public void setQuery(String queryText){
 		String andOp = "and";
 		String orOp = "or";
-		String butnotOP = "butnot";		     
+		String butnotOP = "butnot";
+		String LINKTO = "LINKTO";
+		if (queryText.startsWith(LINKTO)) {
+			// synchronize with WikiPage.getLinks
+			queryText = queryText.substring(LINKTO.length());
+			queryText = queryText.trim();
+			queryText = queryText.replace(" ", "]");
+			queryText = queryText.toLowerCase();
+			queryText = "[[" + queryText + "]]";
+			// queryText is now the word we need to look for.
+			// I do not understand what is going on behind this point.
+			// I will not spend hours to complete the task.
+			// TODO: May somebody do it who knows about the BooleanQuery.
+		}
 		//now stringList = [fish*, and, *tropical] or [fish*, butnot, *tropical]		         		
 		//in case of "but not", [fish, but, not, tropical] -> [fish, butnot, tropical]		
 		queryText = queryText.toLowerCase().replace("but not", butnotOP);			
-		//thks to http://stackoverflow.com/questions/366202/regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
+		//thanks to http://stackoverflow.com/questions/366202/regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 		Matcher regexMatcher = regex.matcher(queryText);		
 		String operator = "";
@@ -119,21 +132,23 @@ public class MyQuery {
 		List<WikiPage> wikiPages = wikiPagesMatchingQuery();
 		// thanks to http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property
 		final List<Term> queryTerms = new PhraseClause(queryTokens, BooleanOp.MUST).getTerms();
-		Collections.sort(wikiPages, new Comparator<WikiPage>() {
-	        public int compare(WikiPage o1, WikiPage o2) {
-	            try {	            	
-					return (new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return 0;
-	        }
-	    });
-		List<WikiPage> wikiPagesTopN = new ArrayList<>();
-		for (int i = 0; i < topN; i++)
-			wikiPagesTopN.add(wikiPages.get(i));		
-		return wikiPagesTopN;
+		Collections.sort(
+			wikiPages, new Comparator<WikiPage>() {
+		        public int compare(WikiPage o1, WikiPage o2) {
+		            try {	            	
+						return (new Double(new BM25(index, queryTerms, o1).compute()).compareTo(new BM25(index, queryTerms, o2).compute()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return 0;
+		        }
+			}
+		);		
+		if (topN > wikiPages.size())
+			topN = wikiPages.size();
+		return wikiPages.subList(0, topN);					
+
 	}
 	
 	private List<Long> getDocumentPositions(BooleanClause booleanClause) throws IOException, XMLStreamException{

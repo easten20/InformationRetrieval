@@ -1,5 +1,6 @@
 package de.hpi.krestel.mySearchEngine.parser;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -27,7 +28,8 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 	static final String TEXT = "text";
 	static final String PAGE = "page";	
 	private WikiPage nextWikiPage;
-	FileInputStream inputStream;	
+	FileInputStream inputStream;
+	BufferedInputStream buffInputStream;
 	RandomAccessFile rand;
 	long lastPageLocation; // last end of a page tag
 	int lastCharacterOffset; // RANT: THESE damn integers... no way we will parse files greater 2GB.. man I hate them.....
@@ -43,11 +45,14 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 		inputStream = new FileInputStream(xmlFile);				
 		inputStream.getChannel().position(position);		
 		lastPageLocation = position;
+		buffInputStream = new BufferedInputStream(inputStream);
 		lastCharacterOffset = 0; // I HATE IT
 		canParseSeveralWikiPages = position == 0;		
 		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+		inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+		inputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);		
 		//StreamSource source = new StreamSource(inputStream, "ASCII");		
-		eventReader = inputFactory.createXMLEventReader(inputStream, "ASCII");		
+		eventReader = inputFactory.createXMLEventReader(buffInputStream);		
 		//XMLStreamReader reader = inputFactory.createXMLStreamReader(countStream, "ASCII");			    	    
 	}
 
@@ -68,15 +73,17 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 		}
 	}
 	
-	String eventText(XMLEvent event) {
-		String string = event.asCharacters().getData();
-		byte[] bytes = string.getBytes(Charset.forName("ASCII"));
+	String eventText(XMLEvent event) {		
+		String string = event.asCharacters().getData();		
+		/*byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
 		ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
 		buffer.put(bytes);
 		buffer.flip();
 		CharBuffer charBuffer =  Charset.forName("UTF-8").decode(buffer);
-		String unicodeString = String.valueOf(charBuffer);
+		String unicodeString = String.valueOf(charBuffer);			
 		return unicodeString;
+		*/				
+		return string;
 	}	
 
 	private void readNewWikiPage() throws IOException{		
@@ -89,7 +96,7 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 						// If we have an page element, we create a new wikipage
 						if (startElement.getName().getLocalPart() == (PAGE)) {
 							this.nextWikiPage = new WikiPage();
-							nextWikiPage.setPositionInXMLFile(lastPageLocation);
+							//nextWikiPage.setPositionInXMLFile(lastPageLocation);
 						}
 					}	    	
 					if (event.isStartElement()) {
@@ -119,8 +126,9 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 					if (event.isEndElement()) {
 						EndElement endElement = event.asEndElement();
 						if (endElement.getName().getLocalPart() == (PAGE)) {
+							/*
 							if (canParseSeveralWikiPages) {
-								int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
+								//int currentCharacterOffset = endElement.getLocation().getCharacterOffset();
 								if (inputStream.getChannel().position() < endElement.getLocation().getCharacterOffset())
 									System.out.println("stop!!!!");
 								if (lastCharacterOffset > currentCharacterOffset) {
@@ -128,8 +136,9 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 								}
 								lastPageLocation += currentCharacterOffset - lastCharacterOffset;
 								lastCharacterOffset = currentCharacterOffset;
-								nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
+								//nextWikiPage.setStopPositionInXMLFile(lastPageLocation);
 							}
+							*/
 							return;
 						}
 					}

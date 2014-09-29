@@ -1,9 +1,12 @@
 package de.hpi.krestel.mySearchEngine.domain;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -15,27 +18,28 @@ import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser;
 import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser2;
 import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 
-
 /**
- * @author easten
- * class to contain pages from xml file
+ * @author easten class to contain pages from xml file
  */
 public class WikiPage {
 	private String title;
-	private String id;   
-	private String text;
+	private String id;
+	//private String text;
 	private double score;
 	private long positionInXMLFile;
-	private boolean positionInXMLFileSet; 
+	private boolean positionInXMLFileSet;
 	private long stopPositionInXMLFile;
 	private long positionInTitleListFile;
 	private boolean stopPositionInXMLFileSet;
 	private List<String> tokens;
+	private StringBuilder strBuilderText;
+	private static final Pattern LINKS = Pattern.compile("\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]");	
 
-	public WikiPage(){  
-		text = "";
+	public WikiPage() {
+		//text = "";
+		this.strBuilderText = new StringBuilder();
 		stopPositionInXMLFileSet = false;
-		positionInXMLFileSet = false;
+		positionInXMLFileSet = false;		
 	}
 
 	public String getTitle() {
@@ -43,7 +47,7 @@ public class WikiPage {
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title.trim();
 	}
 
 	public String getId() {
@@ -55,42 +59,47 @@ public class WikiPage {
 	}
 
 	public String getText() {
-		return text;
+		return strBuilderText.toString();
 	}
-	
+
 	public void setText(String text) {
-		this.text = text;
+		this.strBuilderText = new StringBuilder();
+		this.strBuilderText.append(text);
 	}
 
 	public void addText(String data) {
-		text += data;
+		//text = text.concat(data);
+		this.strBuilderText.append(data);
 	}
 
 	public void setPositionInXMLFile(long position) {
 		positionInXMLFileSet = true;
 		positionInXMLFile = position;
-	}	
-	
+	}
+
 	public void setPositionInTitleListFile(long position) {
 		this.positionInTitleListFile = position;
 	}
-	
+
 	public long getPositionInTitleListFile(long position) {
 		return this.positionInTitleListFile;
 	}
-	
+
 	public long getPositionInXMLFile() {
-		if (!positionInXMLFileSet) { throw new AssertionError();}
+		if (!positionInXMLFileSet) {
+			throw new AssertionError();
+		}
 		return positionInXMLFile;
 	}
-	
-	public static WikiPage from(String xmlFilePath, long positionInXMLFile) throws IOException, XMLStreamException {
+
+	public static WikiPage from(String xmlFilePath, long positionInXMLFile)
+			throws IOException, XMLStreamException {
 		WikiXMLIterable wikiPages = new WikiXMLIterable(xmlFilePath);
-		ReadXMLParser2 parser = wikiPages.iterator();
-		parser.jumpToPosition(positionInXMLFile);		
-		WikiPage wikiPage =  parser.next();
+		ReadXMLParser parser = wikiPages.iterator();
+		parser.jumpToPosition(positionInXMLFile);
+		WikiPage wikiPage = parser.next();
 		assert wikiPage.getPositionInXMLFile() == positionInXMLFile;
-		wikiPage.setPositionInXMLFile(positionInXMLFile);
+		wikiPage.setPositionInXMLFile(positionInXMLFile);		
 		return wikiPage;
 	}
 
@@ -98,22 +107,24 @@ public class WikiPage {
 		stopPositionInXMLFile = lastPageLocation;
 		stopPositionInXMLFileSet = true;
 	}
-	
+
 	public long getStopPositionInXMLFile() {
-		if (!stopPositionInXMLFileSet) { throw new AssertionError();}
+		if (!stopPositionInXMLFileSet) {
+			throw new AssertionError();
+		}
 		return stopPositionInXMLFile;
 	}
-	
+
 	String cleanUpWikiText() {
-		//ParseHTMLToText htmlParser = new ParseHTMLToText();
+		// ParseHTMLToText htmlParser = new ParseHTMLToText();
 		String text = this.getText();
-		//String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
+		// String html = ParseWikiToHTMLUtility.parseMediaWiki(text);
 		String html = text;
 		html = html.replaceFirst("<\\?[^>]*\\?>", "");
-		//String parsedHTML = htmlParser.parseHTML(html);
+		// String parsedHTML = htmlParser.parseHTML(html);
 		return html.toString();
 	}
-	
+
 	public long numberOfTerms() {
 		return asTokens().size();
 	}
@@ -135,80 +146,102 @@ public class WikiPage {
 		}
 		return number;
 	}
-	
-	public String mostFrequentWord (){
+
+	public String mostFrequentWord() {
 		List<String> tokens = this.asTokens();
-		TreeMap<String, Integer> frequency = new TreeMap<String,Integer>();
+		TreeMap<String, Integer> frequency = new TreeMap<String, Integer>();
 		String mostUsedToken = "";
 		int freq = 0;
-		for (String token:tokens){
-			if (frequency.containsKey(token)){
-				frequency.put(token, frequency.get(token)+1);
-			}
-			else{
+		for (String token : tokens) {
+			if (frequency.containsKey(token)) {
+				frequency.put(token, frequency.get(token) + 1);
+			} else {
 				frequency.put(token, 1);
 			}
-			if (frequency.get(token) > freq){
-				freq=frequency.get(token);
-				mostUsedToken=token;
+			if (frequency.get(token) > freq) {
+				freq = frequency.get(token);
+				mostUsedToken = token;
 			}
 		}
-		return mostUsedToken;	
+		return mostUsedToken;
 	}
-	
-	public String resultGenerate(String query, WikiPage wikiPage, int resultSize, int flag)
-	{
+
+	public String generateSnippet(String query, int resultSize,
+			int snippetNumber) {
 		String returnString = "";
-		returnString += "***** " + flag + "." + wikiPage.getTitle() + " *****" + "\n";
-		
-		String entireText = wikiPage.getText();
+		returnString += "***** " + snippetNumber + "." + this.getTitle()
+				+ " *****" + "\n";
+
+		String entireText = this.getText();
 		String key = null;
-		int tot = 0;
-		int queryPosition = 0;
+		int position = 0;
+		int queryPosition = -1;
 		StringTokenizer stringTokenizer = new StringTokenizer(entireText, " ");
-		
-		//find queryPosition
-		while(stringTokenizer.hasMoreTokens())
-		{
-			tot = tot + 1;
+
+		// find queryPosition
+		while (stringTokenizer.hasMoreTokens()) {
+			position = position + 1;
 			key = stringTokenizer.nextToken();
-			if(key.toLowerCase().contains(query.toLowerCase()))
-			{
-				queryPosition = tot ;
+			if (key.toLowerCase().contains(query.toLowerCase())) {
+				queryPosition = position;
 				break;
-			}	
+			}
 		}
-		
-		tot = 0;
+		if (queryPosition == -1) {
+			throw new AssertionError("Query: " + query
+					+ " not found in WikiPage " + this.getTitle());
+		}
+		position = 0;
 		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
-		while(stringTokenizer2.hasMoreTokens())
-		{
-			tot = tot + 1;
+		while (stringTokenizer2.hasMoreTokens()) {
+			position = position + 1;
 			key = stringTokenizer2.nextToken();
-			
-			if(queryPosition - resultSize <= tot && tot <= queryPosition + resultSize)
-			{
+
+			if (queryPosition - resultSize <= position
+					&& position <= queryPosition + resultSize) {
 				returnString += key + " ";
 				returnString = returnString.replaceAll("\\[", "");
 				returnString = returnString.replaceAll("\\]", "");
 				returnString = returnString.replaceAll("\\{", "");
 				returnString = returnString.replaceAll("\\}", "");
 
-				//debug
-				//System.out.println("added string: " + returnString);
+				// debug
+				// System.out.println("added string: " + returnString);
 			}
-			
+
 		}
 		returnString += "\n";
-		
+
 		return returnString;
 	}
-	
-	public double getScore(){
+
+	public double getScore() {
 		return this.score;
 	}
-	
-	public void setScore(double result){
+
+	public void setScore(double result) {
 		this.score = result;
 	}
+
+	public List<String> getLinks() {
+		// synchronize with MyQuery.setQuery
+		List<String> links = new ArrayList<String>();
+		// from
+		// http://stackoverflow.com/questions/6020384/create-array-of-regex-matches
+		//Matcher m = Pattern.compile(
+		//		"\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]")
+		//		.matcher(getText());
+		Matcher m = LINKS.matcher(getText());
+		while (m.find()) {
+			String link;
+			link = m.group(1);
+			link = link.replaceAll(" ", "]"); // we shall have no spaces there
+												// because they destroy the
+												// index
+			link.toLowerCase();
+			links.add("[[" + link + "]]");
+		}
+		return links;
+	}
+
 }
