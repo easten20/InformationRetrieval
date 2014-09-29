@@ -1,9 +1,12 @@
 package de.hpi.krestel.mySearchEngine;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
@@ -61,9 +64,23 @@ public class SearchEngineTest {
 		//”Artikel AND Smithee”
 		//”’Filmfestspiele in Venedig’”
 		System.out.println("Searched Terms!");
+		
+		//debug
+//		MySecondClass window = new MySecondClass();
+//		window.appendToPane("test", Color.BLACK);
+//        SwingUtilities.invokeLater(new Runnable()
+//        {
+//            public void run()
+//            {
+//            	MySecondClass window = new MySecondClass();
+//            	window.appendToPane("flow", Color.ORANGE);
+//            }
+//        });
+		//debug
 	}
 
 	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
+		
 		System.out.println("---------------------- " + query + " ----------------------");
 
 		SearchResult searchResult = test.searchWikiPages(query, prf, topK);
@@ -77,13 +94,28 @@ public class SearchEngineTest {
 //		System.out.println("ndcg@"+topK + " : " + ndcg);
 //>>>>>>> .merge_file_d1BGvg
 		
-		ArrayList<String> snippetsList = searchResult.makeSnippets();
 
+        MySecondClass window = new MySecondClass();
+  
+		
+		ArrayList<String> snippetsList = searchResult.makeSnippets();
+		
 		for(int i = 0;i<snippetsList.size();i++)
 		{
 			System.out.println(snippetsList.get(i));
+			//window.appendToPane(snippetsList.get(i), Color.BLACK);
+			colorQueryTerm(window, snippetsList.get(i), query);
+			
 		}
-		
+			
+	}
+	
+	private static void colorQueryTerm(MySecondClass window, String string, String query){
+		int index = string.indexOf(query);
+		window.appendToPane( string.substring(0, index), Color.BLACK);
+		window.appendToPane( string.substring(index, index+query.length()), Color.RED);
+		window.appendToPane( string.substring(index+query.length(), string.length()-1), Color.BLACK);
+		window.appendToPane( "\n\n\n", Color.BLACK);
 	}
 
 	@SuppressWarnings("unused")
