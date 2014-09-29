@@ -2,8 +2,6 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.awt.*;
 
-import java.awt.event.*;
-
 import javax.swing.*;
 
 import javax.swing.border.*;
@@ -36,17 +34,7 @@ public class MySecondClass extends JFrame
 
         topPanel.add(tPane);
 
-//        appendToPane(tPane, "My Name is Too Good.\n", Color.RED);
-//        appendToPane(tPane, "I wish I could be ONE of THE BEST on ", Color.BLUE);
-//        appendToPane(tPane, "Stack", Color.DARK_GRAY);
-//        appendToPane(tPane, "Over", Color.MAGENTA);
-//        appendToPane(tPane, "flow", Color.ORANGE);
-
         getContentPane().add(topPanel);
-        
-//        JScrollPane scrollPane = new JScrollPane(topPanel);  
-//        setContentPane(scrollPane);  
-//        scrollPane.add(topPanel); 
         
         sp = new JScrollPane(tPane);
         getContentPane().add( sp );
@@ -60,23 +48,10 @@ public class MySecondClass extends JFrame
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
 
-        //aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
-        //aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
         int len = tPane.getDocument().getLength();
         tPane.setCaretPosition(len);
         tPane.setCharacterAttributes(aset, false);
         tPane.replaceSelection(msg);
     }
 
-//    public static void main(String... args)
-//    {
-//        SwingUtilities.invokeLater(new Runnable()
-//            {
-//                public void run()
-//                {
-//                    new MySecondClass();
-//                }
-//            });
-//    }
 }

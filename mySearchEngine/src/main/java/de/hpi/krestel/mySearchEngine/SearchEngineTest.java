@@ -96,16 +96,11 @@ public class SearchEngineTest {
 		
 
         MySecondClass window = new MySecondClass();
-  
-		
 		ArrayList<String> snippetsList = searchResult.makeSnippets();
-		
 		for(int i = 0;i<snippetsList.size();i++)
 		{
-			System.out.println(snippetsList.get(i));
-			//window.appendToPane(snippetsList.get(i), Color.BLACK);
+			//System.out.println(snippetsList.get(i));
 			colorQueryTerm(window, snippetsList.get(i), query);
-			
 		}
 			
 	}
