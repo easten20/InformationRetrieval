@@ -37,22 +37,22 @@ public class ReadXMLParser implements Iterator<WikiPage> {
 	String xmlFile;		
 
 	public ReadXMLParser(String xmlFile) throws IOException, XMLStreamException {
+		inputStream = new FileInputStream(xmlFile);
+		buffInputStream = new BufferedInputStream(inputStream);
+		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+		inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+		inputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);
+		eventReader = inputFactory.createXMLEventReader(buffInputStream);
 		this.xmlFile = xmlFile;
 		jumpToPosition(0);
 	}
 	
-	public void jumpToPosition(long position) throws IOException, XMLStreamException {
-		inputStream = new FileInputStream(xmlFile);				
+	public void jumpToPosition(long position) throws IOException, XMLStreamException {					
 		inputStream.getChannel().position(position);		
-		lastPageLocation = position;
-		buffInputStream = new BufferedInputStream(inputStream);
+		lastPageLocation = position;		
 		lastCharacterOffset = 0; // I HATE IT
-		canParseSeveralWikiPages = position == 0;		
-		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-		inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-		inputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);		
-		//StreamSource source = new StreamSource(inputStream, "ASCII");		
-		eventReader = inputFactory.createXMLEventReader(buffInputStream);		
+		canParseSeveralWikiPages = position == 0;					
+		//StreamSource source = new StreamSource(inputStream, "ASCII");					
 		//XMLStreamReader reader = inputFactory.createXMLStreamReader(countStream, "ASCII");			    	    
 	}
 

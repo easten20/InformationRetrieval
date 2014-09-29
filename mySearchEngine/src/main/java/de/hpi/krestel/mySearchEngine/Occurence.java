@@ -46,14 +46,22 @@ public class Occurence implements Comparable<Occurence>{
 	
 	public WikiPage getWikiPage() throws IOException, XMLStreamException {
 		return WikiPage.from(xmlFilePath, getPositionOfDocumentInXMLFile());
-	}
-
+	}		
+	
 	@Override
-	public int compareTo(Occurence comparedObj) {
-		if (this.positionOfDocumentInXMLFile != comparedObj.positionOfDocumentInXMLFile)
-			return (int) (this.positionOfDocumentInXMLFile - comparedObj.positionOfDocumentInXMLFile);
-		else 
-			return this.positionOfWordInDocument - comparedObj.positionOfWordInDocument;		
+	public int compareTo(Occurence comparedObj) {		
+		if (this.positionOfDocumentInXMLFile > comparedObj.positionOfDocumentInXMLFile)
+			return 1;
+		else if (this.positionOfDocumentInXMLFile < comparedObj.positionOfDocumentInXMLFile)
+			return -1;
+		else {
+			if (this.positionOfWordInDocument > comparedObj.positionOfWordInDocument)
+				return 1;
+			else if (this.positionOfWordInDocument < comparedObj.positionOfWordInDocument)
+				return -1;
+			else
+				return 0;
+		}
 	}
 
 	public long getIndexInIndex() {

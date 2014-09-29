@@ -96,15 +96,16 @@ public class MyQuery {
 		Collections.sort(occurencesL);
 		int termSize = phraseQuery.getTerms().size(); // combinated word's size
 		String firstWord = phraseQuery.getTerms().get(0).getText(); //first word		
-		String phraseText = phraseQuery.getPhraseText().replace(" ", "");
+		//String phraseText = phraseQuery.getPhraseText().replace(" ", "");
 		for (int i = 0; i < occurencesL.size(); i++){
 			if ((i + termSize) > occurencesL.size()) 
 				break;
 			else
 				if (firstWord.compareTo(occurencesL.get(i).getWord()) == 0)
 				{
+					/*
 					//just make sure the sequences in order
-					if (termSize-1 != (occurencesL.get(i+termSize-1).getPositionOfWordInDocument() - occurencesL.get(i).getPositionOfWordInDocument()))
+					if (termSize-1 > (occurencesL.get(i+termSize-1).getPositionOfWordInDocument() - occurencesL.get(i).getPositionOfWordInDocument()))
 							continue;
 					String concatenatedTerms = "";					
 					for (int j = 0; j < termSize; j++)
@@ -113,6 +114,33 @@ public class MyQuery {
 					}
 					if (phraseText.equalsIgnoreCase(concatenatedTerms))
 						docPosL.add(occurencesL.get(i).getPositionOfDocumentInXMLFile());					
+						*/
+					boolean docSimilar = true;
+					Long docId = occurencesL.get(i).getPositionOfDocumentInXMLFile();
+					for (int j = 1; j < termSize; j++){
+						if (docId != occurencesL.get(i + j).getPositionOfDocumentInXMLFile()){
+							docSimilar = false;
+							break;
+						}
+					}
+					if (!docSimilar)
+						continue;
+					else {						
+						String concatenatedTerms = "";
+						boolean phraseSimilar = true;
+						for (int j = 0; j < termSize; j++){							
+							if (phraseQuery.getTerms().get(j).getText().compareTo(occurencesL.get(i+j).getWord()) != 0)
+								phraseSimilar = false;
+						}						
+						if (phraseSimilar == true) {							
+							if (termSize-1 == (occurencesL.get(i+termSize-1).getPositionOfWordInDocument() - occurencesL.get(i).getPositionOfWordInDocument()))
+								docPosL.add(occurencesL.get(i).getPositionOfDocumentInXMLFile());
+						}
+					}
+				}
+				else
+				{
+					occurencesL.get(i).getWord();
 				}
 		}		
 		return docPosL;
@@ -136,7 +164,7 @@ public class MyQuery {
 			wikiPages, new Comparator<WikiPage>() {
 		        public int compare(WikiPage o1, WikiPage o2) {
 		            try {	            	
-						return (new Double(new BM25(index, queryTerms, o1).compute()).compareTo(new BM25(index, queryTerms, o2).compute()));
+						return (new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute()));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

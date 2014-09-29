@@ -190,7 +190,7 @@ public class Index {
 	}
 
 	public int totalNumberOfDocumets() {
-		return 100;
+		return 500000;
 	}
 
 	public long numberOfDocumentsContaining(Term term) throws IOException {
