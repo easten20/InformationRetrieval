@@ -68,24 +68,14 @@ public class SearchEngineTest {
 
 		SearchResult searchResult = test.searchWikiPages(query, prf, topK);
 		
-<<<<<<< .merge_file_pdjN8X
-		//trim results
-		for(int i = 0;i<results.size();i++){
-			System.out.println(results.set(i, results.get(i).trim()));
-		}
-				
-		//CHANGE TO TOPK!!!!!!!!
-		//double ndcg = test.computeNdcg(goldenList,results, 1);
-		//System.out.println("ndcg@"+topK + " : " + ndcg);
-=======
 		for (String title: searchResult.getTitles()){
 			System.out.println(title);
 		}
 
-			/*
-		double ndcg = searchResult.computeNDCG();
-		System.out.println("ndcg@"+topK + " : " + ndcg);
->>>>>>> .merge_file_d1BGvg
+			
+//		double ndcg = searchResult.computeNDCG();
+//		System.out.println("ndcg@"+topK + " : " + ndcg);
+//>>>>>>> .merge_file_d1BGvg
 		
 		ArrayList<String> snippetsList = searchResult.makeSnippets();
 
@@ -93,7 +83,7 @@ public class SearchEngineTest {
 		{
 			System.out.println(snippetsList.get(i));
 		}
-		*/
+		
 	}
 
 	@SuppressWarnings("unused")

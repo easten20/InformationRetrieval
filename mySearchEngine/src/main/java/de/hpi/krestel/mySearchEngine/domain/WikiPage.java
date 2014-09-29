@@ -34,7 +34,8 @@ public class WikiPage {
 	private List<String> tokens;
 	private StringBuilder strBuilderText;
 	private static final Pattern LINKS = Pattern.compile("\\[\\[\\s*([^\\]\\|#]*)\\s*([\\|#][^\\]]*\\s*)?\\]\\]");	
-
+	private static String[] exclude = { "<ref>", "</ref>", "<small>", "</small>" };
+	
 	public WikiPage() {
 		//text = "";
 		this.strBuilderText = new StringBuilder();
@@ -165,6 +166,16 @@ public class WikiPage {
 		}
 		return mostUsedToken;
 	}
+	
+	private String removeTagsFromSnippet(String key){
+		
+		for(String s:exclude){
+		    key=key.replace(s,"");
+		}
+		
+		return key;
+	}
+	
 
 	public String generateSnippet(String query, int resultSize,
 			int snippetNumber) {
@@ -196,6 +207,9 @@ public class WikiPage {
 		while (stringTokenizer2.hasMoreTokens()) {
 			position = position + 1;
 			key = stringTokenizer2.nextToken();
+			
+			//remove <ref>, </ref>
+			key = removeTagsFromSnippet(key);
 
 			if (queryPosition - resultSize <= position
 					&& position <= queryPosition + resultSize) {
