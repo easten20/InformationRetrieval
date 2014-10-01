@@ -2,6 +2,7 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -38,6 +39,13 @@ public class SearchResult {
 	
 	public double computeNDCG (){
 		ArrayList <String> goldenList = this.searchEngineY.getGoldRanking(query);
+		
+		//print goldenList
+		System.out.println("+++goldenList+++");
+		for ( int i = 0 ; i < goldenList.size() ; i ++ ) {
+			System.out.println( i + goldenList.get(i) );
+		}
+		
 		return this.searchEngineY.computeNdcg(goldenList, getTitles(), this.topK);
 	}
 	
@@ -46,6 +54,13 @@ public class SearchResult {
 		for (WikiPage wikiPage : resultPages) {
 			titles.add(wikiPage.getTitle());
 		}
+		
+		//print myRankingList
+		System.out.println("+++myRankingList+++");
+		for ( int i = 0 ; i < titles.size() ; i ++ ) {
+			System.out.println( i + titles.get(i));
+		}
+		
 		return titles;
 	}
 	

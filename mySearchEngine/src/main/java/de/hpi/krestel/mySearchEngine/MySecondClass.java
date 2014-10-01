@@ -31,6 +31,8 @@ public class MySecondClass extends JFrame
         tPane.setBorder(eb);
         //tPane.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         tPane.setMargin(new Insets(5, 5, 5, 5));
+//        Font font = new Font("Serif", Font.ITALIC, 20);
+//        tPane.setFont(font);
 
         topPanel.add(tPane);
 
@@ -47,7 +49,7 @@ public class MySecondClass extends JFrame
     {
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
+        
         int len = tPane.getDocument().getLength();
         tPane.setCaretPosition(len);
         tPane.setCharacterAttributes(aset, false);

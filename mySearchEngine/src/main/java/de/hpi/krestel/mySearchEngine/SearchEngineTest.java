@@ -57,45 +57,32 @@ public class SearchEngineTest {
 //		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
 //		searchTitles("Art* BUT NOT Artikel", test);
 		//searchTitles("Soziologie", test);
-		searchTitles("München", test);
+		searchTitles("Deutschland", test);
 		//searchTitles("München", test);
 		//”Art* BUT NOT Artikel”
 		//”Artikel OR Reaktion”
 		//”Artikel AND Smithee”
 		//”’Filmfestspiele in Venedig’”
 		System.out.println("Searched Terms!");
-		
-		//debug
-//		MySecondClass window = new MySecondClass();
-//		window.appendToPane("test", Color.BLACK);
-//        SwingUtilities.invokeLater(new Runnable()
-//        {
-//            public void run()
-//            {
-//            	MySecondClass window = new MySecondClass();
-//            	window.appendToPane("flow", Color.ORANGE);
-//            }
-//        });
-		//debug
 	}
 
 	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
 		
-		System.out.println("---------------------- " + query + " ----------------------");
+		MySecondClass window = new MySecondClass();
+		//System.out.println("---------------------- " + query + " ----------------------");
+		printInWindow(window, "---------------------- " + query + " ----------------------");
 
 		SearchResult searchResult = test.searchWikiPages(query, prf, topK);
 		
 		for (String title: searchResult.getTitles()){
-			System.out.println(title);
+			//System.out.println(title);
+			printInWindow(window, title);
 		}
 
-			
-//		double ndcg = searchResult.computeNDCG();
-//		System.out.println("ndcg@"+topK + " : " + ndcg);
-//>>>>>>> .merge_file_d1BGvg
-		
-
-        MySecondClass window = new MySecondClass();
+		double ndcg = searchResult.computeNDCG();
+		//System.out.println("ndcg@"+topK + " : " + ndcg);
+		printInWindow(window, "ndcg@"+topK + " : " + ndcg);
+        
 		ArrayList<String> snippetsList = searchResult.makeSnippets();
 		for(int i = 0;i<snippetsList.size();i++)
 		{
@@ -103,6 +90,11 @@ public class SearchEngineTest {
 			colorQueryTerm(window, snippetsList.get(i), query);
 		}
 			
+	}
+	
+	private static void printInWindow(MySecondClass window, String string){
+		window.appendToPane(string, Color.BLACK);
+		window.appendToPane("\n", Color.BLACK);
 	}
 	
 	private static void colorQueryTerm(MySecondClass window, String string, String query){
