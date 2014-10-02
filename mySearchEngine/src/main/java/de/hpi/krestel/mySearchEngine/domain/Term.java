@@ -69,6 +69,5 @@ public class Term {
 
 	public boolean matches(String token) {
 		return isRegexMatch(token);
-	}
-		
+	}			
 }

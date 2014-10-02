@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.hpi.krestel.mySearchEngine.Occurence;
+
 public class PhraseClause implements BooleanImpl {
 		
 	private BooleanOp boolOp;
 	private List<Term> termsL;
 	private Set<Long> docPositionST;
+	private List<DocumentOcc> occurencesL;
 	
 	public PhraseClause(Iterable<String> iterableString){
 		this(iterableString, BooleanOp.SHOULD);		
@@ -22,6 +25,7 @@ public class PhraseClause implements BooleanImpl {
 		}
 		this.boolOp = boolOp;
 		this.docPositionST = new TreeSet<Long>();
+		this.occurencesL = new ArrayList<DocumentOcc>();
 	}					
 	
 	public String getPhraseText(){
@@ -47,5 +51,10 @@ public class PhraseClause implements BooleanImpl {
 	
 	public Set<Long> getDocPositionST(){
 		return this.docPositionST;
+	}		
+
+	@Override
+	public List<DocumentOcc> getDocumentOccL() {
+		return occurencesL;
 	}
 }

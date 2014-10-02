@@ -37,8 +37,7 @@ public class FileIndex {
 	Map<String, List<Occurence>> cachedFindDocuments;
 	BufferedReader myReader;
 	BufferedRaf bufferedRaf;
-	BufferedRaf seekBufferedRaf;
-	
+	BufferedRaf seekBufferedRaf;	
 	
 	FileIndex(String xmlPath, String indexPath, String seekListPath) {		
 		initFileIndex(xmlPath, indexPath, seekListPath);
@@ -50,7 +49,7 @@ public class FileIndex {
 	
 	FileIndex(String xmlPath) {
 		initFileIndex(xmlPath, xmlPath + ".index", xmlPath + ".index.skl");
-	}
+	}		
 		
 	public String indexFilePath() {
 		return indexPath;

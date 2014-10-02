@@ -201,10 +201,11 @@ public class WikiPage {
 				break;
 			}
 		}
+		/*
 		if (queryPosition == -1) {
 			throw new AssertionError("Query: " + query
 					+ " not found in WikiPage " + this.getTitle());
-		}
+		}*/
 		position = 0;
 		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
 		while (stringTokenizer2.hasMoreTokens()) {

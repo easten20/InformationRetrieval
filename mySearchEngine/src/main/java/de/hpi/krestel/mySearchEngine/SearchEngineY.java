@@ -74,7 +74,7 @@ public class SearchEngineY extends SearchEngine {
 		assert index.isValid();				
 		MyQuery queryResult = new MyQuery(this.index);		
 		queryResult.setQuery(query);		
-		return queryResult.wikiPagesMatchingQuery(numberOfWikiPages);	// TODO: prf	
+		return queryResult.wikiPagesMatchingQuery_New(numberOfWikiPages);	// TODO: prf	
 	}		
 	
 	
@@ -106,8 +106,7 @@ public class SearchEngineY extends SearchEngine {
 	}
 	
 	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
-		//String newQuery = pseudoRelevaceFeedback(query, prf);
-		
+		//String newQuery = pseudoRelevaceFeedback(query, prf);		
 		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
 	}
 

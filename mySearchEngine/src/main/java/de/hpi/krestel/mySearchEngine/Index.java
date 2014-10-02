@@ -220,4 +220,8 @@ public class Index {
 		//add(wikiPage, links);	
 	}		
 	
+	public void storeSeekListToMemory() {
+		
+	}
+	
 }
