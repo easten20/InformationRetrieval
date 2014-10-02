@@ -7,9 +7,10 @@ import java.util.Set;
 
 import de.hpi.krestel.mySearchEngine.Index;
 import de.hpi.krestel.mySearchEngine.domain.DocumentOcc;
+import de.hpi.krestel.mySearchEngine.domain.StarOp;
 import de.hpi.krestel.mySearchEngine.domain.Term;
 
-public class BM25_New {
+public class BM25 {
 	
 	Index index;
 	List<Term> terms;
@@ -18,7 +19,7 @@ public class BM25_New {
 	double b = 0.75f;
 	double k2 = 100;	 
 	
-	public BM25_New (Index index, List<Term> searchTerms, DocumentOcc docOcc) {
+	public BM25 (Index index, List<Term> searchTerms, DocumentOcc docOcc) {
 		this.index = index;
 		this.terms = searchTerms;
 		this.docOcc = docOcc;		
@@ -63,10 +64,17 @@ public class BM25_New {
 	}
 
 	private int countOfTermInQuery(Term term) {
-		int count = 0;
-		for (Term term1: this.terms){			
-			if (term1.getText().compareTo(term.getText()) == 0)
-				count++;
+		int count = 0;		
+		for (Term term1: this.terms){
+			if (term.getStarOp() != StarOp.NOSTAR){				
+				if (term.isRegexMatch(term1.getText()))
+					count+=1;
+			}
+			else
+			{				
+				if (term1.getText().compareTo(term.getText()) == 0)
+					count+=1;
+			}
 		}
 		return count;
 	}		

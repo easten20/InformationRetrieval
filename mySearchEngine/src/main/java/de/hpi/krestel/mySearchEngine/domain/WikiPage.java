@@ -10,13 +10,13 @@ import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
 
-import de.hpi.krestel.mySearchEngine.BM25;
 import de.hpi.krestel.mySearchEngine.TokenStream;
 import de.hpi.krestel.mySearchEngine.parser.ParseHTMLToText;
 import de.hpi.krestel.mySearchEngine.parser.ParseWikiToHTMLUtility;
 import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser;
 import de.hpi.krestel.mySearchEngine.parser.ReadXMLParser2;
 import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
+import de.hpi.krestel.mySearchEngine.score.BM25;
 
 /**
  * @author easten class to contain pages from xml file
@@ -237,9 +237,7 @@ public class WikiPage {
 		return this.score;
 	}
 
-	public void setScore(double result) {
-		System.out.println("title: " + this.title);
-		System.out.println("score :" + result);
+	public void setScore(double result) {		
 		this.score = result;
 	}
 

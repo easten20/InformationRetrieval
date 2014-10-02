@@ -2,6 +2,7 @@ package de.hpi.krestel.mySearchEngine;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,14 +24,14 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
  */
 
 // Replace 'Y' with your search engine name
-public class SearchEngineY extends SearchEngine {
+public class SearchEngineIR extends SearchEngine {
 	
 	Index index;
 	int resultSize = 10; // Nicco and Elina, we have to display different results. Change this size. Timur and I will use 10. 
 	
 	
 	// Replace 'Y' with your search engine name
-	public SearchEngineY() {
+	public SearchEngineIR() {
 		// This should stay as is! Don't add anything here!
 		super();
 	}
@@ -70,10 +71,12 @@ public class SearchEngineY extends SearchEngine {
 		return null;
 	}
 	
-	public List<WikiPage> searchWikiPages(String query, int numberOfWikiPages) throws IOException, XMLStreamException {
+	public List<WikiPage> searchWikiPages(String query, int numberOfWikiPages) throws InvalidParameterException, IOException, XMLStreamException {
 		assert index.isValid();				
 		MyQuery queryResult = new MyQuery(this.index);		
-		queryResult.setQuery(query);		
+		queryResult.setQuery(query);
+		if (queryResult.queryTokens.size() == 0)
+			throw new InvalidParameterException("query not found");
 		return queryResult.wikiPagesMatchingQuery_New(numberOfWikiPages);	// TODO: prf	
 	}		
 	
@@ -168,14 +171,9 @@ public class SearchEngineY extends SearchEngine {
 		//add relevance values to myRanking
 		int size = goldRanking.size();
 		boolean flag = false;
-		for (String title : myRanking){
-			
+		for (String title : myRanking){			
 			for (int i=0; i<size; i++){
-				if (goldRanking.get(i).equals(title)){
-					
-					//debug
-					//System.out.println("hit!!");
-					
+				if (goldRanking.get(i).equals(title)){					
 					double gain = calculateRelevance(i);
 					myRankingRelevance.add(gain);
 					flag = true;
@@ -208,13 +206,6 @@ public class SearchEngineY extends SearchEngine {
 		ArrayList<Double> dcg = computeDCG(dg); 
 
 		ArrayList<Double> ndcg = computeNDCG(dcg, dcgNorm);
-//		Collections.sort(myRankingRelevance);
-//		Collections.reverse(myRankingRelevance);
-		
-		
-//		
-		
-		// TODO Auto-generated method stub
 		return ndcg.get(at-1);
 	}			
 	

@@ -20,14 +20,15 @@ import de.hpi.krestel.mySearchEngine.domain.DocumentOcc;
 import de.hpi.krestel.mySearchEngine.domain.PhraseClause;
 import de.hpi.krestel.mySearchEngine.domain.Term;
 import de.hpi.krestel.mySearchEngine.domain.WikiPage;
-import de.hpi.krestel.mySearchEngine.score.BM25_New;
+import de.hpi.krestel.mySearchEngine.score.BM25;
+import de.hpi.krestel.mySearchEngine.score.BM25;
 
 public class MyQuery {
 		
 	private BooleanQuery booleanQuery;	
 	private Index index;	
 	private Set<Long> docPositionST;	
-	private List<String> queryTokens;		
+	public List<String> queryTokens;		
 	
 	public MyQuery(Index index){		
 		this.index = index;
@@ -78,15 +79,20 @@ public class MyQuery {
 		} 	
 		for (int i = 0; i < operator.size(); i++){
 			if (operator.get(i).equalsIgnoreCase(andOp)) {
+				if (this.booleanQuery.getBooleanClauses().size() > i)
 				this.booleanQuery.getBooleanClauses().get(i).setBoolOp(BooleanOp.MUST);
+				if (this.booleanQuery.getBooleanClauses().size() > i+1)
 				this.booleanQuery.getBooleanClauses().get(i+1).setBoolOp(BooleanOp.MUST);
 			}
 			else if (operator.get(i).equalsIgnoreCase(orOp)){
-				this.booleanQuery.getBooleanClauses().get(i).setBoolOp(BooleanOp.SHOULD);
-				this.booleanQuery.getBooleanClauses().get(i+1).setBoolOp(BooleanOp.SHOULD);
+				if (this.booleanQuery.getBooleanClauses().size() > i)
+					this.booleanQuery.getBooleanClauses().get(i).setBoolOp(BooleanOp.SHOULD);
+				if (this.booleanQuery.getBooleanClauses().size() > i+1)
+					this.booleanQuery.getBooleanClauses().get(i+1).setBoolOp(BooleanOp.SHOULD);
 			}
-			else if (operator.get(i).equalsIgnoreCase(butnotOP))
-				this.booleanQuery.getBooleanClauses().get(i+1).setBoolOp(BooleanOp.MUSTNOT);
+			else if (operator.get(i).equalsIgnoreCase(butnotOP))		
+				if (this.booleanQuery.getBooleanClauses().size() > i+1)					
+					this.booleanQuery.getBooleanClauses().get(i+1).setBoolOp(BooleanOp.MUSTNOT);
 		}
 	}	
 	
@@ -190,7 +196,7 @@ public class MyQuery {
 		}		
 		return wikiPages;
 	}
-	
+	   
 	/***
 	 * Instead of parse all of wikipages every time we retrieve it 
 	 * we only return the occurences 
@@ -220,7 +226,7 @@ public class MyQuery {
 				docOccs, new Comparator<DocumentOcc>() {
 		    public int compare(DocumentOcc o1, DocumentOcc o2) {
 		    	try {	            	
-					return (new Double(new BM25_New(index, queryTerms, o2).compute()).compareTo(new BM25_New(index, queryTerms, o1).compute()));
+					return (new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute()));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -229,29 +235,7 @@ public class MyQuery {
 				        }
 					}
 				);		
-	}
-	
-	public List<WikiPage> wikiPagesMatchingQuery(int topN) throws IOException, XMLStreamException {
-		List<WikiPage> wikiPages = wikiPagesMatchingQuery();
-		// thanks to http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property
-		final List<Term> queryTerms = new PhraseClause(queryTokens, BooleanOp.MUST).getTerms();
-		Collections.sort(
-			wikiPages, new Comparator<WikiPage>() {
-		        public int compare(WikiPage o1, WikiPage o2) {
-		            try {	            	
-						return (new Double(new BM25(index, queryTerms, o2).compute()).compareTo(new BM25(index, queryTerms, o1).compute()));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					return 0;
-		        }
-			}
-		);		
-		if (topN > wikiPages.size())
-			topN = wikiPages.size();
-		return wikiPages.subList(0, topN);					
-	}		
+	}	
 	
 	private List<DocumentOcc> groupOccurencesToDocumentOcc(List<Occurence> occurencesL){
 		long docId = -1; //set initial page Id

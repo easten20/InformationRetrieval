@@ -3,6 +3,7 @@ package de.hpi.krestel.mySearchEngine;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -23,72 +24,83 @@ import de.hpi.krestel.mySearchEngine.domain.WikiPage;
 public class SearchEngineTest {
 
 	// Some test queries for development. The real test queries will be more difficult ;) 
-	static String[] queries = {"artikel", "deutsch"};
+	static String[] queries = {"'ein trauriges Arschloch'",
+							"Toskana AND Wein", 
+							"sülz* AND staatlich",
+							"öffentlicher nahverkehr stadtpiraten",
+							"schnitzel AND kaffee BUT NOT schwein*",
+							"Dr. No",
+							"ICE BUT NOT T",
+							"Bierzelt Oktoberfest",
+							"Los Angeles sport",
+							"08/15"};
+	static String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 	
 	// some variables (will be explained when needed, ignore for now!)
-	static int topK = 20;
+	static int topK = 10;
 	static int prf = 5;
 
 	public static void main(String[] args) throws IOException, XMLStreamException {		
-		String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
-//		basicPath = "res/wiki.xml"; // comment this out/in
+		//String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
+		//basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
-		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
+		//basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
 		
 		String filePath = new File(basicPath).getAbsolutePath();
-		SearchEngineY test = new SearchEngineY();
-		if (!test.loadIndex(filePath)) {
+		SearchEngineIR mySearchEngine = new SearchEngineIR();
+		if (!mySearchEngine.loadIndex(filePath)) {
 			final long startTime = System.currentTimeMillis();
 			System.out.println("Creating index...");
-			test.index(filePath);
+			mySearchEngine.index(filePath);
 			System.out.println("Created index!");			
 			final long endTime = System.currentTimeMillis();
 			System.out.println("Total execution time: " + (endTime - startTime) );
 		}
-		if (!test.loadIndex(filePath)) {
+		if (!mySearchEngine.loadIndex(filePath)) {
 			throw new AssertionError("Index should be loaded.");
 		};
-		
+				
 		System.out.println("Searching Terms...");
-//		searchTitles("LINKTO Kulturapfel", test); // should be Bodensee
-//		searchTitles("LINKTO schnitzelmitkartoffelsalat", test);
-//		searchTitles("Art* BUT NOT Artikel", test);
-		//searchTitles("Soziologie", test);
-		searchTitles("Deutschland", test);
-		//searchTitles("München", test);
-		//”Art* BUT NOT Artikel”
-		//”Artikel OR Reaktion”
-		//”Artikel AND Smithee”
-		//”’Filmfestspiele in Venedig’”
+		for (String query : queries){
+			searchTitles(query, mySearchEngine);
+		}
+		//searchTitles("ICE BUT NOT TTT", test);
 		System.out.println("Searched Terms!");
 	}
 
-	private static void searchTitles(String query, SearchEngineY test) throws IOException, XMLStreamException {
+	private static void searchTitles(String query, SearchEngineIR test) throws IOException, XMLStreamException {
 		
-		MySecondClass window = new MySecondClass();
-		//System.out.println("---------------------- " + query + " ----------------------");
-		printInWindow(window, "---------------------- " + query + " ----------------------");
+		//MySecondClass window = new MySecondClass();
+		System.out.println("---------------------- " + query + " ----------------------");
+		//printInWindow(window, "---------------------- " + query + " ----------------------");
 
-		SearchResult searchResult = test.searchWikiPages(query, prf, topK);
+		try 
+		{
+			SearchResult searchResult = test.searchWikiPages(query, prf, topK);		
 		
-		for (String title: searchResult.getTitles()){
-			//System.out.println(title);
-			printInWindow(window, title);
+			for (String title: searchResult.getTitles()){
+				System.out.println(title);
+				//printInWindow(window, title);
+			}		
 		}
-
-		double ndcg = searchResult.computeNDCG();
+		catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		//double ndcg = searchResult.computeNDCG();
 		//System.out.println("ndcg@"+topK + " : " + ndcg);
-		printInWindow(window, "ndcg@"+topK + " : " + ndcg);
+		//printInWindow(window, "ndcg@"+topK + " : " + ndcg);
         
+		/*
 		ArrayList<String> snippetsList = searchResult.makeSnippets();
 		for(int i = 0;i<snippetsList.size();i++)
 		{
 			//System.out.println(snippetsList.get(i));
-			colorQueryTerm(window, snippetsList.get(i), query);
+			//colorQueryTerm(window, snippetsList.get(i), query);
 		}
+		*/
 			
 	}
 	

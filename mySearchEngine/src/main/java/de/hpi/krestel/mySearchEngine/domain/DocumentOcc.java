@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.hpi.krestel.mySearchEngine.BM25;
 import de.hpi.krestel.mySearchEngine.Occurence;
+import de.hpi.krestel.mySearchEngine.score.BM25;
 
 public class DocumentOcc{
 
@@ -40,12 +40,12 @@ public class DocumentOcc{
 	public int getTermsInOcc(Term term){
 		int fi = 0;
 		for (Occurence occurence: this.occurenceL){
-			if (term.getStarOp() != StarOp.NOSTAR){
+			if (term.getStarOp() != StarOp.NOSTAR){				
 				if (term.isRegexMatch(occurence.getWord()))
 					fi+=1;
 			}
 			else
-			{
+			{				
 				if (occurence.getWord().compareTo(term.getText()) == 0)
 					fi+=1;
 			}

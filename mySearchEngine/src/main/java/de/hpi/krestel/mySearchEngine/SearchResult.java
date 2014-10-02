@@ -14,10 +14,10 @@ public class SearchResult {
 	private int resultSize = 10;
 	private ArrayList<String> titles;
 	private List<WikiPage> resultPages;
-	private SearchEngineY searchEngineY;
+	private SearchEngineIR searchEngineY;
 	private int topK;
 
-	public SearchResult(String query, int prf, SearchEngineY test, List<WikiPage> pages, int topK) {
+	public SearchResult(String query, int prf, SearchEngineIR test, List<WikiPage> pages, int topK) {
 		this.query = query;
 		this.searchEngineY = test;
 		this.resultPages = pages;
@@ -41,11 +41,12 @@ public class SearchResult {
 		ArrayList <String> goldenList = this.searchEngineY.getGoldRanking(query);
 		
 		//print goldenList
+		/*
 		System.out.println("+++goldenList+++");
 		for ( int i = 0 ; i < goldenList.size() ; i ++ ) {
 			System.out.println( i + goldenList.get(i) );
 		}
-		
+		*/
 		return this.searchEngineY.computeNdcg(goldenList, getTitles(), this.topK);
 	}
 	
@@ -53,14 +54,7 @@ public class SearchResult {
 		ArrayList<String> titles = new ArrayList<String>();
 		for (WikiPage wikiPage : resultPages) {
 			titles.add(wikiPage.getTitle());
-		}
-		
-		//print myRankingList
-		System.out.println("+++myRankingList+++");
-		for ( int i = 0 ; i < titles.size() ; i ++ ) {
-			System.out.println( i + titles.get(i));
-		}
-		
+		}						
 		return titles;
 	}
 	
