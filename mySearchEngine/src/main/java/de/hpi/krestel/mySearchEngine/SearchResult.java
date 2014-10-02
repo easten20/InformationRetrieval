@@ -23,6 +23,18 @@ public class SearchResult {
 		this.resultPages = pages;
 		this.topK = topK;
 	}
+	
+	public SearchResult() {
+		this.resultPages = new ArrayList<WikiPage>();
+	}
+	
+	public int getResultPagesSize() {
+		System.out.println("start getResultPagesSize");
+		if ( resultPages != null ) {
+			return resultPages.size();
+		}
+		return 0;
+	}
 
 	public ArrayList<String> makeSnippets() throws IOException, XMLStreamException {
 		
@@ -30,8 +42,10 @@ public class SearchResult {
 		ArrayList<String> snippetsList = new ArrayList<String>();
 
 		for (WikiPage wikiPage : resultPages) {
-			snippetsList.add(wikiPage.generateSnippet(query, resultSize, numberOfSnippet));
+			snippetsList.add(wikiPage.generateSnippet2(query, resultSize, numberOfSnippet));
 			numberOfSnippet ++;
+			//debug
+			System.out.println(snippetsList.get(snippetsList.size()-1));
 		}
 
 		return snippetsList;

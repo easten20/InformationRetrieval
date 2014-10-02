@@ -34,6 +34,7 @@ public class SearchEngineTest {
 							"Bierzelt Oktoberfest",
 							"Los Angeles sport",
 							"08/15"};
+	//static String[] queries = { "adolf hitler", "Bierzelt Oktoberfest" };
 	static String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 	
 	// some variables (will be explained when needed, ignore for now!)
@@ -45,7 +46,7 @@ public class SearchEngineTest {
 		//basicPath = "res/wiki.xml"; // comment this out/in
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
+		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
 		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
 		
@@ -64,6 +65,7 @@ public class SearchEngineTest {
 		};
 				
 		System.out.println("Searching Terms...");
+		//MySecondClass window = new MySecondClass();
 		for (String query : queries){
 			searchTitles(query, mySearchEngine);
 		}
@@ -72,36 +74,38 @@ public class SearchEngineTest {
 	}
 
 	private static void searchTitles(String query, SearchEngineIR test) throws IOException, XMLStreamException {
+		//SearchResult searchResult = null;
+		//try {
 		
-		//MySecondClass window = new MySecondClass();
-		System.out.println("---------------------- " + query + " ----------------------");
-		//printInWindow(window, "---------------------- " + query + " ----------------------");
+			System.out.println("---------------------- " + query + " ----------------------");
+			//printInWindow(window, "---------------------- " + query + " ----------------------");
 
-		try 
-		{
 			SearchResult searchResult = test.searchWikiPages(query, prf, topK);		
-		
+			
 			for (String title: searchResult.getTitles()){
 				System.out.println(title);
 				//printInWindow(window, title);
-			}		
-		}
-		catch (Exception ex) {
-			System.out.println(ex.getMessage());
-		}
+			}
+		
+		
 		//double ndcg = searchResult.computeNDCG();
 		//System.out.println("ndcg@"+topK + " : " + ndcg);
 		//printInWindow(window, "ndcg@"+topK + " : " + ndcg);
-        
-		/*
-		ArrayList<String> snippetsList = searchResult.makeSnippets();
-		for(int i = 0;i<snippetsList.size();i++)
-		{
-			//System.out.println(snippetsList.get(i));
-			//colorQueryTerm(window, snippetsList.get(i), query);
+//		}
+//		catch (Exception ex) {
+//			System.out.println(ex.getMessage());
+//		}	
+		
+		if ( searchResult.getResultPagesSize() != 0 ) {
+		
+			ArrayList<String> snippetsList = searchResult.makeSnippets();
+			for(int i = 0;i<snippetsList.size();i++)
+			{
+				System.out.println(snippetsList.get(i));
+				//colorQueryTerm(window, snippetsList.get(i), query);
+			}
 		}
-		*/
-			
+		
 	}
 	
 	private static void printInWindow(MySecondClass window, String string){
@@ -110,11 +114,15 @@ public class SearchEngineTest {
 	}
 	
 	private static void colorQueryTerm(MySecondClass window, String string, String query){
-		int index = string.indexOf(query);
-		window.appendToPane( string.substring(0, index), Color.BLACK);
-		window.appendToPane( string.substring(index, index+query.length()), Color.RED);
-		window.appendToPane( string.substring(index+query.length(), string.length()-1), Color.BLACK);
-		window.appendToPane( "\n\n\n", Color.BLACK);
+		System.out.println("string: " + string + ", query: " + query);
+		if( string.toLowerCase().contains(query.toLowerCase())){
+			System.out.println("string contains query");
+			int index = string.toLowerCase().indexOf(query.toLowerCase());
+			window.appendToPane( string.substring(0, index), Color.BLACK);
+			window.appendToPane( string.substring(index, index+query.length()), Color.RED);
+			window.appendToPane( string.substring(index+query.length(), string.length()-1), Color.BLACK);
+			window.appendToPane( "\n\n\n", Color.BLACK);
+		}
 	}
 
 	@SuppressWarnings("unused")

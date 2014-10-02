@@ -110,7 +110,14 @@ public class SearchEngineIR extends SearchEngine {
 	
 	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
 		//String newQuery = pseudoRelevaceFeedback(query, prf);		
-		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
+		try {
+			return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
+		}catch (Exception ex) {
+			System.out.println("no wikipage found");
+			System.out.println(ex.getMessage());
+			return new SearchResult();
+		}
+		
 	}
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){

@@ -179,6 +179,88 @@ public class WikiPage {
 		return key;
 	}
 	
+	private int arrayContainsStringCaseInsensitive(ArrayList<String> arrayList, String token){
+		String string = "";
+		int i = 0;
+		for ( i = 0 ; i < arrayList.size() ; i ++ ) {
+			string = arrayList.get(i);
+			if ( string.toLowerCase().equals(token.toLowerCase()) ){
+				return i;
+			}else{
+				return -1;
+			}
+		}
+		return -1;
+	}
+		
+		
+	
+	
+	public String generateSnippet2(String query, int resultSize, int snippetNumber) {
+		String returnString = "";
+		returnString += "***** " + snippetNumber + "." + this.getTitle()
+				+ " *****" + "\n";
+
+		String entireText = this.getText();
+		
+		// queryArray: "abc def xyz" => { "abc", "def", "xyz" }
+		ArrayList<String> queryArray = new ArrayList<String>();
+		StringTokenizer stringTokenizer = new StringTokenizer(query, " ");
+		String partQuery = "";
+		while (stringTokenizer.hasMoreTokens()) {
+			partQuery = stringTokenizer.nextToken();
+			queryArray.add(partQuery);
+		}
+		
+		// queryPositionArray: { "abc", "def", "xyz" } => { 2, 6, 14 } (position)
+		String partText = "";
+		ArrayList<Integer> queryPositionArray = new ArrayList<Integer>();
+		ArrayList<String> queryArrayCopy = new ArrayList<String>(queryArray); // copy of queryArray
+		StringTokenizer stringTokenizer2 = new StringTokenizer(entireText, " ");
+		int index = 0;
+		int count = 0;
+		while (stringTokenizer2.hasMoreTokens()) {
+			partText = stringTokenizer2.nextToken();
+			index =arrayContainsStringCaseInsensitive(queryArrayCopy, partText); 
+			if ( index != -1) {
+				queryPositionArray.add(count);
+				System.out.println("count: " + count);
+				queryArrayCopy.remove(index);
+			}
+			if(queryArrayCopy.isEmpty()) break;
+			count++;
+		}
+		
+		int position = 0;
+		StringTokenizer stringTokenizer3 = new StringTokenizer(entireText, " ");
+		while (stringTokenizer3.hasMoreTokens()) {
+			position = position + 1;
+			partText = stringTokenizer3.nextToken();
+			
+			//remove <ref>, </ref>
+			partText = removeTagsFromSnippet(partText);
+			
+			int pos = 0;
+			if ( queryPositionArray.isEmpty() ) pos = 0;
+			else pos = queryPositionArray.get(0);
+				
+			if (pos - resultSize <= position && position <= pos + resultSize) {
+				returnString += partText + " ";
+				returnString = returnString.replaceAll("\\[", "");
+				returnString = returnString.replaceAll("\\]", "");
+				returnString = returnString.replaceAll("\\{", "");
+				returnString = returnString.replaceAll("\\}", "");
+
+				// debug
+				// System.out.println("added string: " + returnString);
+			}
+
+		}
+		returnString += "\n";
+
+		return returnString;
+	}
+	
 
 	public String generateSnippet(String query, int resultSize,
 			int snippetNumber) {
