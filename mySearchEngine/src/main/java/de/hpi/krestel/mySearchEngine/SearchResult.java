@@ -28,8 +28,7 @@ public class SearchResult {
 		this.resultPages = new ArrayList<WikiPage>();
 	}
 	
-	public int getResultPagesSize() {
-		System.out.println("start getResultPagesSize");
+	public int getResultPagesSize() {		
 		if ( resultPages != null ) {
 			return resultPages.size();
 		}

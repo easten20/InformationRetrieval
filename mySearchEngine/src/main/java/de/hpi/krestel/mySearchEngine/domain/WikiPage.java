@@ -223,8 +223,7 @@ public class WikiPage {
 			partText = stringTokenizer2.nextToken();
 			index =arrayContainsStringCaseInsensitive(queryArrayCopy, partText); 
 			if ( index != -1) {
-				queryPositionArray.add(count);
-				System.out.println("count: " + count);
+				queryPositionArray.add(count);				
 				queryArrayCopy.remove(index);
 			}
 			if(queryArrayCopy.isEmpty()) break;

@@ -27,9 +27,12 @@ import de.hpi.krestel.mySearchEngine.parser.WikiXMLIterable;
 public class SearchEngineIR extends SearchEngine {
 	
 	Index index;
-	int resultSize = 10; // Nicco and Elina, we have to display different results. Change this size. Timur and I will use 10. 
+	int resultSize = 10; // Nicco and Elina, we have to display different results. Change this size. Timur and I will use 10.
 	
-	
+	// Some test queries for development. The real test queries will be more difficult ;) 
+		
+	static String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
+		
 	// Replace 'Y' with your search engine name
 	public SearchEngineIR() {
 		// This should stay as is! Don't add anything here!
@@ -67,8 +70,22 @@ public class SearchEngineIR extends SearchEngine {
 
 	@Override
 	ArrayList<String> search(String query, int topK, int prf) {
-		// TODO Auto-generated method stub
-		return null;
+		SearchResult searchResult = new SearchResult();		
+		try {
+			List<WikiPage> wikiPages = searchWikiPages(query, topK);
+			if (prf > 0) {
+				System.out.println("running pseudo relevance feedback");
+				for (int i = 0; i < prf; i++) {
+					query += " " + wikiPages.get(i).mostFrequentWord();					
+				}				
+				System.out.println("new query: " + query);
+				wikiPages = searchWikiPages(query, topK);
+			}
+			searchResult = new SearchResult(query, prf, this, wikiPages, topK) ;			
+		} catch (Exception e) {
+			System.out.println("error happens : " + e.getMessage());
+		}
+		return searchResult.getTitles();
 	}
 	
 	public List<WikiPage> searchWikiPages(String query, int numberOfWikiPages) throws InvalidParameterException, IOException, XMLStreamException {
@@ -109,15 +126,8 @@ public class SearchEngineIR extends SearchEngine {
 	}
 	
 	public SearchResult searchWikiPages (String query, int prf, int topK)throws IOException, XMLStreamException {
-		//String newQuery = pseudoRelevaceFeedback(query, prf);		
-		try {
-			return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;
-		}catch (Exception ex) {
-			System.out.println("no wikipage found");
-			System.out.println(ex.getMessage());
-			return new SearchResult();
-		}
-		
+		//String newQuery = pseudoRelevaceFeedback(query, prf);				
+		return new SearchResult(query, prf, this, searchWikiPages(query, topK), topK) ;				
 	}
 
 	ArrayList<Double> computeDG (ArrayList<Double> gains){

@@ -34,22 +34,14 @@ public class SearchEngineTest {
 							"Bierzelt Oktoberfest",
 							"Los Angeles sport",
 							"08/15"};
-	//static String[] queries = { "adolf hitler", "Bierzelt Oktoberfest" };
+	
 	static String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
 	
 	// some variables (will be explained when needed, ignore for now!)
 	static int topK = 10;
-	static int prf = 5;
+	static int prf = 0;
 
 	public static void main(String[] args) throws IOException, XMLStreamException {		
-		//String basicPath = "res/dewiki-20140216-pages-articles-multistream.xml";
-		//basicPath = "res/wiki.xml"; // comment this out/in
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100.xml";
-		basicPath = "res/dewiki-20140216-pages-articles-multistream.1000.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.10000.xml";
-		//basicPath = "res/dewiki-20140216-pages-articles-multistream.100000.xml";
-		
 		String filePath = new File(basicPath).getAbsolutePath();
 		SearchEngineIR mySearchEngine = new SearchEngineIR();
 		if (!mySearchEngine.loadIndex(filePath)) {
@@ -65,45 +57,37 @@ public class SearchEngineTest {
 		};
 				
 		System.out.println("Searching Terms...");
-		//MySecondClass window = new MySecondClass();
-		for (String query : queries){
-			searchTitles(query, mySearchEngine);
+		for (String query : queries){			
+			for (String title: mySearchEngine.search(query, topK, prf)){
+				System.out.println(title);
+			}				
 		}
-		//searchTitles("ICE BUT NOT TTT", test);
 		System.out.println("Searched Terms!");
 	}
 
 	private static void searchTitles(String query, SearchEngineIR test) throws IOException, XMLStreamException {
-		//SearchResult searchResult = null;
-		//try {
+		try{
 		
-			System.out.println("---------------------- " + query + " ----------------------");
-			//printInWindow(window, "---------------------- " + query + " ----------------------");
-
-			SearchResult searchResult = test.searchWikiPages(query, prf, topK);		
-			
-			for (String title: searchResult.getTitles()){
-				System.out.println(title);
-				//printInWindow(window, title);
-			}
+		System.out.println("---------------------- " + query + " ----------------------");
+		SearchResult searchResult = test.searchWikiPages(query, prf, topK);		
 		
+		for (String title: searchResult.getTitles()){
+			System.out.println(title);
+		}				
 		
-		//double ndcg = searchResult.computeNDCG();
-		//System.out.println("ndcg@"+topK + " : " + ndcg);
-		//printInWindow(window, "ndcg@"+topK + " : " + ndcg);
-//		}
-//		catch (Exception ex) {
-//			System.out.println(ex.getMessage());
-//		}	
+		/* uncomment to show ndcg result
+		double ndcg = searchResult.computeNDCG();
+		System.out.println("ndcg@"+topK + " : " + ndcg);				
+		*/
 		
-		if ( searchResult.getResultPagesSize() != 0 ) {
-		
+		if ( searchResult.getResultPagesSize() != 0 ) {		
 			ArrayList<String> snippetsList = searchResult.makeSnippets();
-			for(int i = 0;i<snippetsList.size();i++)
-			{
-				System.out.println(snippetsList.get(i));
-				//colorQueryTerm(window, snippetsList.get(i), query);
-			}
+			for(int i = 0;i<snippetsList.size();i++)			
+				System.out.println(snippetsList.get(i));					
+		}
+		
+		}catch (Exception ex) {			
+			System.out.println(ex.getMessage());		
 		}
 		
 	}
